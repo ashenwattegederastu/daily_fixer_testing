@@ -1,0 +1,213 @@
+body {
+    background: linear-gradient(to bottom, #ffffff, #c8d9ff);
+    color: #333;
+    line-height: 1.6;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    position: fixed;       /* makes the entire header fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Main Navbar */
+.navbar {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #7c8cff;
+    padding: 10px 30px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    position: relative;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    scroll-padding-top: 140px;  /* adjust if your header is taller */
+}
+
+/* Subnav */
+.subnav {
+    background-color: #cfe0ff;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 12px 20px;
+    border-radius: 50px;
+    margin-top: 5px;
+    border: 1px solid #a6c0ff;
+}
+
+.subnav a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.subnav a.active {
+    color: #7c8cff;
+}
+
+/* Page Title */
+.page-title {
+    background: #a5b8fc;
+    margin: 20px;
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+.page-title h2 {
+    margin: 0;
+    color: #fff;
+}
+
+/* Layout */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    margin: 20px;
+    margin-top:150px;
+}
+
+/* Left Panel */
+.technician-profile {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #e3e5fc;
+    margin-bottom: 15px;
+}
+.subtitle {
+    color: #555;
+}
+.rating {
+    margin: 5px 0 15px;
+}
+.review {
+    background: #f7f8ff;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+/* Booking Section */
+.booking {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+.booking h3 {
+    margin-top: 0;
+}
+.calendar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.calendar .month {
+    font-weight: bold;
+}
+.calendar .nav {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+.days,
+.dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin: 5px 0;
+}
+.dates span {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+.dates .active {
+    background: #718bfa;
+    color: white;
+}
+select,
+textarea,
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+textarea {
+    min-height: 80px;
+}
+.time-slots {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+.time-slots button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+    cursor: pointer;
+}
+.time-slots button:hover {
+    background: #eef0ff;
+}
+.confirm-btn {
+    margin-top: 15px;
+    width: 100%;
+    background: #718bfa;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.confirm-btn:hover {
+    background: #5c73d9;
+}

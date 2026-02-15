@@ -1,0 +1,762 @@
+package com.dailyfixer.dao;
+
+import com.dailyfixer.model.Order;
+import com.dailyfixer.model.OrderItem;
+import com.dailyfixer.model.ProductSales;
+import com.dailyfixer.util.DBConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Data Access Object for Order entity.
+ * Handles all database operations for orders.
+ */
+public class OrderDAO {
+
+    // SQL Statements
+    private static final String INSERT_ORDER = "INSERT INTO orders (order_id, customer_name, email, phone, address, city, "
+            +
+            "total_amount, currency, status, store_username, product_name, buyer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    // Fallback INSERT without store_username (if column doesn't exist)
+    private static final String INSERT_ORDER_FALLBACK = "INSERT INTO orders (order_id, customer_name, email, phone, address, city, "
+            +
+            "total_amount, currency, status, product_name, buyer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    // Fallback INSERT without store_username and product_name (if columns don't
+    // exist)
+    private static final String INSERT_ORDER_MINIMAL = "INSERT INTO orders (order_id, customer_name, email, phone, address, city, "
+            +
+            "total_amount, currency, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    private static final String SELECT_ORDER_BY_ID = "SELECT * FROM orders WHERE order_id = ?";
+
+    private static final String UPDATE_ORDER_STATUS = "UPDATE orders SET status = ?, payhere_payment_id = ? WHERE order_id = ?";
+
+    private static final String UPDATE_STATUS_ONLY = "UPDATE orders SET status = ? WHERE order_id = ?";
+
+    private static final String SELECT_ORDERS_BY_STATUS = "SELECT * FROM orders WHERE UPPER(TRIM(status)) = UPPER(TRIM(?)) ORDER BY created_at DESC";
+
+    // Try to use store_username if column exists, otherwise filter by product_name
+    // pattern
+    private static final String SELECT_ORDERS_BY_STORE = "SELECT * FROM orders WHERE UPPER(TRIM(status)) = UPPER(TRIM(?)) AND store_username = ? ORDER BY created_at DESC";
+
+    private static final String SELECT_ALL_ORDERS_BY_STORE = "SELECT * FROM orders WHERE store_username = ? AND UPPER(TRIM(status)) IN ('PAID','PENDING','PROCESSING','OUT_FOR_DELIVERY','DELIVERED') ORDER BY created_at DESC";
+
+    private static final String SELECT_ORDERS_BY_BUYER = "SELECT * FROM orders WHERE buyer_id = ? ORDER BY created_at DESC";
+
+    // Order Items SQL
+    private static final String INSERT_ORDER_ITEM = "INSERT INTO order_items (order_id, store_id, product_id, variant_id, "
+            +
+            "product_name, quantity, unit_price, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    private static final String SELECT_ORDER_ITEMS_BY_ORDER_ID = "SELECT * FROM order_items WHERE order_id = ? ORDER BY id";
+
+    private static final String SELECT_ORDER_ITEMS_BY_STORE_AND_STATUS = "SELECT oi.* FROM order_items oi " +
+            "JOIN orders o ON oi.order_id = o.order_id " +
+            "WHERE oi.store_id = ? AND UPPER(TRIM(o.status)) = UPPER(TRIM(?)) " +
+            "ORDER BY o.created_at DESC, oi.id";
+
+    private static final String SELECT_PRODUCT_SALES_BY_STORE_ID = "SELECT oi.product_name, SUM(oi.quantity) AS total_qty FROM order_items oi "
+            +
+            "JOIN orders o ON oi.order_id = o.order_id " +
+            "WHERE oi.store_id = ? AND UPPER(TRIM(o.status)) IN ('PAID','PENDING','PROCESSING','OUT_FOR_DELIVERY','DELIVERED') "
+            +
+            "GROUP BY oi.product_id, oi.product_name ORDER BY total_qty DESC";
+
+    private static final String SELECT_PRODUCT_SALES_BY_STORE_USERNAME = "SELECT oi.product_id, oi.product_name, SUM(oi.quantity) AS total_qty FROM order_items oi "
+            +
+            "JOIN orders o ON oi.order_id = o.order_id " +
+            "WHERE o.store_username = ? AND UPPER(TRIM(o.status)) IN ('PAID','PENDING','PROCESSING','OUT_FOR_DELIVERY','DELIVERED') "
+            +
+            "GROUP BY oi.product_id, oi.product_name ORDER BY total_qty DESC";
+
+    /**
+     * Get database connection.
+     * Protected to allow overriding in tests (e.g., to use H2).
+     */
+    protected Connection getConnection() throws SQLException, ClassNotFoundException {
+        return DBConnection.getConnection();
+    }
+
+    /**
+     * Create a new order in the database.
+     *
+     * @param order The order to create
+     * @return true if successful, false otherwise
+     */
+    public boolean createOrder(Order order) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(INSERT_ORDER);
+
+            // Combine first name and last name into customer_name
+            String customerName = order.getFirstName();
+            if (order.getLastName() != null && !order.getLastName().isEmpty()) {
+                customerName += " " + order.getLastName();
+            }
+
+            // Try with store_username and product_name first
+            try {
+                stmt.setString(1, order.getOrderId());
+                stmt.setString(2, customerName);
+                stmt.setString(3, order.getEmail());
+                stmt.setString(4, order.getPhone());
+                stmt.setString(5, order.getAddress());
+                stmt.setString(6, order.getCity());
+                stmt.setBigDecimal(7, order.getAmount()); // Maps to total_amount in DB
+                stmt.setString(8, order.getCurrency());
+                stmt.setString(9, order.getStatus());
+                stmt.setString(10, order.getStoreUsername()); // Store username
+                stmt.setString(11, order.getProductName()); // Product name
+                if (order.getBuyerId() != null) {
+                    stmt.setInt(12, order.getBuyerId());
+                } else {
+                    stmt.setNull(12, Types.INTEGER);
+                }
+
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println("Order created: " + order.getOrderId() + " | Rows affected: " + rowsAffected);
+                return rowsAffected > 0;
+            } catch (SQLException e) {
+                // If store_username or product_name column doesn't exist, try fallback
+                if (e.getMessage().contains("store_username") || e.getMessage().contains("product_name")
+                        || e.getMessage().contains("Unknown column")) {
+                    System.out.println("store_username or product_name column not found, using fallback INSERT");
+                    try {
+                        stmt = conn.prepareStatement(INSERT_ORDER_FALLBACK);
+                        stmt.setString(1, order.getOrderId());
+                        stmt.setString(2, customerName);
+                        stmt.setString(3, order.getEmail());
+                        stmt.setString(4, order.getPhone());
+                        stmt.setString(5, order.getAddress());
+                        stmt.setString(6, order.getCity());
+                        stmt.setBigDecimal(7, order.getAmount());
+                        stmt.setString(8, order.getCurrency());
+                        stmt.setString(9, order.getStatus());
+                        stmt.setString(10, order.getProductName()); // Product name
+                        if (order.getBuyerId() != null) {
+                            stmt.setInt(11, order.getBuyerId());
+                        } else {
+                            stmt.setNull(11, Types.INTEGER);
+                        }
+
+                        int rowsAffected = stmt.executeUpdate();
+                        System.out.println("Order created (fallback with product_name): " + order.getOrderId()
+                                + " | Rows affected: " + rowsAffected);
+                        return rowsAffected > 0;
+                    } catch (SQLException e2) {
+                        // If product_name also doesn't exist, use minimal INSERT
+                        if (e2.getMessage().contains("product_name") || e2.getMessage().contains("Unknown column")) {
+                            System.out.println("product_name column not found, using minimal INSERT");
+                            stmt = conn.prepareStatement(INSERT_ORDER_MINIMAL);
+                            stmt.setString(1, order.getOrderId());
+                            stmt.setString(2, customerName);
+                            stmt.setString(3, order.getEmail());
+                            stmt.setString(4, order.getPhone());
+                            stmt.setString(5, order.getAddress());
+                            stmt.setString(6, order.getCity());
+                            stmt.setBigDecimal(7, order.getAmount());
+                            stmt.setString(8, order.getCurrency());
+                            stmt.setString(9, order.getStatus());
+
+                            int rowsAffected = stmt.executeUpdate();
+                            System.out.println("Order created (minimal): " + order.getOrderId() + " | Rows affected: "
+                                    + rowsAffected);
+                            return rowsAffected > 0;
+                        } else {
+                            throw e2; // Re-throw if it's a different error
+                        }
+                    }
+                } else {
+                    throw e; // Re-throw if it's a different error
+                }
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error creating order: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeResources(stmt, conn);
+        }
+    }
+
+    /**
+     * Find an order by its ID.
+     *
+     * @param orderId The order ID to search for
+     * @return Order object if found, null otherwise
+     */
+    public Order findOrderById(String orderId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_ORDER_BY_ID);
+            stmt.setString(1, orderId);
+
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return mapResultSetToOrder(rs);
+            }
+            return null;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error finding order: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+    }
+
+    /**
+     * Update order status and optionally PayHere payment ID.
+     *
+     * @param orderId          The order ID
+     * @param status           New status (PENDING, PAID, CANCELLED, FAILED)
+     * @param payherePaymentId PayHere payment ID (optional)
+     * @return true if successful, false otherwise
+     */
+    public boolean updateOrderStatus(String orderId, String status, String payherePaymentId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(UPDATE_ORDER_STATUS);
+
+            stmt.setString(1, status);
+            stmt.setString(2, payherePaymentId);
+            stmt.setString(3, orderId);
+
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Order status updated: " + orderId + " -> " + status + " | Rows: " + rowsAffected);
+            return rowsAffected > 0;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error updating order status: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeResources(stmt, conn);
+        }
+    }
+
+    /**
+     * Update only the order status.
+     *
+     * @param orderId The order ID
+     * @param status  New status
+     * @return true if successful, false otherwise
+     */
+    public boolean updateStatus(String orderId, String status) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(UPDATE_STATUS_ONLY);
+
+            stmt.setString(1, status);
+            stmt.setString(2, orderId);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error updating status: " + e.getMessage());
+            return false;
+        } finally {
+            closeResources(stmt, conn);
+        }
+    }
+
+    /**
+     * Get all orders by status.
+     *
+     * @param status The order status (e.g., "PAID", "PENDING")
+     * @return List of orders with the specified status
+     */
+    public java.util.List<Order> getOrdersByStatus(String status) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        java.util.List<Order> orders = new java.util.ArrayList<>();
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_ORDERS_BY_STATUS);
+            stmt.setString(1, status);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                orders.add(mapResultSetToOrder(rs));
+            }
+            return orders;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting orders by status: " + e.getMessage());
+            e.printStackTrace();
+            return orders;
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+    }
+
+    /**
+     * Get orders by status and store username.
+     *
+     * @param status        The order status (e.g., "PAID", "PENDING")
+     * @param storeUsername The store username
+     * @return List of orders for the store with the specified status
+     */
+    public java.util.List<Order> getOrdersByStatusAndStore(String status, String storeUsername) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        java.util.List<Order> orders = new java.util.ArrayList<>();
+
+        try {
+            conn = getConnection();
+
+            // Try to use store-specific query
+            try {
+                stmt = conn.prepareStatement(SELECT_ORDERS_BY_STORE);
+                stmt.setString(1, status);
+                stmt.setString(2, storeUsername);
+            } catch (SQLException e) {
+                // If column doesn't exist, use status-only query and filter in code
+                stmt = conn.prepareStatement(SELECT_ORDERS_BY_STATUS);
+                stmt.setString(1, status);
+            }
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Order order = mapResultSetToOrder(rs);
+                // If using status-only query, filter by store_username here
+                if (order.getStoreUsername() != null && order.getStoreUsername().equals(storeUsername)) {
+                    orders.add(order);
+                } else if (order.getStoreUsername() == null && stmt.toString().contains("store_username")) {
+                    // Column exists but is null, skip
+                    continue;
+                } else if (!stmt.toString().contains("store_username")) {
+                    // Column doesn't exist, add all (backward compatibility)
+                    orders.add(order);
+                }
+            }
+            return orders;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting orders by status and store: " + e.getMessage());
+            e.printStackTrace();
+            return orders;
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+    }
+
+    /**
+     * Get all orders for a store (PAID, PENDING, PROCESSING, OUT_FOR_DELIVERY,
+     * DELIVERED) for charts and trends.
+     */
+    public java.util.List<Order> getAllOrdersByStore(String storeUsername) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        java.util.List<Order> orders = new java.util.ArrayList<>();
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_ALL_ORDERS_BY_STORE);
+            stmt.setString(1, storeUsername);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                orders.add(mapResultSetToOrder(rs));
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting all orders by store: " + e.getMessage());
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+        return orders;
+    }
+
+    /**
+     * Get all orders for a specific buyer (user).
+     *
+     * @param buyerId The user ID of the buyer
+     * @return List of orders placed by the buyer
+     */
+    public java.util.List<Order> getOrdersByBuyerId(int buyerId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        java.util.List<Order> orders = new java.util.ArrayList<>();
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_ORDERS_BY_BUYER);
+            stmt.setInt(1, buyerId);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                orders.add(mapResultSetToOrder(rs));
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting orders by buyer ID: " + e.getMessage());
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+        return orders;
+    }
+
+    /**
+     * Get top selling products by quantity for a store (from PAID, PROCESSING,
+     * OUT_FOR_DELIVERY, DELIVERED orders).
+     */
+    public java.util.List<ProductSales> getProductSalesByStore(int storeId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        java.util.List<ProductSales> list = new java.util.ArrayList<>();
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_PRODUCT_SALES_BY_STORE_ID);
+            stmt.setInt(1, storeId);
+            rs = stmt.executeQuery();
+            while (rs.next() && list.size() < 10) {
+                ProductSales ps = new ProductSales();
+                ps.setProductName(rs.getString("product_name") != null ? rs.getString("product_name") : "");
+                ps.setQuantitySold(rs.getInt("total_qty"));
+                list.add(ps);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting product sales by store: " + e.getMessage());
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+        return list;
+    }
+
+    /**
+     * Get top selling products by quantity for a store by store username.
+     * Uses orders.store_username so it works even when StoreDAO returns null.
+     * Includes PAID, PENDING, PROCESSING, OUT_FOR_DELIVERY, DELIVERED.
+     */
+    public java.util.List<ProductSales> getProductSalesByStore(String storeUsername) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        java.util.List<ProductSales> list = new java.util.ArrayList<>();
+        if (storeUsername == null || storeUsername.trim().isEmpty())
+            return list;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_PRODUCT_SALES_BY_STORE_USERNAME);
+            stmt.setString(1, storeUsername.trim());
+            rs = stmt.executeQuery();
+            while (rs.next() && list.size() < 10) {
+                ProductSales ps = new ProductSales();
+                ps.setProductId(rs.getInt("product_id"));
+                ps.setProductName(rs.getString("product_name") != null ? rs.getString("product_name") : "");
+                ps.setQuantitySold(rs.getInt("total_qty"));
+                list.add(ps);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting product sales by store username: " + e.getMessage());
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+        return list;
+    }
+
+    /**
+     * Map ResultSet to Order object.
+     */
+    private Order mapResultSetToOrder(ResultSet rs) throws SQLException {
+        Order order = new Order();
+        order.setOrderId(rs.getString("order_id"));
+
+        // Split customer_name into first_name and last_name
+        String customerName = rs.getString("customer_name");
+        if (customerName != null && !customerName.isEmpty()) {
+            String[] nameParts = customerName.trim().split("\\s+", 2);
+            if (nameParts.length > 0) {
+                order.setFirstName(nameParts[0]);
+                order.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+            } else {
+                order.setFirstName(customerName);
+                order.setLastName("");
+            }
+        } else {
+            order.setFirstName("");
+            order.setLastName("");
+        }
+
+        order.setEmail(rs.getString("email"));
+        order.setPhone(rs.getString("phone"));
+        order.setAddress(rs.getString("address"));
+        order.setCity(rs.getString("city"));
+        // Try to get product_name if column exists
+        try {
+            String productName = rs.getString("product_name");
+            order.setProductName(productName != null ? productName : "");
+        } catch (SQLException e) {
+            // Column doesn't exist, set to empty
+            order.setProductName("");
+        }
+        order.setAmount(rs.getBigDecimal("total_amount")); // Maps from total_amount
+        order.setCurrency(rs.getString("currency"));
+        order.setStatus(rs.getString("status"));
+        order.setPayherePaymentId(rs.getString("payhere_payment_id"));
+        // Get store_username if column exists
+        try {
+            order.setStoreUsername(rs.getString("store_username"));
+        } catch (SQLException e) {
+            // Column doesn't exist, set to null
+            order.setStoreUsername(null);
+        }
+        order.setCreatedAt(rs.getTimestamp("created_at"));
+        order.setUpdatedAt(rs.getTimestamp("updated_at"));
+        // Get buyer_id if column exists
+        try {
+            int buyerId = rs.getInt("buyer_id");
+            order.setBuyerId(rs.wasNull() ? null : buyerId);
+        } catch (SQLException e) {
+            // Column doesn't exist, set to null
+            order.setBuyerId(null);
+        }
+        return order;
+    }
+
+    /**
+     * Create an order item in the database.
+     *
+     * @param orderItem The order item to create
+     * @return true if successful, false otherwise
+     */
+    public boolean createOrderItem(OrderItem orderItem) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(INSERT_ORDER_ITEM);
+
+            stmt.setString(1, orderItem.getOrderId());
+            stmt.setInt(2, orderItem.getStoreId());
+            stmt.setInt(3, orderItem.getProductId());
+            if (orderItem.getVariantId() != null) {
+                stmt.setInt(4, orderItem.getVariantId());
+            } else {
+                stmt.setNull(4, Types.INTEGER);
+            }
+            stmt.setString(5, orderItem.getProductName());
+            stmt.setInt(6, orderItem.getQuantity());
+            stmt.setBigDecimal(7, orderItem.getUnitPrice());
+            stmt.setBigDecimal(8, orderItem.getTotalPrice());
+            stmt.setString(9, orderItem.getStatus() != null ? orderItem.getStatus() : "PENDING");
+
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println(
+                    "Order item created for order: " + orderItem.getOrderId() + " | Rows affected: " + rowsAffected);
+            return rowsAffected > 0;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error creating order item: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeResources(stmt, conn);
+        }
+    }
+
+    /**
+     * Get all order items for a specific order.
+     *
+     * @param orderId The order ID
+     * @return List of order items
+     */
+    public List<OrderItem> getOrderItemsByOrderId(String orderId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_ORDER_ITEMS_BY_ORDER_ID);
+            stmt.setString(1, orderId);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                orderItems.add(mapResultSetToOrderItem(rs));
+            }
+            return orderItems;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting order items by order ID: " + e.getMessage());
+            e.printStackTrace();
+            return orderItems;
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+    }
+
+    /**
+     * Get order items by store ID and order status.
+     *
+     * @param storeId The store ID
+     * @param status  The order status
+     * @return List of order items grouped by order
+     */
+    public List<OrderItem> getOrderItemsByStoreAndStatus(int storeId, String status) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(SELECT_ORDER_ITEMS_BY_STORE_AND_STATUS);
+            stmt.setInt(1, storeId);
+            stmt.setString(2, status);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                orderItems.add(mapResultSetToOrderItem(rs));
+            }
+            return orderItems;
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error getting order items by store and status: " + e.getMessage());
+            e.printStackTrace();
+            return orderItems;
+        } finally {
+            closeResources(rs, stmt, conn);
+        }
+    }
+
+    /**
+     * Map ResultSet to OrderItem object.
+     */
+    private OrderItem mapResultSetToOrderItem(ResultSet rs) throws SQLException {
+        OrderItem item = new OrderItem();
+        item.setId(rs.getInt("id"));
+        item.setOrderId(rs.getString("order_id"));
+        item.setStoreId(rs.getInt("store_id"));
+        item.setProductId(rs.getInt("product_id"));
+        int variantId = rs.getInt("variant_id");
+        item.setVariantId(rs.wasNull() ? null : variantId);
+        item.setProductName(rs.getString("product_name"));
+        item.setQuantity(rs.getInt("quantity"));
+        item.setUnitPrice(rs.getBigDecimal("unit_price"));
+        item.setTotalPrice(rs.getBigDecimal("total_price"));
+        item.setStatus(rs.getString("status"));
+        item.setCreatedAt(rs.getTimestamp("created_at"));
+        return item;
+    }
+
+    /**
+     * Close database resources safely (with ResultSet).
+     */
+    private void closeResources(ResultSet rs, PreparedStatement stmt, Connection conn) {
+        try {
+            if (rs != null)
+                rs.close();
+        } catch (SQLException e) {
+            System.err.println("Error closing result set: " + e.getMessage());
+        }
+        closeResources(stmt, conn);
+    }
+
+    /**
+     * Reduce stock for all items in an order.
+     * This should be called when payment is successful (status = PAID).
+     * 
+     * @param orderId The order ID
+     * @return true if stock reduction was successful for all items, false otherwise
+     */
+    public boolean reduceStockForOrder(String orderId) {
+        try {
+            // Get all order items
+            List<OrderItem> orderItems = getOrderItemsByOrderId(orderId);
+
+            if (orderItems == null || orderItems.isEmpty()) {
+                System.out.println("No order items found for order: " + orderId);
+                return false;
+            }
+
+            com.dailyfixer.dao.ProductDAO productDAO = new com.dailyfixer.dao.ProductDAO();
+            com.dailyfixer.dao.ProductVariantDAO variantDAO = new com.dailyfixer.dao.ProductVariantDAO();
+
+            boolean allSuccessful = true;
+
+            for (OrderItem item : orderItems) {
+                try {
+                    if (item.getVariantId() != null) {
+                        // Reduce variant stock
+                        boolean success = variantDAO.reduceVariantQuantity(item.getVariantId(), item.getQuantity());
+                        if (!success) {
+                            System.err.println("Failed to reduce stock for variant ID: " + item.getVariantId());
+                            allSuccessful = false;
+                        }
+                    } else {
+                        // Reduce product stock
+                        boolean success = productDAO.reduceProductQuantity(item.getProductId(), item.getQuantity());
+                        if (!success) {
+                            System.err.println("Failed to reduce stock for product ID: " + item.getProductId());
+                            allSuccessful = false;
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error reducing stock for order item: " + e.getMessage());
+                    e.printStackTrace();
+                    allSuccessful = false;
+                }
+            }
+
+            if (allSuccessful) {
+                System.out.println("Successfully reduced stock for all items in order: " + orderId);
+            } else {
+                System.err.println("Some stock reductions failed for order: " + orderId);
+            }
+
+            return allSuccessful;
+
+        } catch (Exception e) {
+            System.err.println("Error reducing stock for order: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Close database resources safely.
+     */
+    private void closeResources(PreparedStatement stmt, Connection conn) {
+        try {
+            if (stmt != null)
+                stmt.close();
+        } catch (SQLException e) {
+            System.err.println("Error closing statement: " + e.getMessage());
+        }
+        try {
+            if (conn != null)
+                conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error closing connection: " + e.getMessage());
+        }
+    }
+}

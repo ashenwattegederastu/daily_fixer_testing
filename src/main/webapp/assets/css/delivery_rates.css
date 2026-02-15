@@ -1,0 +1,194 @@
+body {
+    background: linear-gradient(to bottom, #ffffff, #c8d9ff);
+    color: #333;
+    line-height: 1.6;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    position: fixed;       /* makes the entire header fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Main Navbar */
+.navbar {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #7c8cff;
+    padding: 10px 30px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    position: relative;
+}
+
+.subnav a.active {
+    color: #7c8cff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    scroll-padding-top: 140px;  /* adjust if your header is taller */
+}
+
+/* Subnav */
+.subnav {
+    background-color: #cfe0ff;
+    display: flex;
+    flex-wrap: wrap;              /* allows wrapping on small screens */
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-radius: 50px;
+    margin-top: 5px;
+    border: 1px solid #a6c0ff;
+    gap: 10px;
+}
+
+.subnav .store-name {
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    font-size: 20px;
+    margin-right: 0;
+}
+
+.subnav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    padding: 0;
+    margin: 0;
+}
+
+.subnav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.subnav a:hover {
+    color: #7c8cff;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;   /* stack items vertically */
+    justify-content: flex-start;
+    align-items: center;      /* center horizontally */
+    min-height: 100vh;
+    padding-top: 150px;       /* avoid header overlap */
+    gap: 2rem;                /* space between current rates and form */
+}
+
+.current-rates-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    width: 800px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.current-rates-card h2 {
+    margin-bottom: 1rem;
+    color: #1b2647;
+}
+
+.current-rates-card p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+
+.form-card h2 {
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Form card */
+.form-card {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    width: 800px;
+    height: auto;             /* let it resize naturally */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.form-card label {
+    display: block;
+    font-weight: 500;
+    margin: 1rem 0 0.4rem;
+    color: #6b77cf;
+}
+
+.form-card input,
+.form-card textarea,
+.form-card select {
+    width: 100%;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: #ecf1fe;
+}
+
+.form-card textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+.cancel-btn {
+    background: #1b2647;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.save-btn {
+    background: #7c8cff;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

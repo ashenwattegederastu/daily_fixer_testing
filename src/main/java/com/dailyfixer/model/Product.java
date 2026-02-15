@@ -1,0 +1,53 @@
+package com.dailyfixer.model;
+
+import java.util.Base64;
+
+public class Product {
+    private int productId;
+    private String name;
+    private String type;
+    private int quantity;
+    private String quantityUnit;
+    private double price;
+    private byte[] image;
+    private String storeUsername;
+    private String description;
+    private int storeId;
+
+    // Getters and Setters
+    public int getProductId() { return productId; }
+    public void setProductId(int productId) { this.productId = productId; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public String getQuantityUnit() { return quantityUnit; }
+    public void setQuantityUnit(String quantityUnit) { this.quantityUnit = quantityUnit; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+    public byte[] getImage() { return image; }
+    public void setImage(byte[] image) { this.image = image; }
+    public String getStoreUsername() { return storeUsername; }
+    public void setStoreUsername(String storeUsername) { this.storeUsername = storeUsername; }
+
+
+    public String getImageBase64() {
+        if (image != null && image.length > 0) {
+            return Base64.getEncoder().encodeToString(image);
+        }
+        return "";
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getStoreId() { return storeId; }
+    public void setStoreId(int storeId) { this.storeId = storeId; }
+}

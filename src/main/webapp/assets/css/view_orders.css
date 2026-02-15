@@ -1,0 +1,397 @@
+body {
+    background: linear-gradient(to bottom, #ffffff, #c8d9ff);
+    color: #333;
+    line-height: 1.6;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    position: fixed;       /* makes the entire header fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Main Navbar */
+.navbar {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #7c8cff;
+    padding: 10px 30px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    position: relative;
+}
+
+.subnav a.active {
+    color: #7c8cff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    scroll-padding-top: 140px;  /* adjust if your header is taller */
+}
+
+/* Subnav */
+.subnav {
+    background-color: #cfe0ff;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 12px 20px;
+    border-radius: 50px;
+    margin-top: 5px;
+    border: 1px solid #a6c0ff;
+}
+
+.subnav .store-name {
+    font-weight: bold;
+    margin-right: 45rem;
+    font-family: 'Arial', sans-serif;
+    font-size: 20px;
+}
+
+.subnav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    padding: 0;
+    margin: 0;
+}
+
+.subnav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.subnav a:hover {
+    color: #7c8cff;
+}
+
+.container {
+    max-width: 1200px;   /* limits the width on large screens */
+    margin: 0 auto;      /* centers horizontally */
+    padding: 140px 1.5rem 2rem;   /* horizontal spacing on small screens */
+}
+
+main {
+    padding: 8rem;
+}
+
+h2 {
+    margin-bottom: 1rem;
+}
+
+.status-legend {
+    margin-bottom: 1rem;
+}
+
+.status-legend .status {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+/* Status text with dot */
+.status {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status.pending {
+    background: red;
+}
+
+.status.out-delivery {
+    background: green;
+}
+
+.status.delivered {
+    background: blue;
+}
+
+/* Dropdown for Update Status */
+.status-options {
+    display: none;
+    margin-top: 5px;
+}
+
+
+
+.status-options button {
+    width: 100%;
+    padding: 8px 12px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.status-options button:hover {
+    background: #ccc;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+}
+
+table thead {
+    background: #7b8cff;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background: #f1f3ff;
+}
+
+.view {
+    background: #7b8cff;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 0.3rem;
+}
+
+.update {
+    background: #26338b;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 0.3rem;
+}
+
+.delivery-btn {
+    background: #2c2c54;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 0.3rem;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-section {
+    background-color: #f0f4ff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-section h3 {
+    margin-top: 0;
+    font-weight: 500;
+    color: #5a7edc;
+}
+
+.pickup-section p {
+    color: #666;
+    line-height: 1.5;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.set-location-box {
+    background-color: white; /* Matches the input fields */
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+    margin-top: 15px; /* Adds space from the input fields above */
+}
+
+.set-location-btn {
+    background-color: transparent;
+    border: none;
+    color: #5a7edc;
+    font-weight: 500;
+    cursor: pointer;
+    float: none;
+    width: 100%;
+    text-align: left; /* Align text to the left for a cleaner look */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.set-location-btn::after {
+    content: ' >';
+    margin-left: 5px;
+    font-size: 1.2em;
+}
+
+.item-type-group {
+    cursor: pointer;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-arrow {
+    color: #5a7edc;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu.hidden {
+    display: none;
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f0f4ff;
+}
+
+.dropdown-menu li:last-child {
+    border-bottom: none;
+}
+
+.weight-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#weight-value {
+    flex-grow: 1;
+}
+
+#weight-unit {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.go-back-btn {
+    background-color: #6e798f;
+    color: white;
+}
+
+.next-btn {
+    background-color: #5a7edc;
+    color: white;
+}

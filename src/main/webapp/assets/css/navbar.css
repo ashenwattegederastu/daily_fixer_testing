@@ -1,0 +1,61 @@
+/* ===================== Main Navbar ===================== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #7c8cff;
+    padding: 10px 30px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.nav-links li.active a {
+    background-color: #005fa3;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+/* ===================== Sub Navbar ===================== */
+.sub-nav {
+    background-color: #cfe0ff;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 12px 20px;
+    border-radius: 50px;
+    margin-top: 5px;
+    border: 1px solid #a6c0ff;
+}
+
+.sub-nav a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+}
+
+.sub-nav a.active {
+    background-color: #7c8cff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
