@@ -263,14 +263,6 @@ h1.cancelled-title {
     box-shadow: var(--shadow-sm);
 }
 
-@media (max-width: 900px) {
-    .btn-primary,
-    .btn-secondary,
-    .btn-download {
-        min-width: 180px;
-    }
-}
-
 .btn-primary {
     background: var(--primary);
     color: var(--primary-foreground);
@@ -405,5 +397,100 @@ footer {
     .btn-secondary,
     .btn-download {
         width: 100%;
+    }
+}
+
+/* Navigation Styles (shared between Success and Cancel pages) */
+nav.public-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.dark nav.public-nav {
+    background-color: rgba(34, 35, 48, 0.1);
+}
+
+nav.public-nav.scrolled {
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-md);
+}
+
+.dark nav.public-nav.scrolled {
+    background-color: rgba(34, 35, 48, 0.15);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav.public-nav .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.theme-toggle {
+    padding: 0.5rem 1rem;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    color: var(--secondary-foreground);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 10px;
+}
+
+.theme-toggle:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.btn-logout {
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-logout:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 1rem;
     }
 }
