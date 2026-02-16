@@ -13,8 +13,8 @@
     <meta name="description" content="Payment Cancelled - DailyFixer">
     <title>Payment Cancelled - Daily Fixer</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/framework.css">
-    <link rel="stylesheet" href="assets/css/payment-status.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/payment-status.css">
     <style>
 /* Navigation styles specific to Cancel page */
 nav.public-nav {
