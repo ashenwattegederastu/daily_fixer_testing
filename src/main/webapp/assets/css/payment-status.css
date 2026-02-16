@@ -1,5 +1,11 @@
 /* Payment Status Page Styles (Success & Cancel) */
-/* Uses framework.css variables - ensure it's loaded first */
+/* 
+ * DEPENDENCIES: This file requires framework.css to be loaded first.
+ * framework.css provides the core CSS variables (--background, --foreground, --primary, etc.)
+ * and dark mode framework (.dark class styles).
+ * 
+ * This file extends framework.css with payment-specific variables and components.
+ */
 
 /* Additional color variables for payment pages */
 :root {
@@ -463,6 +469,7 @@ nav.public-nav .logo {
     align-items: center;
     gap: 0.5rem;
     margin-right: 10px;
+    /* Theme toggle functionality is handled by dark-mode.js */
 }
 
 .theme-toggle:hover {
