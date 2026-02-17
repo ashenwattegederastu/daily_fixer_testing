@@ -36,6 +36,9 @@
                         <ul>
                             <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp"
                                     class="active"> Dashboard</a></li>
+                            <li><a href="${pageContext.request.contextPath}/admin/store-dashboard"> Store Dashboard</a>
+                            </li>
+                            <li><a href="${pageContext.request.contextPath}/admin/products"> Manage Products</a></li>
                             <li><a href="${pageContext.request.contextPath}/admin/users"> User Management</a></li>
                             <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/flags.jsp">
                                     Flags</a></li>
@@ -44,7 +47,8 @@
                                     Transactions</a></li>
                             <li><a href="${pageContext.request.contextPath}/pages/guides/admin-list.jsp"> Manage
                                     Guides</a></li>
-                            <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/diagnostic-trees.jsp">
+                            <li><a
+                                    href="${pageContext.request.contextPath}/pages/dashboards/admindash/diagnostic-trees.jsp">
                                     Diagnostic Trees</a></li>
                         </ul>
                     </aside>

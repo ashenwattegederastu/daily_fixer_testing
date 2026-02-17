@@ -11,7 +11,7 @@ public class ProductDAO {
     public void addProduct(Product p) throws Exception {
         String sql = "INSERT INTO products (name, type, quantity, quantity_unit, price, image, store_username, description) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getType());
             ps.setDouble(3, p.getQuantity());
@@ -30,7 +30,7 @@ public class ProductDAO {
             }
         }
     }
-    
+
     public int addProductAndReturnId(Product p) throws Exception {
         addProduct(p);
         return p.getProductId();
@@ -40,7 +40,7 @@ public class ProductDAO {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM products WHERE store_username=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, storeUsername);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -60,11 +60,56 @@ public class ProductDAO {
         return list;
     }
 
+    public List<Product> getAllProductsAdmin() throws Exception {
+        List<Product> list = new ArrayList<>();
+        // Query to fetch product details along with variation stats
+        String sql = "SELECT p.*, " +
+                "COUNT(pv.variant_id) as variant_count, " +
+                "MIN(pv.price) as min_var_price, " +
+                "MAX(pv.price) as max_var_price, " +
+                "SUM(pv.quantity) as total_var_qty " +
+                "FROM products p " +
+                "LEFT JOIN product_variants pv ON p.product_id = pv.product_id " +
+                "GROUP BY p.product_id " +
+                "ORDER BY p.product_id DESC";
+
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setProductId(rs.getInt("product_id"));
+                p.setName(rs.getString("name"));
+                p.setType(rs.getString("type"));
+                p.setQuantity(rs.getInt("quantity"));
+                p.setQuantityUnit(rs.getString("quantity_unit"));
+                p.setPrice(rs.getDouble("price"));
+                p.setImage(rs.getBytes("image"));
+                p.setDescription(rs.getString("description"));
+                p.setStoreUsername(rs.getString("store_username"));
+
+                // Populate variation data
+                int variantCount = rs.getInt("variant_count");
+                if (variantCount > 0) {
+                    p.setHasVariants(true);
+                    p.setMinPrice(rs.getDouble("min_var_price"));
+                    p.setMaxPrice(rs.getDouble("max_var_price"));
+                    p.setVariantQuantity(rs.getInt("total_var_qty"));
+                } else {
+                    p.setHasVariants(false);
+                }
+
+                list.add(p);
+            }
+        }
+        return list;
+    }
+
     public Product getProductById(int id) throws Exception {
         Product p = null;
         String sql = "SELECT * FROM products WHERE product_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -86,7 +131,7 @@ public class ProductDAO {
     public void updateProduct(Product p) throws Exception {
         String sql = "UPDATE products SET name=?, type=?, quantity=?, quantity_unit=?, price=?, image=?, description=? WHERE product_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getType());
             ps.setDouble(3, p.getQuantity());
@@ -102,14 +147,14 @@ public class ProductDAO {
     /**
      * Reduce product quantity by the specified amount.
      * 
-     * @param productId The product ID
+     * @param productId        The product ID
      * @param quantityToReduce The quantity to reduce
      * @return true if successful, false otherwise
      */
     public boolean reduceProductQuantity(int productId, int quantityToReduce) {
         String sql = "UPDATE products SET quantity = GREATEST(0, quantity - ?) WHERE product_id = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, quantityToReduce);
             ps.setInt(2, productId);
             int rowsAffected = ps.executeUpdate();
@@ -128,23 +173,22 @@ public class ProductDAO {
     public void deleteProduct(int id) throws Exception {
         String sql = "DELETE FROM products WHERE product_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         }
     }
 
-
     public List<Product> getProductsByCategory(String category) throws Exception {
         List<Product> list = new ArrayList<>();
         // JOIN with users and stores to get store_id for location filtering
         String sql = "SELECT p.*, s.store_id FROM products p " +
-                     "LEFT JOIN users u ON p.store_username = u.username " +
-                     "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                     "WHERE p.type = ?";
+                "LEFT JOIN users u ON p.store_username = u.username " +
+                "LEFT JOIN stores s ON u.user_id = s.user_id " +
+                "WHERE p.type = ?";
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, category);
             ResultSet rs = ps.executeQuery();
@@ -168,18 +212,20 @@ public class ProductDAO {
     }
 
     /**
-     * Flexible search products by name and description (case-insensitive, partial match)
+     * Flexible search products by name and description (case-insensitive, partial
+     * match)
      * 
      * Features:
      * - Partial word matches: "dril" matches "drill", "cut" matches "cutting"
-     * - Multiple words: "power drill" matches products with "power" OR "drill" in name/description
+     * - Multiple words: "power drill" matches products with "power" OR "drill" in
+     * name/description
      * - Searches in both product name and description fields
-     * - Smart ranking: 
-     *   1. Exact match (highest priority)
-     *   2. Starts with search term
-     *   3. Contains search term
-     *   4. Individual word matches
-     *   5. Description matches (lower priority)
+     * - Smart ranking:
+     * 1. Exact match (highest priority)
+     * 2. Starts with search term
+     * 3. Contains search term
+     * 4. Individual word matches
+     * 5. Description matches (lower priority)
      * 
      * Examples:
      * - "dril" will find "Drill Machine", "Power Drill", etc.
@@ -188,34 +234,34 @@ public class ProductDAO {
      */
     public List<Product> searchProductsByName(String searchTerm) throws Exception {
         List<Product> list = new ArrayList<>();
-        
+
         // Clean and prepare search term
         String cleanTerm = searchTerm.trim().toLowerCase();
         if (cleanTerm.isEmpty()) {
             return list;
         }
-        
+
         // Split into individual words for flexible matching
         String[] words = cleanTerm.split("\\s+");
-        
+
         // Build flexible search query
         // Search in both name and description, match any word
         StringBuilder whereClause = new StringBuilder("(");
         for (int i = 0; i < words.length; i++) {
-            if (i > 0) whereClause.append(" OR ");
+            if (i > 0)
+                whereClause.append(" OR ");
             whereClause.append("(LOWER(p.name) LIKE ? OR LOWER(p.description) LIKE ?)");
         }
         whereClause.append(")");
-        
+
         // Build ranking ORDER BY clause for better relevance
         // Priority: 1. Exact match, 2. Starts with, 3. Contains, 4. Word matches
         StringBuilder orderClause = new StringBuilder(
-            "ORDER BY " +
-            "CASE WHEN LOWER(p.name) = LOWER(?) THEN 1 " +
-            "WHEN LOWER(p.name) LIKE ? THEN 2 " +
-            "WHEN LOWER(p.name) LIKE ? THEN 3 "
-        );
-        
+                "ORDER BY " +
+                        "CASE WHEN LOWER(p.name) = LOWER(?) THEN 1 " +
+                        "WHEN LOWER(p.name) LIKE ? THEN 2 " +
+                        "WHEN LOWER(p.name) LIKE ? THEN 3 ");
+
         // Add word-based ranking
         for (int i = 0; i < words.length; i++) {
             orderClause.append("WHEN LOWER(p.name) LIKE ? THEN ").append(4 + i).append(" ");
@@ -223,25 +269,25 @@ public class ProductDAO {
         orderClause.append("ELSE ").append(100 + words.length).append(" END, ");
         orderClause.append("CASE WHEN LOWER(p.description) LIKE ? THEN 1 ELSE 2 END, ");
         orderClause.append("p.name");
-        
+
         String sql = "SELECT p.*, s.store_id FROM products p " +
-                     "LEFT JOIN users u ON p.store_username = u.username " +
-                     "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                     "WHERE " + whereClause.toString() + " " +
-                     orderClause.toString();
+                "LEFT JOIN users u ON p.store_username = u.username " +
+                "LEFT JOIN stores s ON u.user_id = s.user_id " +
+                "WHERE " + whereClause.toString() + " " +
+                orderClause.toString();
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
             int paramIndex = 1;
-            
+
             // Set WHERE clause parameters (for each word, check name and description)
             for (String word : words) {
                 String wordPattern = "%" + word + "%";
                 ps.setString(paramIndex++, wordPattern); // name LIKE
                 ps.setString(paramIndex++, wordPattern); // description LIKE
             }
-            
+
             // Set ORDER BY parameters
             // Exact match
             ps.setString(paramIndex++, cleanTerm);
@@ -249,15 +295,15 @@ public class ProductDAO {
             ps.setString(paramIndex++, cleanTerm + "%");
             // Contains
             ps.setString(paramIndex++, "%" + cleanTerm + "%");
-            
+
             // Word-based ranking
             for (String word : words) {
                 ps.setString(paramIndex++, "%" + word + "%");
             }
-            
+
             // Description ranking
             ps.setString(paramIndex++, "%" + cleanTerm + "%");
-            
+
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -284,7 +330,7 @@ public class ProductDAO {
     public boolean categoryExists(String category) throws Exception {
         String sql = "SELECT COUNT(*) FROM products WHERE LOWER(type) = LOWER(?) LIMIT 1";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, category);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -301,7 +347,7 @@ public class ProductDAO {
         List<String> categories = new ArrayList<>();
         String sql = "SELECT DISTINCT type FROM products WHERE type IS NOT NULL ORDER BY type";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 categories.add(rs.getString("type"));
@@ -316,17 +362,17 @@ public class ProductDAO {
     public List<Product> getRelatedProducts(int productId, String category, int limit) throws Exception {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT p.*, s.store_id FROM products p " +
-                     "LEFT JOIN users u ON p.store_username = u.username " +
-                     "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                     "WHERE p.type = ? AND p.product_id != ? " +
-                     "LIMIT ?";
+                "LEFT JOIN users u ON p.store_username = u.username " +
+                "LEFT JOIN stores s ON u.user_id = s.user_id " +
+                "WHERE p.type = ? AND p.product_id != ? " +
+                "LIMIT ?";
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, category);
             ps.setInt(2, productId);
             ps.setInt(3, limit);
-            
+
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
