@@ -9,8 +9,10 @@ import com.dailyfixer.model.Product;
 import com.dailyfixer.model.ProductVariant;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
+@WebServlet("/EditProductServlet")
 @MultipartConfig
 public class EditProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

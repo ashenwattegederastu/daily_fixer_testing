@@ -4,6 +4,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import com.dailyfixer.model.Product;
 import com.dailyfixer.model.ProductVariant;
@@ -11,6 +12,7 @@ import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.ProductVariantDAO;
 import com.dailyfixer.model.User;
 
+@WebServlet("/AddProductServlet")
 @MultipartConfig(maxFileSize = 16177215) // 16 MB max
 public class AddProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -4,11 +4,13 @@ import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.model.Product;
 import com.dailyfixer.model.User;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@WebServlet("/ListProductsServlet")
 public class ListProductsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

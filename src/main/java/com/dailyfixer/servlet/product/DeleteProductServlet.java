@@ -5,6 +5,7 @@ import com.dailyfixer.dao.ProductVariantDAO;
 import com.dailyfixer.dao.DiscountDAO;
 import com.dailyfixer.model.ProductVariant;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.dailyfixer.util.DBConnection;
 
+@WebServlet("/DeleteProductServlet")
 public class DeleteProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
