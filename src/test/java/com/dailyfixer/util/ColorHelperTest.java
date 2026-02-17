@@ -12,7 +12,7 @@ public class ColorHelperTest {
     public void testBasicColorConversion() {
         assertEquals("#ff0000", ColorHelper.getColorCode("red"));
         assertEquals("#0000ff", ColorHelper.getColorCode("blue"));
-        assertEquals("#00ff00", ColorHelper.getColorCode("green"));
+        assertEquals("#008000", ColorHelper.getColorCode("green"));  // Standard web color
         assertEquals("#ffff00", ColorHelper.getColorCode("yellow"));
         assertEquals("#000000", ColorHelper.getColorCode("black"));
         assertEquals("#ffffff", ColorHelper.getColorCode("white"));
@@ -22,7 +22,7 @@ public class ColorHelperTest {
     public void testCaseInsensitivity() {
         assertEquals("#ff0000", ColorHelper.getColorCode("RED"));
         assertEquals("#0000ff", ColorHelper.getColorCode("Blue"));
-        assertEquals("#00ff00", ColorHelper.getColorCode("GREEN"));
+        assertEquals("#008000", ColorHelper.getColorCode("GREEN"));
         assertEquals("#ffa500", ColorHelper.getColorCode("OrAnGe"));
     }
     
@@ -54,7 +54,7 @@ public class ColorHelperTest {
     @Test
     public void testHexColorPassthrough() {
         assertEquals("#abc123", ColorHelper.getColorCode("#abc123"));
-        assertEquals("#abcdef", ColorHelper.getColorCode("#ABCDEF")); // Converted to lowercase
+        assertEquals("#abcdef", ColorHelper.getColorCode("#ABCDEF")); // Input is lowercased in ColorHelper
         assertEquals("#123456", ColorHelper.getColorCode("#123456"));
     }
     
@@ -84,6 +84,6 @@ public class ColorHelperTest {
     public void testWhitespaceHandling() {
         assertEquals("#ff0000", ColorHelper.getColorCode("  red  "));
         assertEquals("#0000ff", ColorHelper.getColorCode(" blue "));
-        assertEquals("#00ff00", ColorHelper.getColorCode("green   "));
+        assertEquals("#008000", ColorHelper.getColorCode("green   "));
     }
 }

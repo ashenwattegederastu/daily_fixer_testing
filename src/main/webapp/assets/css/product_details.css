@@ -463,6 +463,22 @@ button.variant-btn:not(.active) {
     font-weight: 500 !important;
 }
 
+/* Color indicator styles */
+.color-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+}
+
+.color-btn {
+    position: relative;
+    min-width: 80px;
+}
+
 .color-btn .color-indicator {
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }

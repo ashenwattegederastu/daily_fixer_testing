@@ -18,7 +18,7 @@ public class ColorHelper {
         switch (color) {
             case "red": return "#ff0000";
             case "blue": return "#0000ff";
-            case "green": return "#00ff00";
+            case "green": return "#008000";  // Standard web color
             case "yellow": return "#ffff00";
             case "black": return "#000000";
             case "white": return "#ffffff";
@@ -31,7 +31,7 @@ public class ColorHelper {
             case "teal": return "#008080";
             case "cyan": return "#00ffff";
             case "magenta": return "#ff00ff";
-            case "lime": return "#00ff00";
+            case "lime": return "#00ff00";  // Bright green
             case "maroon": return "#800000";
             case "olive": return "#808000";
             case "silver": return "#c0c0c0";

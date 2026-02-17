@@ -538,9 +538,8 @@ nav.public-nav .logo {
                     <button type="button" 
                             class="variant-btn color-btn" 
                             data-value="<%= color %>"
-                            data-option="color"
-                            style="position: relative; min-width: 80px;">
-                        <span class="color-indicator" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1px solid #ccc; background-color: <%= ColorHelper.getColorCode(color) %>;"></span>
+                            data-option="color">
+                        <span class="color-indicator" style="background-color: <%= ColorHelper.getColorCode(color) %>;"></span>
                         <span><%= color %></span>
                     </button>
                     <% } %>
