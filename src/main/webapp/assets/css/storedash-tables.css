@@ -253,6 +253,17 @@ td .status {
   color: var(--foreground);
 }
 
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.text-muted-italic {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
 /* Category Filter */
 .filter-bar {
   display: flex;
