@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ page import="com.dailyfixer.model.Booking" %>
+<%@ page import="com.dailyfixer.dao.BookingDAO" %>
+<%@ page import="java.util.List" %>
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -13,6 +16,9 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
+    
+    BookingDAO bookingDAO = new BookingDAO();
+    List<Booking> acceptedBookings = bookingDAO.getBookingsByTechnicianId(user.getUserId(), Booking.BookingStatus.ACCEPTED);
 %>
 
 <!DOCTYPE html>
@@ -191,11 +197,11 @@ tbody tr:hover { background-color:#f9f9f9; }
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
     <ul>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp">Dashboard</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp">Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp">Service Listings</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/setAvailability.jsp">Set Availability</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp" class="active">Accepted Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
@@ -217,53 +223,37 @@ tbody tr:hover { background-color:#f9f9f9; }
             </tr>
         </thead>
         <tbody>
-            <!-- Sample data - replace with actual data from backend -->
-            <tr>
-                <td>BK004</td>
-                <td>Plumbing Repair</td>
-                <td>Alice Brown</td>
-                <td>2025-01-20</td>
-                <td><span class="status-badge status-accepted">Accepted</span></td>
-                <td>
-                    <button class="btn view-btn" onclick="viewBookingDetails('BK004')">View Details</button>
-                    <button class="btn complete-btn" onclick="completeBooking('BK004')">Mark Complete</button>
-                </td>
-            </tr>
-            <tr>
-                <td>BK005</td>
-                <td>Electrical Installation</td>
-                <td>Robert Davis</td>
-                <td>2025-01-22</td>
-                <td><span class="status-badge status-in-progress">In Progress</span></td>
-                <td>
-                    <button class="btn view-btn" onclick="viewBookingDetails('BK005')">View Details</button>
-                    <button class="btn complete-btn" onclick="completeBooking('BK005')">Mark Complete</button>
-                </td>
-            </tr>
-            <tr>
-                <td>BK006</td>
-                <td>HVAC Maintenance</td>
-                <td>Emily Wilson</td>
-                <td>2025-01-25</td>
-                <td><span class="status-badge status-accepted">Accepted</span></td>
-                <td>
-                    <button class="btn view-btn" onclick="viewBookingDetails('BK006')">View Details</button>
-                    <button class="btn complete-btn" onclick="completeBooking('BK006')">Mark Complete</button>
-                </td>
-            </tr>
+            <% if (acceptedBookings.isEmpty()) { %>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                        No accepted bookings at the moment.
+                    </td>
+                </tr>
+            <% } else {
+                for (Booking booking : acceptedBookings) { %>
+                <tr>
+                    <td><%= booking.getBookingId() %></td>
+                    <td><%= booking.getServiceName() %></td>
+                    <td><%= booking.getUserName() %></td>
+                    <td><%= booking.getBookingDate() %> <%= booking.getBookingTime() %></td>
+                    <td><span class="status-badge status-accepted">Accepted</span></td>
+                    <td>
+                        <button class="btn view-btn" onclick="viewBookingDetails(<%= booking.getBookingId() %>)">View Details</button>
+                        <button class="btn complete-btn" onclick="completeBooking(<%= booking.getBookingId() %>)">Mark Complete</button>
+                    </td>
+                </tr>
+            <% } } %>
         </tbody>
     </table>
 </main>
 
 <script>
 function viewBookingDetails(bookingId) {
-    // Navigate to booking details page or show modal
-    window.location.href = '${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookingDetails.jsp?id=' + bookingId;
+    alert('Booking Details:\n\nBooking ID: ' + bookingId + '\n\nFull booking details view coming soon!');
 }
 
 function completeBooking(bookingId) {
-    if (confirm('Are you sure you want to mark this booking as complete?')) {
-        // Send AJAX request to complete booking
+    if (confirm('Are you sure you want to mark this booking as complete? The customer will need to confirm completion.')) {
         fetch('${pageContext.request.contextPath}/CompleteBookingServlet', {
             method: 'POST',
             headers: {
@@ -274,7 +264,7 @@ function completeBooking(bookingId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Booking marked as complete successfully!');
+                alert('Booking marked as complete! Waiting for customer confirmation.');
                 location.reload();
             } else {
                 alert('Error completing booking: ' + data.message);
