@@ -24,14 +24,6 @@
                             rel="stylesheet">
                         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
                         <style>
-                            .container {
-                                flex: 1;
-                                margin-left: 240px;
-                                margin-top: 83px;
-                                padding: 30px;
-                                background-color: var(--background);
-                            }
-
                             .container h2 {
                                 font-size: 1.6em;
                                 margin-bottom: 20px;
@@ -53,34 +45,6 @@
                                 color: var(--foreground);
                                 border-bottom: 1px solid var(--border);
                                 padding-bottom: 10px;
-                            }
-
-                            .stats-grid {
-                                display: grid;
-                                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                                gap: 20px;
-                            }
-
-                            .stat-card {
-                                background: var(--card);
-                                padding: 20px;
-                                border-radius: var(--radius-md);
-                                box-shadow: var(--shadow-sm);
-                                border: 1px solid var(--border);
-                                text-align: center;
-                                transition: all 0.2s;
-                            }
-
-                            .stat-card:hover {
-                                transform: translateY(-3px);
-                                box-shadow: var(--shadow-md);
-                            }
-
-                            .stat-card .number {
-                                font-size: 2em;
-                                font-weight: 700;
-                                color: var(--primary);
-                                margin-bottom: 5px;
                             }
 
                             .stat-card .label {

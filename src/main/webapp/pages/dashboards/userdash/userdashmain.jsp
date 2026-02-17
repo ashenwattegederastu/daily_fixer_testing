@@ -28,9 +28,9 @@
 
 .topbar .home-btn {
     padding: 0.6rem 1.2rem;
-    background: oklch(0.6290 0.1902 156.4499);
+    background: var(--success);
     border: none;
-    color: white;
+    color: var(--success-foreground);
     border-radius: var(--radius-md);
     cursor: pointer;
     font-weight: 600;
@@ -43,14 +43,6 @@
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
     opacity: 0.9;
-}
-
-.container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
-    padding:30px;
-    background-color: var(--background);
 }
 
 .container h2 {
@@ -73,22 +65,6 @@
     color: var(--foreground);
     border-bottom: 2px solid var(--border);
     padding-bottom: 10px;
-}
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-}
-.info-box {
-    background: var(--muted);
-    padding: 15px;
-    border-radius: var(--radius-md);
-    border-left: 4px solid var(--primary);
-}
-.info-box p {
-    margin: 0;
-    color: var(--foreground);
-    font-weight: 500;
 }
 </style>
 </head>

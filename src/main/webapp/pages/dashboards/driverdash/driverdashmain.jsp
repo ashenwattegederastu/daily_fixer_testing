@@ -19,14 +19,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
 <style>
-.container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
-    padding:30px;
-    background-color: var(--background);
-}
-
 .container h2 {
     font-size:1.6em;
     margin-bottom:20px;
@@ -47,22 +39,6 @@
     color: var(--foreground);
     border-bottom: 2px solid var(--border);
     padding-bottom: 10px;
-}
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-}
-.info-box {
-    background: var(--muted);
-    padding: 15px;
-    border-radius: var(--radius-md);
-    border-left: 4px solid var(--primary);
-}
-.info-box p {
-    margin: 0;
-    color: var(--foreground);
-    font-weight: 500;
 }
 </style>
 </head>
