@@ -335,229 +335,229 @@
                         </div>
                     </div>
 
-<%--                    <%@ include file="/pages/shared/footer.jsp" %>--%>
 
-                        <script>
-                            const contextPath = '${pageContext.request.contextPath}';
-                            const treeIdValue = '<%= treeId %>';
-                            let tree = null;
-                            let rootNode = null;
-                            let currentNode = null;
-                            let nodeHistory = [];
-                            let selectedRating = 0;
 
-                            document.addEventListener('DOMContentLoaded', function () {
-                                loadTree();
-                                setupStarRating();
-                            });
+                    <script>
+                        const contextPath = '${pageContext.request.contextPath}';
+                        const treeIdValue = '<%= treeId %>';
+                        let tree = null;
+                        let rootNode = null;
+                        let currentNode = null;
+                        let nodeHistory = [];
+                        let selectedRating = 0;
 
-                            function loadTree() {
-                                fetch(contextPath + '/api/diagnostic/trees/' + treeIdValue + '?includeNodes=true')
-                                    .then(response => {
-                                        if (!response.ok) throw new Error('Tree not found');
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        tree = data;
-                                        rootNode = data.rootNode;
+                        document.addEventListener('DOMContentLoaded', function () {
+                            loadTree();
+                            setupStarRating();
+                        });
 
-                                        document.getElementById('loadingState').style.display = 'none';
-                                        document.getElementById('runnerContent').style.display = 'block';
+                        function loadTree() {
+                            fetch(contextPath + '/api/diagnostic/trees/' + treeIdValue + '?includeNodes=true')
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Tree not found');
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    tree = data;
+                                    rootNode = data.rootNode;
 
-                                        document.getElementById('treeTitle').textContent = tree.title;
-                                        document.getElementById('treeCreator').textContent = 'Created by ' + tree.creatorUsername;
+                                    document.getElementById('loadingState').style.display = 'none';
+                                    document.getElementById('runnerContent').style.display = 'block';
 
-                                        if (!rootNode) {
-                                            document.getElementById('nodeText').textContent = 'This guide has no content yet.';
-                                            return;
-                                        }
+                                    document.getElementById('treeTitle').textContent = tree.title;
+                                    document.getElementById('treeCreator').textContent = 'Created by ' + tree.creatorUsername;
 
-                                        displayNode(rootNode);
-                                        checkUserRating();
-                                    })
-                                    .catch(err => {
-                                        console.error('Failed to load tree:', err);
-                                        document.getElementById('loadingState').innerHTML = `
+                                    if (!rootNode) {
+                                        document.getElementById('nodeText').textContent = 'This guide has no content yet.';
+                                        return;
+                                    }
+
+                                    displayNode(rootNode);
+                                    checkUserRating();
+                                })
+                                .catch(err => {
+                                    console.error('Failed to load tree:', err);
+                                    document.getElementById('loadingState').innerHTML = `
                         <h3>Guide not found</h3>
                         <p>This diagnostic guide may have been removed.</p>
                         <a href="${contextPath}/pages/diagnostic/diagnostic-browse.jsp" class="btn-primary" style="margin-top: 1rem;">Browse Guides</a>
                     `;
+                                });
+                        }
+
+                        function displayNode(node) {
+                            currentNode = node;
+                            updateProgress();
+
+                            // Update badge and text
+                            const badge = document.getElementById('nodeTypeBadge');
+                            badge.textContent = node.nodeType;
+                            badge.className = 'node-type-badge ' + node.nodeType.toLowerCase();
+
+                            document.getElementById('nodeText').textContent = node.nodeText;
+
+                            // Show/hide back button
+                            document.getElementById('backBtn').style.visibility = nodeHistory.length > 0 ? 'visible' : 'hidden';
+
+                            // Handle options or result
+                            const optionsContainer = document.getElementById('optionsContainer');
+                            const ratingSection = document.getElementById('ratingSectionWrapper');
+
+                            if (node.nodeType === 'RESULT') {
+                                optionsContainer.innerHTML = '';
+                                ratingSection.style.display = 'block';
+                                updateProgress(100);
+                            } else {
+                                ratingSection.style.display = 'none';
+
+                                if (node.children && node.children.length > 0) {
+                                    let html = '';
+                                    node.children.forEach(function (child) {
+                                        html += '<button class="option-btn" onclick="selectOption(' + child.nodeId + ')">' +
+                                            escapeHtml(child.optionLabel || 'Continue') +
+                                            '</button>';
                                     });
-                            }
-
-                            function displayNode(node) {
-                                currentNode = node;
-                                updateProgress();
-
-                                // Update badge and text
-                                const badge = document.getElementById('nodeTypeBadge');
-                                badge.textContent = node.nodeType;
-                                badge.className = 'node-type-badge ' + node.nodeType.toLowerCase();
-
-                                document.getElementById('nodeText').textContent = node.nodeText;
-
-                                // Show/hide back button
-                                document.getElementById('backBtn').style.visibility = nodeHistory.length > 0 ? 'visible' : 'hidden';
-
-                                // Handle options or result
-                                const optionsContainer = document.getElementById('optionsContainer');
-                                const ratingSection = document.getElementById('ratingSectionWrapper');
-
-                                if (node.nodeType === 'RESULT') {
-                                    optionsContainer.innerHTML = '';
-                                    ratingSection.style.display = 'block';
-                                    updateProgress(100);
+                                    optionsContainer.innerHTML = html;
                                 } else {
-                                    ratingSection.style.display = 'none';
-
-                                    if (node.children && node.children.length > 0) {
-                                        let html = '';
-                                        node.children.forEach(function (child) {
-                                            html += '<button class="option-btn" onclick="selectOption(' + child.nodeId + ')">' +
-                                                escapeHtml(child.optionLabel || 'Continue') +
-                                                '</button>';
-                                        });
-                                        optionsContainer.innerHTML = html;
-                                    } else {
-                                        optionsContainer.innerHTML = '<p style="color: var(--muted-foreground);">No options available.</p>';
-                                    }
-                                }
-
-                                // Animate card
-                                const card = document.getElementById('wizardCard');
-                                card.style.animation = 'none';
-                                card.offsetHeight; // Trigger reflow
-                                card.style.animation = 'fadeIn 0.3s ease';
-                            }
-
-                            function selectOption(childNodeId) {
-                                const childNode = findNodeById(rootNode, childNodeId);
-                                if (childNode) {
-                                    nodeHistory.push(currentNode);
-                                    displayNode(childNode);
+                                    optionsContainer.innerHTML = '<p style="color: var(--muted-foreground);">No options available.</p>';
                                 }
                             }
 
-                            function goBack() {
-                                if (nodeHistory.length > 0) {
-                                    const previousNode = nodeHistory.pop();
-                                    displayNode(previousNode);
+                            // Animate card
+                            const card = document.getElementById('wizardCard');
+                            card.style.animation = 'none';
+                            card.offsetHeight; // Trigger reflow
+                            card.style.animation = 'fadeIn 0.3s ease';
+                        }
+
+                        function selectOption(childNodeId) {
+                            const childNode = findNodeById(rootNode, childNodeId);
+                            if (childNode) {
+                                nodeHistory.push(currentNode);
+                                displayNode(childNode);
+                            }
+                        }
+
+                        function goBack() {
+                            if (nodeHistory.length > 0) {
+                                const previousNode = nodeHistory.pop();
+                                displayNode(previousNode);
+                            }
+                        }
+
+                        function restartTree() {
+                            nodeHistory = [];
+                            if (rootNode) {
+                                displayNode(rootNode);
+                            }
+                        }
+
+                        function findNodeById(node, id) {
+                            if (!node) return null;
+                            if (node.nodeId === id) return node;
+                            if (node.children) {
+                                for (const child of node.children) {
+                                    const found = findNodeById(child, id);
+                                    if (found) return found;
                                 }
                             }
+                            return null;
+                        }
 
-                            function restartTree() {
-                                nodeHistory = [];
-                                if (rootNode) {
-                                    displayNode(rootNode);
-                                }
-                            }
+                        function updateProgress(forcePercent) {
+                            const depth = nodeHistory.length + 1;
+                            // Estimate max depth as 5 levels for progress display
+                            const percent = forcePercent || Math.min(95, (depth / 5) * 100);
+                            document.getElementById('progressFill').style.width = percent + '%';
+                        }
 
-                            function findNodeById(node, id) {
-                                if (!node) return null;
-                                if (node.nodeId === id) return node;
-                                if (node.children) {
-                                    for (const child of node.children) {
-                                        const found = findNodeById(child, id);
-                                        if (found) return found;
-                                    }
-                                }
-                                return null;
-                            }
+                        // ==================== Rating ====================
+                        function setupStarRating() {
+                            document.querySelectorAll('.star-btn').forEach(btn => {
+                                btn.addEventListener('click', function () {
+                                    selectedRating = parseInt(this.dataset.rating);
+                                    updateStars();
+                                });
 
-                            function updateProgress(forcePercent) {
-                                const depth = nodeHistory.length + 1;
-                                // Estimate max depth as 5 levels for progress display
-                                const percent = forcePercent || Math.min(95, (depth / 5) * 100);
-                                document.getElementById('progressFill').style.width = percent + '%';
-                            }
+                                btn.addEventListener('mouseenter', function () {
+                                    const rating = parseInt(this.dataset.rating);
+                                    highlightStars(rating);
+                                });
 
-                            // ==================== Rating ====================
-                            function setupStarRating() {
-                                document.querySelectorAll('.star-btn').forEach(btn => {
-                                    btn.addEventListener('click', function () {
-                                        selectedRating = parseInt(this.dataset.rating);
+                                btn.addEventListener('mouseleave', function () {
+                                    updateStars();
+                                });
+                            });
+                        }
+
+                        function highlightStars(rating) {
+                            document.querySelectorAll('.star-btn').forEach((btn, index) => {
+                                btn.textContent = index < rating ? '★' : '☆';
+                            });
+                        }
+
+                        function updateStars() {
+                            document.querySelectorAll('.star-btn').forEach((btn, index) => {
+                                btn.textContent = index < selectedRating ? '★' : '☆';
+                                btn.classList.toggle('active', index < selectedRating);
+                            });
+                        }
+
+                        function checkUserRating() {
+                            fetch(contextPath + '/api/diagnostic/ratings?tree=' + treeIdValue + '&userRating=true')
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.hasRated) {
+                                        selectedRating = data.rating;
                                         updateStars();
-                                    });
-
-                                    btn.addEventListener('mouseenter', function () {
-                                        const rating = parseInt(this.dataset.rating);
-                                        highlightStars(rating);
-                                    });
-
-                                    btn.addEventListener('mouseleave', function () {
-                                        updateStars();
-                                    });
-                                });
-                            }
-
-                            function highlightStars(rating) {
-                                document.querySelectorAll('.star-btn').forEach((btn, index) => {
-                                    btn.textContent = index < rating ? '★' : '☆';
-                                });
-                            }
-
-                            function updateStars() {
-                                document.querySelectorAll('.star-btn').forEach((btn, index) => {
-                                    btn.textContent = index < selectedRating ? '★' : '☆';
-                                    btn.classList.toggle('active', index < selectedRating);
-                                });
-                            }
-
-                            function checkUserRating() {
-                                fetch(contextPath + '/api/diagnostic/ratings?tree=' + treeIdValue + '&userRating=true')
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.hasRated) {
-                                            selectedRating = data.rating;
-                                            updateStars();
-                                            document.getElementById('ratingFeedback').value = data.feedback || '';
-                                        }
-                                    })
-                                    .catch(err => console.error('Failed to check rating:', err));
-                            }
-
-                            function submitRating() {
-                                if (selectedRating === 0) {
-                                    alert('Please select a rating');
-                                    return;
-                                }
-
-                                const feedback = document.getElementById('ratingFeedback').value.trim();
-
-                                const formData = new FormData();
-                                formData.append('treeId', treeIdValue);
-                                formData.append('rating', selectedRating);
-                                if (feedback) formData.append('feedback', feedback);
-
-                                fetch(contextPath + '/api/diagnostic/ratings', {
-                                    method: 'POST',
-                                    body: new URLSearchParams(formData)
+                                        document.getElementById('ratingFeedback').value = data.feedback || '';
+                                    }
                                 })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success) {
-                                            document.getElementById('ratingSection').style.display = 'none';
-                                            document.getElementById('ratingThanks').style.display = 'block';
-                                        } else if (data.error && data.error.includes('Login')) {
-                                            alert('Please log in to rate this guide');
-                                            window.location.href = contextPath + '/login.jsp';
-                                        } else {
-                                            alert('Failed to submit rating: ' + (data.error || 'Unknown error'));
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.error('Failed to submit rating:', err);
-                                        alert('Failed to submit rating');
-                                    });
+                                .catch(err => console.error('Failed to check rating:', err));
+                        }
+
+                        function submitRating() {
+                            if (selectedRating === 0) {
+                                alert('Please select a rating');
+                                return;
                             }
 
-                            function escapeHtml(text) {
-                                if (!text) return '';
-                                const div = document.createElement('div');
-                                div.textContent = text;
-                                return div.innerHTML;
-                            }
-                        </script>
+                            const feedback = document.getElementById('ratingFeedback').value.trim();
+
+                            const formData = new FormData();
+                            formData.append('treeId', treeIdValue);
+                            formData.append('rating', selectedRating);
+                            if (feedback) formData.append('feedback', feedback);
+
+                            fetch(contextPath + '/api/diagnostic/ratings', {
+                                method: 'POST',
+                                body: new URLSearchParams(formData)
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        document.getElementById('ratingSection').style.display = 'none';
+                                        document.getElementById('ratingThanks').style.display = 'block';
+                                    } else if (data.error && data.error.includes('Login')) {
+                                        alert('Please log in to rate this guide');
+                                        window.location.href = contextPath + '/login.jsp';
+                                    } else {
+                                        alert('Failed to submit rating: ' + (data.error || 'Unknown error'));
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error('Failed to submit rating:', err);
+                                    alert('Failed to submit rating');
+                                });
+                        }
+
+                        function escapeHtml(text) {
+                            if (!text) return '';
+                            const div = document.createElement('div');
+                            div.textContent = text;
+                            return div.innerHTML;
+                        }
+                    </script>
             </body>
 
             </html>
