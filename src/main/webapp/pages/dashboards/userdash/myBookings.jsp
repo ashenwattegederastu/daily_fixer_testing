@@ -6,6 +6,16 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.stream.Collectors" %>
 
+<%!
+    // Helper method to truncate text with ellipsis
+    private String truncate(String text, int maxLength) {
+        if (text == null || text.length() <= maxLength) {
+            return text != null ? text : "-";
+        }
+        return text.substring(0, maxLength) + "...";
+    }
+%>
+
 <%
   User user = (User) session.getAttribute("currentUser");
   if (user == null || user.getRole() == null || !"user".equalsIgnoreCase(user.getRole().trim())) {
@@ -418,10 +428,10 @@ body {
                         }
                 %>
                 <tr>
-                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= booking.getProblemDescription() != null ? booking.getProblemDescription().substring(0, Math.min(50, booking.getProblemDescription().length())) + "..." : "-" %></small></td>
+                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= truncate(booking.getProblemDescription(), 50) %></small></td>
                     <td><%= booking.getTechnicianName() %></td>
                     <td><%= booking.getBookingDate() %><br><%= booking.getBookingTime() %></td>
-                    <td><%= booking.getLocationAddress() != null ? booking.getLocationAddress().substring(0, Math.min(40, booking.getLocationAddress().length())) + "..." : "-" %></td>
+                    <td><%= truncate(booking.getLocationAddress(), 40) %></td>
                     <td><span class="status-badge <%= statusClass %>"><%= statusText %></span></td>
                     <td>
                         <div class="action-buttons">
@@ -466,7 +476,7 @@ body {
                 <% } else {
                     for (Booking booking : completedBookings) { %>
                 <tr>
-                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= booking.getProblemDescription() != null ? booking.getProblemDescription().substring(0, Math.min(50, booking.getProblemDescription().length())) + "..." : "-" %></small></td>
+                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= truncate(booking.getProblemDescription(), 50) %></small></td>
                     <td><%= booking.getTechnicianName() %></td>
                     <td><%= booking.getBookingDate() %><br><%= booking.getBookingTime() %></td>
                     <td>-</td>
@@ -509,7 +519,7 @@ body {
                         String statusText = booking.getStatus() == Booking.BookingStatus.REJECTED ? "Rejected" : "Cancelled";
                 %>
                 <tr>
-                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= booking.getProblemDescription() != null ? booking.getProblemDescription().substring(0, Math.min(50, booking.getProblemDescription().length())) + "..." : "-" %></small></td>
+                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= truncate(booking.getProblemDescription(), 50) %></small></td>
                     <td><%= booking.getTechnicianName() %></td>
                     <td><%= booking.getBookingDate() %><br><%= booking.getBookingTime() %></td>
                     <td>-</td>

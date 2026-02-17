@@ -5,6 +5,7 @@ import com.dailyfixer.dao.ChatDAO;
 import com.dailyfixer.model.Booking;
 import com.dailyfixer.model.ChatConversation;
 import com.dailyfixer.model.User;
+import com.google.gson.JsonObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,10 +24,13 @@ public class AcceptBookingServlet extends HttpServlet {
         
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
+        JsonObject jsonResponse = new JsonObject();
         
         User user = (User) request.getSession().getAttribute("currentUser");
         if (user == null || !"technician".equalsIgnoreCase(user.getRole())) {
-            out.write("{\"success\": false, \"message\": \"Unauthorized access\"}");
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Unauthorized access");
+            out.write(jsonResponse.toString());
             return;
         }
 
@@ -37,17 +41,23 @@ public class AcceptBookingServlet extends HttpServlet {
             Booking booking = bookingDAO.getBookingById(bookingId);
             
             if (booking == null) {
-                out.write("{\"success\": false, \"message\": \"Booking not found\"}");
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Booking not found");
+                out.write(jsonResponse.toString());
                 return;
             }
             
             if (booking.getTechnicianId() != user.getUserId()) {
-                out.write("{\"success\": false, \"message\": \"Unauthorized\"}");
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Unauthorized");
+                out.write(jsonResponse.toString());
                 return;
             }
             
             if (booking.getStatus() != Booking.BookingStatus.REQUESTED) {
-                out.write("{\"success\": false, \"message\": \"Booking cannot be accepted\"}");
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Booking cannot be accepted");
+                out.write(jsonResponse.toString());
                 return;
             }
 
@@ -63,11 +73,15 @@ public class AcceptBookingServlet extends HttpServlet {
                 chatDAO.createConversation(conversation);
             }
 
-            out.write("{\"success\": true, \"message\": \"Booking accepted successfully\"}");
+            jsonResponse.addProperty("success", true);
+            jsonResponse.addProperty("message", "Booking accepted successfully");
+            out.write(jsonResponse.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
-            out.write("{\"success\": false, \"message\": \"" + e.getMessage() + "\"}");
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "An error occurred while processing your request");
+            out.write(jsonResponse.toString());
         }
     }
 }

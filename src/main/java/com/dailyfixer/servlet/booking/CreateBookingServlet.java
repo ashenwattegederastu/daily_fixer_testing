@@ -95,8 +95,8 @@ public class CreateBookingServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/pages/dashboards/userdash/searchServices.jsp");
+            request.getSession().setAttribute("errorMessage", "Failed to create booking. Please try again or contact support.");
+            response.sendRedirect(request.getContextPath() + "/pages/dashboards/userdash/bookService.jsp?serviceId=" + request.getParameter("serviceId"));
         }
     }
 }

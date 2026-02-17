@@ -70,7 +70,7 @@ public class SetAvailabilityServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.getSession().setAttribute("errorMessage", "Failed to update availability: " + e.getMessage());
+            request.getSession().setAttribute("errorMessage", "Failed to update availability. Please try again.");
             response.sendRedirect(request.getContextPath() + "/pages/dashboards/techniciandash/setAvailability.jsp");
         }
     }

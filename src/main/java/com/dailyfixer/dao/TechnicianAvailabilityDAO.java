@@ -97,7 +97,7 @@ public class TechnicianAvailabilityDAO {
         Time startTime = availability.getStartTime();
         Time endTime = availability.getEndTime();
 
-        return !bookingTime.before(startTime) && !bookingTime.after(endTime);
+        return !bookingTime.before(startTime) && bookingTime.before(endTime);
     }
 
     private String getDayOfWeek(Date date) {
