@@ -6,6 +6,7 @@
 <%@ page import="com.dailyfixer.model.Discount" %>
 <%@ page import="com.dailyfixer.model.User" %>
 <%@ page import="com.dailyfixer.util.ColorHelper" %>
+<%@ page import="com.dailyfixer.dto.ProductDetailsData" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
@@ -15,23 +16,78 @@
     User currentUser = (User) session.getAttribute("currentUser");
     boolean isLoggedIn = (currentUser != null);
     
-    String productIdParam = request.getParameter("productId");
+    // Check if servlet has already prepared the data (new approach)
+    ProductDetailsData productData = (ProductDetailsData) request.getAttribute("productData");
+    
     Product product = null;
     List<ProductVariant> variants = null;
     boolean hasVariants = false;
+    Set<String> colors = new HashSet<>();
+    Set<String> sizes = new HashSet<>();
+    Set<String> powers = new HashSet<>();
+    boolean outOfStock = false;
+    double originalPrice = 0;
+    double displayPrice = 0;
+    Discount activeDiscount = null;
 
-    if (productIdParam != null && !productIdParam.isEmpty()) {
-        int productId = Integer.parseInt(productIdParam);
-        ProductDAO dao = new ProductDAO();
-        product = dao.getProductById(productId);
+    if (productData != null) {
+        // Use data prepared by servlet (preferred)
+        product = productData.getProduct();
+        hasVariants = productData.isHasVariants();
+        outOfStock = productData.isOutOfStock();
+        originalPrice = productData.getOriginalPrice();
+        displayPrice = productData.getDisplayPrice();
+        activeDiscount = productData.getActiveDiscount();
         
-        if (product != null) {
-            ProductVariantDAO variantDAO = new ProductVariantDAO();
-            try {
-                variants = variantDAO.getVariantsByProductId(productId);
-                hasVariants = variants != null && !variants.isEmpty();
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (hasVariants) {
+            colors = productData.getColors();
+            sizes = productData.getSizes();
+            powers = productData.getPowers();
+            // Convert VariantData to ProductVariant for backward compatibility
+            variants = new java.util.ArrayList<>();
+            for (ProductDetailsData.VariantData vd : productData.getVariants()) {
+                ProductVariant pv = new ProductVariant();
+                pv.setVariantId(vd.getId());
+                pv.setColor(vd.getColor());
+                pv.setSize(vd.getSize());
+                pv.setPower(vd.getPower());
+                pv.setPrice(new java.math.BigDecimal(vd.getPrice()));
+                pv.setQuantity(vd.getQuantity());
+                variants.add(pv);
+            }
+        }
+    } else {
+        // Fallback: Load data directly (backward compatibility)
+        String productIdParam = request.getParameter("productId");
+        
+        if (productIdParam != null && !productIdParam.isEmpty()) {
+            int productId = Integer.parseInt(productIdParam);
+            ProductDAO dao = new ProductDAO();
+            product = dao.getProductById(productId);
+            
+            if (product != null) {
+                ProductVariantDAO variantDAO = new ProductVariantDAO();
+                try {
+                    variants = variantDAO.getVariantsByProductId(productId);
+                    hasVariants = variants != null && !variants.isEmpty();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+                // Calculate pricing
+                originalPrice = product.getPrice();
+                DiscountDAO discountDAO = new DiscountDAO();
+                try {
+                    activeDiscount = discountDAO.getActiveDiscountForProduct(productId);
+                    if (activeDiscount != null && activeDiscount.isValid()) {
+                        displayPrice = activeDiscount.calculateDiscountedPrice(originalPrice);
+                    } else {
+                        displayPrice = originalPrice;
+                        activeDiscount = null;
+                    }
+                } catch (Exception e) {
+                    displayPrice = originalPrice;
+                }
             }
         }
     }
@@ -44,33 +100,32 @@
         return;
     }
 
-    boolean outOfStock = product.getQuantity() <= 0;
-    if (hasVariants) {
-        // Check if all variants are out of stock
-        boolean allOutOfStock = true;
-        for (ProductVariant v : variants) {
-            if (v.getQuantity() > 0) {
-                allOutOfStock = false;
-                break;
+    // Calculate stock status if not already done
+    if (productData == null) {
+        outOfStock = product.getQuantity() <= 0;
+        if (hasVariants) {
+            boolean allOutOfStock = true;
+            for (ProductVariant v : variants) {
+                if (v.getQuantity() > 0) {
+                    allOutOfStock = false;
+                    break;
+                }
             }
+            outOfStock = allOutOfStock;
         }
-        outOfStock = allOutOfStock;
-    }
-    
-    // Extract unique option values for dropdowns
-    Set<String> colors = new HashSet<>();
-    Set<String> sizes = new HashSet<>();
-    Set<String> powers = new HashSet<>();
-    if (hasVariants) {
-        for (ProductVariant v : variants) {
-            if (v.getColor() != null && !v.getColor().trim().isEmpty()) {
-                colors.add(v.getColor());
-            }
-            if (v.getSize() != null && !v.getSize().trim().isEmpty()) {
-                sizes.add(v.getSize());
-            }
-            if (v.getPower() != null && !v.getPower().trim().isEmpty()) {
-                powers.add(v.getPower());
+        
+        // Extract unique option values for dropdowns
+        if (hasVariants) {
+            for (ProductVariant v : variants) {
+                if (v.getColor() != null && !v.getColor().trim().isEmpty()) {
+                    colors.add(v.getColor());
+                }
+                if (v.getSize() != null && !v.getSize().trim().isEmpty()) {
+                    sizes.add(v.getSize());
+                }
+                if (v.getPower() != null && !v.getPower().trim().isEmpty()) {
+                    powers.add(v.getPower());
+                }
             }
         }
     }
@@ -461,54 +516,7 @@ nav.public-nav .logo {
         </p>
 
         <h1 class="title"><%= product.getName() %></h1>
-        <%
-            // Check for active discount
-            Discount activeDiscount = null;
-            double displayPrice = product.getPrice();
-            double originalPrice = product.getPrice();
-            double discountAmount = 0;
-            
-            // For products with variants, if main price is 0.00, use first variant's price
-            if (hasVariants && variants != null && !variants.isEmpty() && product.getPrice() == 0.00) {
-                ProductVariant firstVariant = variants.get(0);
-                if (firstVariant != null && firstVariant.getPrice() != null) {
-                    originalPrice = firstVariant.getPrice().doubleValue();
-                    displayPrice = originalPrice;
-                    
-                    // Check for discount on the first variant
-                    try {
-                        DiscountDAO discountDAO = new DiscountDAO();
-                        activeDiscount = discountDAO.getActiveDiscountForVariant(firstVariant.getVariantId());
-                        if (activeDiscount != null && activeDiscount.isValid()) {
-                            displayPrice = activeDiscount.calculateDiscountedPrice(originalPrice);
-                            discountAmount = originalPrice - displayPrice;
-                        } else {
-                            // Also check for product-level discount
-                            activeDiscount = discountDAO.getActiveDiscountForProduct(product.getProductId());
-                            if (activeDiscount != null && activeDiscount.isValid()) {
-                                displayPrice = activeDiscount.calculateDiscountedPrice(originalPrice);
-                                discountAmount = originalPrice - displayPrice;
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                // For products without variants or with non-zero main price
-                try {
-                    DiscountDAO discountDAO = new DiscountDAO();
-                    activeDiscount = discountDAO.getActiveDiscountForProduct(product.getProductId());
-                    if (activeDiscount != null && activeDiscount.isValid()) {
-                        originalPrice = product.getPrice();
-                        displayPrice = activeDiscount.calculateDiscountedPrice(originalPrice);
-                        discountAmount = originalPrice - displayPrice;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        %>
+        
         <div class="price-container">
             <h2 class="price">
                 Rs <span id="priceValue"><%= String.format("%.2f", displayPrice) %></span>
