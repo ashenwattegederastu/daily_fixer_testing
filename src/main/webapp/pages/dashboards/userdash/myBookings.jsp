@@ -1,6 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ page import="com.dailyfixer.model.Booking" %>
+<%@ page import="com.dailyfixer.dao.BookingDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.stream.Collectors" %>
 
 <%
   User user = (User) session.getAttribute("currentUser");
@@ -8,6 +12,24 @@
     response.sendRedirect(request.getContextPath() + "/pages/shared/login.jsp");
     return;
   }
+  
+  BookingDAO bookingDAO = new BookingDAO();
+  List<Booking> allBookings = bookingDAO.getBookingsByUserId(user.getUserId(), null);
+  
+  List<Booking> activeBookings = allBookings.stream()
+      .filter(b -> b.getStatus() == Booking.BookingStatus.REQUESTED || 
+                   b.getStatus() == Booking.BookingStatus.ACCEPTED ||
+                   b.getStatus() == Booking.BookingStatus.TECHNICIAN_COMPLETED)
+      .collect(Collectors.toList());
+  
+  List<Booking> completedBookings = allBookings.stream()
+      .filter(b -> b.getStatus() == Booking.BookingStatus.FULLY_COMPLETED)
+      .collect(Collectors.toList());
+  
+  List<Booking> cancelledBookings = allBookings.stream()
+      .filter(b -> b.getStatus() == Booking.BookingStatus.CANCELLED || 
+                   b.getStatus() == Booking.BookingStatus.REJECTED)
+      .collect(Collectors.toList());
 %>
 
 <!DOCTYPE html>
@@ -342,10 +364,10 @@ body {
 </header>
 
 <aside class="sidebar">
-<%--    <h3>Navigation</h3>--%>
     <ul>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp">Dashboard</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp">Notifications</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/searchServices.jsp">Find Services</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myBookings.jsp" class="active">My Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myPurchases.jsp">My Purchases</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp">My Profile</a></li>
@@ -370,34 +392,52 @@ body {
                 </tr>
             </thead>
             <tbody>
+                <% if (activeBookings.isEmpty()) { %>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                            No active bookings. <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/searchServices.jsp">Find services</a> to book.
+                        </td>
+                    </tr>
+                <% } else {
+                    for (Booking booking : activeBookings) { 
+                        String statusClass = "";
+                        String statusText = "";
+                        switch (booking.getStatus()) {
+                            case REQUESTED:
+                                statusClass = "status-pending";
+                                statusText = "Pending";
+                                break;
+                            case ACCEPTED:
+                                statusClass = "status-accepted";
+                                statusText = "Accepted";
+                                break;
+                            case TECHNICIAN_COMPLETED:
+                                statusClass = "status-accepted";
+                                statusText = "Awaiting Confirmation";
+                                break;
+                        }
+                %>
                 <tr>
-                    <td><strong>Electrical Repair</strong><br><small>Faulty Wiring</small></td>
-                    <td>John Silva</td>
-                    <td>Oct 25, 2025<br>10:30 AM</td>
-                    <td>124 Main Street<br>Colombo 07</td>
-                    <td><span class="status-badge status-accepted">Accepted</span></td>
+                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= booking.getProblemDescription() != null ? booking.getProblemDescription().substring(0, Math.min(50, booking.getProblemDescription().length())) + "..." : "-" %></small></td>
+                    <td><%= booking.getTechnicianName() %></td>
+                    <td><%= booking.getBookingDate() %><br><%= booking.getBookingTime() %></td>
+                    <td><%= booking.getLocationAddress() != null ? booking.getLocationAddress().substring(0, Math.min(40, booking.getLocationAddress().length())) + "..." : "-" %></td>
+                    <td><span class="status-badge <%= statusClass %>"><%= statusText %></span></td>
                     <td>
                         <div class="action-buttons">
-                            <a href="${pageContext.request.contextPath}/pages/chat.jsp?tech=JohnSilva" class="btn btn-message">Message</a>
-                            <a href="#" class="btn btn-details">Details</a>
-                            <a href="#" class="btn btn-cancel" onclick="showDialog()">Cancel</a>
+                            <% if (booking.getStatus() == Booking.BookingStatus.ACCEPTED || booking.getStatus() == Booking.BookingStatus.TECHNICIAN_COMPLETED) { %>
+                                <button class="btn btn-message" onclick="alert('Chat feature coming soon!')">Message</button>
+                            <% } %>
+                            <% if (booking.getStatus() == Booking.BookingStatus.TECHNICIAN_COMPLETED) { %>
+                                <button class="btn btn-details" onclick="confirmCompletion(<%= booking.getBookingId() %>)">Confirm Complete</button>
+                            <% } %>
+                            <% if (booking.getStatus() != Booking.BookingStatus.TECHNICIAN_COMPLETED) { %>
+                                <button class="btn btn-cancel" onclick="showCancelDialog(<%= booking.getBookingId() %>)">Cancel</button>
+                            <% } %>
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td><strong>Plumbing Service</strong><br><small>Leaking Pipe</small></td>
-                    <td>Nuwan Perera</td>
-                    <td>Oct 28, 2025<br>2:00 PM</td>
-                    <td>56 Lake Road<br>Kandy</td>
-                    <td><span class="status-badge status-pending">Pending</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="${pageContext.request.contextPath}/pages/chat.jsp?tech=NuwanPerera" class="btn btn-message">Message</a>
-                            <a href="#" class="btn btn-details">Details</a>
-                            <a href="#" class="btn btn-cancel" onclick="showDialog()">Cancel</a>
-                        </div>
-                    </td>
-                </tr>
+                <% } } %>
             </tbody>
         </table>
     </div>
@@ -417,34 +457,28 @@ body {
                 </tr>
             </thead>
             <tbody>
+                <% if (completedBookings.isEmpty()) { %>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                            No completed bookings yet.
+                        </td>
+                    </tr>
+                <% } else {
+                    for (Booking booking : completedBookings) { %>
                 <tr>
-                    <td><strong>AC Repair</strong><br><small>Cooling Issue</small></td>
-                    <td>Kusal Jayawardena</td>
-                    <td>Oct 10, 2025<br>11:00 AM</td>
-                    <td>2 hours</td>
+                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= booking.getProblemDescription() != null ? booking.getProblemDescription().substring(0, Math.min(50, booking.getProblemDescription().length())) + "..." : "-" %></small></td>
+                    <td><%= booking.getTechnicianName() %></td>
+                    <td><%= booking.getBookingDate() %><br><%= booking.getBookingTime() %></td>
+                    <td>-</td>
                     <td><span class="status-badge status-completed">Completed</span></td>
                     <td>
                         <div class="action-buttons">
-                            <a href="${pageContext.request.contextPath}/pages/chat.jsp?tech=KusalJayawardena" class="btn btn-message">Message</a>
-                            <a href="#" class="btn btn-details">Details</a>
-                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/writeReview.jsp?item=ACRepair" class="btn btn-review">Review</a>
+                            <button class="btn btn-message" onclick="alert('Chat feature coming soon!')">Message</button>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/writeReview.jsp?bookingId=<%= booking.getBookingId() %>" class="btn btn-review">Review</a>
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td><strong>Appliance Repair</strong><br><small>Washing Machine</small></td>
-                    <td>Rajesh Kumar</td>
-                    <td>Sep 15, 2025<br>3:00 PM</td>
-                    <td>1.5 hours</td>
-                    <td><span class="status-badge status-completed">Completed</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="${pageContext.request.contextPath}/pages/chat.jsp?tech=RajeshKumar" class="btn btn-message">Message</a>
-                            <a href="#" class="btn btn-details">Details</a>
-                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/writeReview.jsp?item=ApplianceRepair" class="btn btn-review">Review</a>
-                        </div>
-                    </td>
-                </tr>
+                <% } } %>
             </tbody>
         </table>
     </div>
@@ -464,18 +498,29 @@ body {
                 </tr>
             </thead>
             <tbody>
+                <% if (cancelledBookings.isEmpty()) { %>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                            No cancelled bookings.
+                        </td>
+                    </tr>
+                <% } else {
+                    for (Booking booking : cancelledBookings) { 
+                        String statusText = booking.getStatus() == Booking.BookingStatus.REJECTED ? "Rejected" : "Cancelled";
+                %>
                 <tr>
-                    <td><strong>Electrical Repair</strong><br><small>Power Outage</small></td>
-                    <td>Mike Johnson</td>
-                    <td>Sep 5, 2025<br>9:00 AM</td>
-                    <td>Technician unavailable</td>
-                    <td><span class="status-badge status-denied">Cancelled</span></td>
+                    <td><strong><%= booking.getServiceName() %></strong><br><small><%= booking.getProblemDescription() != null ? booking.getProblemDescription().substring(0, Math.min(50, booking.getProblemDescription().length())) + "..." : "-" %></small></td>
+                    <td><%= booking.getTechnicianName() %></td>
+                    <td><%= booking.getBookingDate() %><br><%= booking.getBookingTime() %></td>
+                    <td>-</td>
+                    <td><span class="status-badge status-denied"><%= statusText %></span></td>
                     <td>
                         <div class="action-buttons">
-                            <a href="#" class="btn btn-details">Details</a>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/searchServices.jsp" class="btn btn-details">Book Again</a>
                         </div>
                     </td>
                 </tr>
+                <% } } %>
             </tbody>
         </table>
     </div>
@@ -484,24 +529,82 @@ body {
 <!-- Cancel Confirmation Dialog -->
 <div class="dialog-overlay" id="cancelDialog">
     <div class="dialog-box">
-        <p>Are you sure you want to cancel this booking?</p>
-        <button class="confirm" onclick="confirmCancel()">Yes, Cancel</button>
-        <button class="cancel" onclick="closeDialog()">No</button>
+        <h3 style="margin-bottom: 15px;">Cancel Booking</h3>
+        <p>Please provide a reason for cancelling:</p>
+        <textarea id="cancelReason" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 15px 0; min-height: 100px;" placeholder="Enter cancellation reason..."></textarea>
+        <button class="confirm" onclick="confirmCancel()">Confirm Cancellation</button>
+        <button class="cancel" onclick="closeDialog()">Go Back</button>
     </div>
 </div>
 
 <script>
-function showDialog() {
+let currentBookingId = null;
+
+function showCancelDialog(bookingId) {
+    currentBookingId = bookingId;
     document.getElementById('cancelDialog').style.display = 'flex';
 }
 
 function closeDialog() {
+    currentBookingId = null;
     document.getElementById('cancelDialog').style.display = 'none';
+    document.getElementById('cancelReason').value = '';
 }
 
 function confirmCancel() {
-    closeDialog();
-    alert("Your booking has been canceled.");
+    const reason = document.getElementById('cancelReason').value.trim();
+    
+    if (!reason) {
+        alert('Please provide a reason for cancellation.');
+        return;
+    }
+    
+    fetch('${pageContext.request.contextPath}/CancelBookingServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'bookingId=' + currentBookingId + '&reason=' + encodeURIComponent(reason)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Booking cancelled successfully!');
+            closeDialog();
+            location.reload();
+        } else {
+            alert('Error cancelling booking: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error cancelling booking');
+    });
+}
+
+function confirmCompletion(bookingId) {
+    if (confirm('Please confirm that the service has been completed to your satisfaction.')) {
+        fetch('${pageContext.request.contextPath}/ConfirmCompletionServlet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'bookingId=' + bookingId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Thank you for confirming! The booking is now complete.');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error confirming completion');
+        });
+    }
 }
 </script>
 
