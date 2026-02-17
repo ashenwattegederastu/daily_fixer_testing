@@ -5,7 +5,7 @@
          version="6.0">
     <servlet>
         <servlet-name>AddProductServlet</servlet-name>
-        <servlet-class>com.dailyfixer.product.AddProductServlet</servlet-class>
+        <servlet-class>com.dailyfixer.servlet.product.AddProductServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>AddProductServlet</servlet-name>
@@ -14,7 +14,7 @@
 
     <servlet>
         <servlet-name>ListProductsServlet</servlet-name>
-        <servlet-class>com.dailyfixer.product.ListProductsServlet</servlet-class>
+        <servlet-class>com.dailyfixer.servlet.product.ListProductsServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ListProductsServlet</servlet-name>
@@ -23,7 +23,7 @@
 
     <servlet>
         <servlet-name>EditProductServlet</servlet-name>
-        <servlet-class>com.dailyfixer.product.EditProductServlet</servlet-class>
+        <servlet-class>com.dailyfixer.servlet.product.EditProductServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>EditProductServlet</servlet-name>
@@ -32,7 +32,7 @@
 
     <servlet>
         <servlet-name>DeleteProductServlet</servlet-name>
-        <servlet-class>com.dailyfixer.product.DeleteProductServlet</servlet-class>
+        <servlet-class>com.dailyfixer.servlet.product.DeleteProductServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DeleteProductServlet</servlet-name>
