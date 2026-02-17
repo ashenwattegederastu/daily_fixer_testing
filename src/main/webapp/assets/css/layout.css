@@ -361,7 +361,7 @@ nav.public-nav .logo {
     transition: all 0.3s ease;
   }
 
-  /* Hamburger Aninmation */
+  /* Hamburger Animation */
   .hamburger.active span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 6px);
   }
