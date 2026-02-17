@@ -5,46 +5,10 @@
 <%@ page import="com.dailyfixer.model.ProductVariant" %>
 <%@ page import="com.dailyfixer.model.Discount" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ page import="com.dailyfixer.util.ColorHelper" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
-
-<%!
-    // Helper method to convert color name to hex code
-    private String getColorCode(String colorName) {
-        if (colorName == null) return "#cccccc";
-        String color = colorName.toLowerCase().trim();
-        switch (color) {
-            case "red": return "#ff0000";
-            case "blue": return "#0000ff";
-            case "green": return "#00ff00";
-            case "yellow": return "#ffff00";
-            case "black": return "#000000";
-            case "white": return "#ffffff";
-            case "gray": case "grey": return "#808080";
-            case "orange": return "#ffa500";
-            case "purple": return "#800080";
-            case "pink": return "#ffc0cb";
-            case "brown": return "#a52a2a";
-            case "navy": return "#000080";
-            case "teal": return "#008080";
-            case "cyan": return "#00ffff";
-            case "magenta": return "#ff00ff";
-            case "lime": return "#00ff00";
-            case "maroon": return "#800000";
-            case "olive": return "#808000";
-            case "silver": return "#c0c0c0";
-            case "gold": return "#ffd700";
-            default: 
-                // Try to parse as hex color if it starts with #
-                if (color.startsWith("#") && color.length() == 7) {
-                    return color;
-                }
-                // Default gray for unknown colors
-                return "#cccccc";
-        }
-    }
-%>
 
 <%
     // Check if user is logged in
@@ -447,72 +411,6 @@ nav.public-nav .logo {
     padding: 1rem;
   }
 }
-        .variant-btn {
-            padding: 10px 16px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background-color: white;
-            color: #333;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 60px;
-        }
-        
-        .variant-btn:hover {
-            border-color: #8b95ff;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(139, 149, 255, 0.2);
-        }
-        
-        .variant-btn.active {
-            border: 2px solid #8b95ff !important;
-            background-color: #f0f0ff !important;
-            color: #8b95ff !important;
-            font-weight: 600 !important;
-        }
-        
-        /* Force default styles for non-active buttons */
-        button.variant-btn:not(.active) {
-            border: 2px solid #ddd !important;
-            background-color: white !important;
-            color: #333 !important;
-            font-weight: 500 !important;
-        }
-        
-        .color-btn .color-indicator {
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        
-        .color-btn.active .color-indicator {
-            box-shadow: 0 0 0 2px #8b95ff, 0 1px 3px rgba(0,0,0,0.3);
-        }
-        
-        .price-container {
-            margin-bottom: 15px;
-        }
-        
-        .price-details {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 8px;
-        }
-        
-        .original-price {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 1.2em;
-        }
-        
-        .discount-badge {
-            background: linear-gradient(135deg, #ff4d4f, #ff7875);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
@@ -642,7 +540,7 @@ nav.public-nav .logo {
                             data-value="<%= color %>"
                             data-option="color"
                             style="position: relative; min-width: 80px;">
-                        <span class="color-indicator" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1px solid #ccc; background-color: <%= getColorCode(color) %>;"></span>
+                        <span class="color-indicator" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1px solid #ccc; background-color: <%= ColorHelper.getColorCode(color) %>;"></span>
                         <span><%= color %></span>
                     </button>
                     <% } %>

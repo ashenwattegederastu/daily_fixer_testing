@@ -165,7 +165,6 @@ public class ProductDetailsServlet extends HttpServlet {
         double basePrice = product.getPrice();
         data.setOriginalPrice(basePrice);
         
-        DiscountDAO discountDAO = new DiscountDAO();
         Discount baseDiscount = discountDAO.getActiveDiscountForProduct(product.getProductId());
         
         if (baseDiscount != null && baseDiscount.isValid()) {

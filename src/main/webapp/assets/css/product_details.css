@@ -429,6 +429,75 @@ nav.scrolled {
     color: #555;
 }
 
+/* Variant Selection Styles */
+.variant-btn {
+    padding: 10px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 60px;
+}
+
+.variant-btn:hover {
+    border-color: #8b95ff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(139, 149, 255, 0.2);
+}
+
+.variant-btn.active {
+    border: 2px solid #8b95ff !important;
+    background-color: #f0f0ff !important;
+    color: #8b95ff !important;
+    font-weight: 600 !important;
+}
+
+/* Force default styles for non-active buttons */
+button.variant-btn:not(.active) {
+    border: 2px solid #ddd !important;
+    background-color: white !important;
+    color: #333 !important;
+    font-weight: 500 !important;
+}
+
+.color-btn .color-indicator {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.color-btn.active .color-indicator {
+    box-shadow: 0 0 0 2px #8b95ff, 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Price Display Styles */
+.price-container {
+    margin-bottom: 15px;
+}
+
+.price-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 1.2em;
+}
+
+.discount-badge {
+    background: linear-gradient(135deg, #ff4d4f, #ff7875);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .product-container {
