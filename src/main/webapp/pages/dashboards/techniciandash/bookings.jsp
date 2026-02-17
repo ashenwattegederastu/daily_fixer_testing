@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ page import="com.dailyfixer.model.Booking" %>
+<%@ page import="com.dailyfixer.dao.BookingDAO" %>
+<%@ page import="java.util.List" %>
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -13,6 +16,9 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
+    
+    BookingDAO bookingDAO = new BookingDAO();
+    List<Booking> pendingBookings = bookingDAO.getBookingsByTechnicianId(user.getUserId(), Booking.BookingStatus.REQUESTED);
 %>
 
 <!DOCTYPE html>
@@ -225,11 +231,11 @@ tbody tr:hover { background-color:#f9f9f9; }
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
     <ul>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp">Dashboard</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp" class="active">Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp">Service Listings</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/setAvailability.jsp">Set Availability</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp">Accepted Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
@@ -251,54 +257,40 @@ tbody tr:hover { background-color:#f9f9f9; }
             </tr>
         </thead>
         <tbody>
-            <!-- Sample data - replace with actual data from backend -->
-            <tr>
-                <td>BK001</td>
-                <td>Plumbing Repair</td>
-                <td>John Smith</td>
-                <td>2025-01-15</td>
-                <td>Kitchen sink is leaking and needs repair</td>
-                <td>
-                    <button class="btn accept-btn" onclick="acceptBooking('BK001')">Accept</button>
-                    <button class="btn deny-btn" onclick="showDenialModal('BK001')">Deny</button>
-                </td>
-            </tr>
-            <tr>
-                <td>BK002</td>
-                <td>Electrical Wiring</td>
-                <td>Sarah Johnson</td>
-                <td>2025-01-16</td>
-                <td>Outdoor lighting installation needed</td>
-                <td>
-                    <button class="btn accept-btn" onclick="acceptBooking('BK002')">Accept</button>
-                    <button class="btn deny-btn" onclick="showDenialModal('BK002')">Deny</button>
-                </td>
-            </tr>
-            <tr>
-                <td>BK003</td>
-                <td>AC Maintenance</td>
-                <td>Mike Wilson</td>
-                <td>2025-01-17</td>
-                <td></td>
-                <td>
-                    <button class="btn accept-btn" onclick="acceptBooking('BK003')">Accept</button>
-                    <button class="btn deny-btn" onclick="showDenialModal('BK003')">Deny</button>
-                </td>
-            </tr>
+            <% if (pendingBookings.isEmpty()) { %>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                        No pending booking requests at the moment.
+                    </td>
+                </tr>
+            <% } else {
+                for (Booking booking : pendingBookings) { %>
+                <tr>
+                    <td><%= booking.getBookingId() %></td>
+                    <td><%= booking.getServiceName() %></td>
+                    <td><%= booking.getUserName() %></td>
+                    <td><%= booking.getBookingDate() %> <%= booking.getBookingTime() %></td>
+                    <td><%= booking.getProblemDescription() != null ? booking.getProblemDescription() : "-" %></td>
+                    <td>
+                        <button class="btn accept-btn" onclick="acceptBooking(<%= booking.getBookingId() %>)">Accept</button>
+                        <button class="btn deny-btn" onclick="showDenialModal(<%= booking.getBookingId() %>)">Deny</button>
+                    </td>
+                </tr>
+            <% } } %>
         </tbody>
     </table>
 </main>
 
-<!-- Denial Modal -->
+<!-- Rejection Modal -->
 <div id="denialModal" class="denial-modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeDenialModal()">&times;</span>
-        <h3>Deny Booking</h3>
-        <p>Please provide a reason for denying this booking. This will be sent to the customer as a notification.</p>
-        <textarea id="denialReason" placeholder="Enter reason for denial..."></textarea>
+        <h3>Reject Booking</h3>
+        <p>Please provide a reason for rejecting this booking request.</p>
+        <textarea id="denialReason" placeholder="Enter reason for rejection..."></textarea>
         <div class="modal-buttons">
             <button class="btn" onclick="closeDenialModal()" style="background: #6c757d;">Cancel</button>
-            <button class="btn deny-btn" onclick="submitDenial()">Submit Denial</button>
+            <button class="btn deny-btn" onclick="submitDenial()">Submit Rejection</button>
         </div>
     </div>
 </div>
@@ -347,13 +339,12 @@ function submitDenial() {
     const reason = document.getElementById('denialReason').value.trim();
     
     if (!reason) {
-        alert('Please provide a reason for denial.');
+        alert('Please provide a reason for rejection.');
         return;
     }
     
-    if (confirm('Are you sure you want to deny this booking?')) {
-        // Send AJAX request to deny booking
-        fetch('${pageContext.request.contextPath}/DenyBookingServlet', {
+    if (confirm('Are you sure you want to reject this booking?')) {
+        fetch('${pageContext.request.contextPath}/RejectBookingServlet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -363,16 +354,16 @@ function submitDenial() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Booking denied successfully!');
+                alert('Booking rejected successfully!');
                 closeDenialModal();
                 location.reload();
             } else {
-                alert('Error denying booking: ' + data.message);
+                alert('Error rejecting booking: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error denying booking');
+            alert('Error rejecting booking');
         });
     }
 }
