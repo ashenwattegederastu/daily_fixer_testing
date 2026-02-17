@@ -26,167 +26,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orders | Daily Fixer</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Framework CSS -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+<!-- Tables CSS -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/storedash-tables.css">
 
 <style>
-:root {
-    --panel-color: #dcdaff;
-    --accent: #8b95ff;
-    --text-dark: #000000;
-    --text-secondary: #333333;
-    --shadow-sm: 0 4px 12px rgba(0,0,0,0.12);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.18);
-    --shadow-lg: 0 12px 36px rgba(0,0,0,0.22);
-}
+/* Page-specific: action button variants */
+.view-btn { background: var(--primary); color: var(--primary-foreground); }
+.update-btn { background: var(--accent); color: var(--accent-foreground); }
+.delivery-btn { background: var(--destructive); color: var(--destructive-foreground); }
 
-/* Reset */
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: var(--text-dark);
-    display: flex;
-    min-height: 100vh;
-}
-
-/* Top Navbar */
-.topbar {
-    position: fixed;
-    top:0; left:0; right:0;
-    height:76px;
-    background-color: var(--panel-color);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    z-index: 200;
-    box-shadow: var(--shadow-md);
-}
-.topbar .logo { font-size: 1.5em; font-weight: 700; color: var(--accent); }
-.topbar .panel-name { font-weight: 600; flex:1; text-align:center; color: var(--text-dark); }
-.topbar .logout-btn {
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, var(--accent), #7ba3d4);
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-sm);
-    text-decoration: none;
-}
-.topbar .logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    opacity: 0.9;
-}
-
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background-color: var(--panel-color);
-    height: 100vh;
-    position: fixed;
-    top:0;
-    left:0;
-    padding-top: 96px;
-    box-shadow: var(--shadow-md);
-    overflow-y: auto;
-    z-index: 100;
-}
-.sidebar h3 { padding: 0 20px 12px; font-size: 0.85em; color: var(--text-dark); text-transform: uppercase; }
-.sidebar ul { list-style:none; }
-.sidebar a {
-    display:block;
-    padding:12px 20px;
-    text-decoration:none;
-    color: var(--text-dark);
-    font-weight:500;
-    border-left:3px solid transparent;
-    border-radius:0 8px 8px 0;
-    margin-bottom:4px;
-    transition: all 0.2s;
-}
-.sidebar a:hover, .sidebar a.active {
-    background-color: #f0f0ff;
-    border-left-color: var(--accent);
-}
-
-/* Main Content */
-.container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
-    padding:30px;
-}
-.container h2 {
-    font-size:1.6em;
-    margin-bottom:20px;
-    color: #000000;
-}
-
-/* Table Styles */
-table {
-    width:100%;
-    border-collapse: collapse;
-    box-shadow: var(--shadow-sm);
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.1);
-}
-thead { background-color: var(--panel-color); }
-th, td {
-    padding:12px 10px;
-    text-align:left;
-    border-bottom:1px solid #ddd;
-}
-tbody tr:hover { background-color:#f9f9f9; }
-
-td .status {
-    display:inline-block;
-    width:14px;
-    height:14px;
-    border-radius:50%;
-    margin-right: 8px;
-}
-.status.pending { background-color: #f39c12; }
-.status.out-delivery { background-color: #3498db; }
-.status.delivered { background-color: #27ae60; }
-
-/* Buttons */
-.btn { 
-    padding:6px 12px; 
-    border:none; 
-    border-radius:8px; 
-    cursor:pointer; 
-    font-weight:500; 
-    margin-right:5px;
-    font-size: 0.85em;
-}
-.view-btn { background:#20255b; color:#fff; }
-.update-btn { background: var(--accent); color:#fff; }
-.delivery-btn { background: #e74c3c; color:#fff; }
-
-.btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
-
-/* Status Options */
+/* Page-specific: status dropdown */
 .status-options {
     display: none;
     position: absolute;
-    background: white;
-    border: 1px solid #ddd;
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 8px;
     box-shadow: var(--shadow-sm);
     z-index: 10;
     margin-top: 5px;
 }
-
 .status-options button {
     display: block;
     width: 100%;
@@ -196,74 +59,69 @@ td .status {
     text-align: left;
     cursor: pointer;
     font-size: 0.85em;
+    color: var(--foreground);
 }
-
 .status-options button:hover {
-    background-color: #f0f0ff;
+    background-color: var(--accent);
+    color: var(--accent-foreground);
 }
 
-/* Modal */
+/* Page-specific: vehicle selection modal */
 .vehicle-modal {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0,0,0,0.6);
     justify-content: center;
     align-items: center;
     z-index: 500;
 }
-
 .vehicle-modal .modal-content {
-    background: white;
+    background: var(--card);
+    color: var(--card-foreground);
     padding: 30px;
     border-radius: 12px;
     max-width: 400px;
     width: 90%;
     text-align: center;
     box-shadow: var(--shadow-lg);
+    position: relative;
 }
-
 .vehicle-modal h3 {
-    color: var(--accent);
+    color: var(--primary);
     margin-bottom: 20px;
 }
-
 .vehicle-modal .vehicle-options {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-bottom: 20px;
 }
-
 .vehicle-modal .vehicle-btn {
     padding: 12px;
-    border: 2px solid #ddd;
+    border: 2px solid var(--border);
     border-radius: 8px;
-    background: white;
+    background: var(--card);
+    color: var(--card-foreground);
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s;
 }
-
 .vehicle-modal .vehicle-btn:hover {
-    border-color: var(--accent);
-    background: #f0f0ff;
+    border-color: var(--primary);
+    background: var(--accent);
 }
-
 .vehicle-modal .vehicle-btn.selected {
-    border-color: var(--accent);
-    background: var(--panel-color);
+    border-color: var(--primary);
+    background: var(--accent);
+    color: var(--accent-foreground);
 }
-
 .vehicle-modal .modal-buttons {
     display: flex;
     gap: 10px;
     justify-content: center;
 }
-
 .vehicle-modal .modal-btn {
     padding: 10px 20px;
     border: none;
@@ -271,17 +129,14 @@ td .status {
     cursor: pointer;
     font-weight: 500;
 }
-
 .vehicle-modal .confirm-btn {
-    background: var(--accent);
-    color: white;
+    background: var(--primary);
+    color: var(--primary-foreground);
 }
-
 .vehicle-modal .cancel-btn {
-    background: #ddd;
-    color: var(--text-dark);
+    background: var(--muted);
+    color: var(--muted-foreground);
 }
-
 .close-btn {
     position: absolute;
     top: 15px;
@@ -289,16 +144,19 @@ td .status {
     font-size: 1.5em;
     font-weight: bold;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--muted-foreground);
 }
 </style>
 </head>
-<body>
+<body class="dashboard-layout">
 
 <header class="topbar">
     <div class="logo">Daily Fixer</div>
     <div class="panel-name">Store Panel</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    </div>
 </header>
 
 <aside class="sidebar">
@@ -309,6 +167,8 @@ td .status {
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/upfordelivery.jsp">Up for Delivery</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/completedorders.jsp">Completed Orders</a></li>
         <li><a href="${pageContext.request.contextPath}/ListProductsServlet">Catalogue</a></li>
+        <li><a href="${pageContext.request.contextPath}/ListDiscountsServlet">Discounts</a></li>
+        <li><a href="${pageContext.request.contextPath}/StoreReviewsServlet">Customer Reviews</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/myProfile.jsp">Profile</a></li>
     </ul>
 </aside>
@@ -470,5 +330,6 @@ document.getElementById('vehicleModal').addEventListener('click', e => {
 });
 </script>
 
+<script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
 </body>
 </html>
