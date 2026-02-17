@@ -240,11 +240,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
 <style>
 .container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
     padding:40px;
-    background-color: var(--background);
     min-height: calc(100vh - 83px);
 }
 
@@ -275,12 +271,6 @@
 }
 
 .card {
-    background: var(--card);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
@@ -295,12 +285,6 @@
     background: linear-gradient(90deg, var(--primary), var(--accent-foreground));
     opacity: 0;
     transition: opacity 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary);
 }
 
 .card:hover::before {

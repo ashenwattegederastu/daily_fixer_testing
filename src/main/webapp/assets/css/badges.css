@@ -1,0 +1,115 @@
+/* Shared badge base styles */
+.priority-high,
+.priority-medium,
+.priority-low,
+.status-pending,
+.status-resolved,
+.status-dismissed,
+.status-completed,
+.status-failed,
+.status-refunded {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Priority Badges */
+.priority-high {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.priority-medium {
+  background-color: var(--warning);
+  color: var(--warning-foreground);
+}
+
+.priority-low {
+  background-color: var(--success);
+  color: var(--success-foreground);
+}
+
+/* Status Badges */
+.status-pending {
+  background-color: var(--warning);
+  color: var(--warning-foreground);
+}
+
+.status-resolved,
+.status-completed {
+  background-color: var(--success);
+  color: var(--success-foreground);
+}
+
+.status-dismissed,
+.status-refunded {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.status-failed {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.status-active {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.status-suspended {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* Amount styling */
+.amount {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.amount.positive {
+  color: var(--success);
+}
+
+.amount.negative {
+  color: var(--destructive);
+}
+
+/* Alert Messages */
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  background-color: var(--success);
+  color: var(--success-foreground);
+}
+
+.alert-error {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+/* Error Messages */
+.error-message {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+/* Success Messages */
+.success-message {
+  background-color: var(--success);
+  color: var(--success-foreground);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
