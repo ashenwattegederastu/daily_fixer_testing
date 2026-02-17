@@ -56,8 +56,8 @@ CREATE TABLE bookings (
   phone_number VARCHAR(20) NOT NULL,
   problem_description TEXT,
   location_address VARCHAR(500),
-  location_latitude DECIMAL(10, 7),
-  location_longitude DECIMAL(10, 7),
+  location_latitude DECIMAL(9, 6),
+  location_longitude DECIMAL(9, 6),
   status ENUM('REQUESTED', 'ACCEPTED', 'REJECTED', 'CANCELLED', 
               'TECHNICIAN_COMPLETED', 'FULLY_COMPLETED') NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -269,6 +269,13 @@ Copy the generated WAR file to Tomcat's webapps directory.
 **Problem:** Session timeout
 - Increase session timeout in web.xml
 - Check login redirect logic
+
+**Problem:** Data truncation error for location coordinates
+- Error: `Out of range value for column 'location_latitude'`
+- **Solution:** Run the fix script: `src/main/resources/fix_location_coordinates.sql`
+- This updates coordinates from DECIMAL(10,7) to DECIMAL(9,6)
+- DECIMAL(9,6) provides standard GPS precision (6 decimal places)
+- Sufficient range for latitude (-90 to 90) and longitude (-180 to 180)
 
 ## Future Enhancements
 
