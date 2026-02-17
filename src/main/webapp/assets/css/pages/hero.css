@@ -36,16 +36,16 @@
 
 /* Specific hero backgrounds */
 #hero1 {
-  background-image: url('../images/index/hero_community.png');
+  background-image: url('../../images/index/hero_community.png');
 }
 
 #hero2 {
-  background-image: url('../images/index/hero_guides.png');
+  background-image: url('../../images/index/hero_guides.png');
   margin-top: 0;
 }
 
 #hero3 {
-  background-image: url('../images/index/hero_technician.png');
+  background-image: url('../../images/index/hero_technician.png');
   margin-top: 0;
 }
 
