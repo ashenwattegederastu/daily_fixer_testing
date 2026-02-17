@@ -6,7 +6,10 @@
         <head>
             <meta charset="UTF-8">
             <title>Register Store - DailyFixer</title>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+            <link
+                href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+                rel="stylesheet">
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
             <style>
                 .signup-wrapper {
                     display: flex;
@@ -219,7 +222,8 @@
                             </div>
 
                             <div style="margin-top:18px;">
-                                <button type="submit" class="login-btn" id="submitBtn">Register Store</button>
+                                <button type="submit" class="btn-primary" id="submitBtn" style="width: 100%;">Register
+                                    Store</button>
                             </div>
                         </form>
                     </div>

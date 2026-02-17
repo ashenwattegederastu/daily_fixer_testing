@@ -35,7 +35,7 @@
             case "olive": return "#808000";
             case "silver": return "#c0c0c0";
             case "gold": return "#ffd700";
-            default: 
+            default:
                 // Try to parse as hex color if it starts with #
                 if (color.startsWith("#") && color.length() == 7) {
                     return color;
@@ -50,7 +50,7 @@
     // Check if user is logged in
     User currentUser = (User) session.getAttribute("currentUser");
     boolean isLoggedIn = (currentUser != null);
-    
+
     String productIdParam = request.getParameter("productId");
     Product product = null;
     List<ProductVariant> variants = null;
@@ -60,7 +60,7 @@
         int productId = Integer.parseInt(productIdParam);
         ProductDAO dao = new ProductDAO();
         product = dao.getProductById(productId);
-        
+
         if (product != null) {
             ProductVariantDAO variantDAO = new ProductVariantDAO();
             try {
@@ -92,7 +92,7 @@
         }
         outOfStock = allOutOfStock;
     }
-    
+
     // Extract unique option values for dropdowns
     Set<String> colors = new HashSet<>();
     Set<String> sizes = new HashSet<>();
@@ -123,330 +123,330 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/product_details.css">
     <style>
-/* Framework CSS Variables */
-:root {
-  --background: oklch(0.9940 0 0);
-  --foreground: oklch(0 0 0);
-  --card: oklch(0.9940 0 0);
-  --card-foreground: oklch(0 0 0);
-  --popover: oklch(0.9911 0 0);
-  --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0.5393 0.2713 286.7462);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.9540 0.0063 255.4755);
-  --secondary-foreground: oklch(0.1344 0 0);
-  --muted: oklch(0.9702 0 0);
-  --muted-foreground: oklch(0.4386 0 0);
-  --accent: oklch(0.9393 0.0288 266.3680);
-  --accent-foreground: oklch(0.5445 0.1903 259.4848);
-  --destructive: oklch(0.6290 0.1902 23.0704);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.9300 0.0094 286.2156);
-  --input: oklch(0.9401 0 0);
-  --ring: oklch(0 0 0);
-  --chart-1: oklch(0.7459 0.1483 156.4499);
-  --chart-2: oklch(0.5393 0.2713 286.7462);
-  --chart-3: oklch(0.7336 0.1758 50.5517);
-  --chart-4: oklch(0.5828 0.1809 259.7276);
-  --chart-5: oklch(0.5590 0 0);
-  --sidebar: oklch(0.9777 0.0051 247.8763);
-  --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0 0 0);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.9401 0 0);
-  --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0.9401 0 0);
-  --sidebar-ring: oklch(0 0 0);
-  --font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --font-serif: 'Lora', serif;
-  --font-mono: 'IBM Plex Mono', monospace;
-  --radius: 1.4rem;
-  --shadow-x: 0px;
-  --shadow-y: 2px;
-  --shadow-blur: 3px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 0.16;
-  --shadow-color: hsl(0 0% 0%);
-  --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
-  --shadow-xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
-  --shadow-sm: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 1px 2px -1px hsl(0 0% 0% / 0.16);
-  --shadow: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 1px 2px -1px hsl(0 0% 0% / 0.16);
-  --shadow-md: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 2px 4px -1px hsl(0 0% 0% / 0.16);
-  --shadow-lg: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 4px 6px -1px hsl(0 0% 0% / 0.16);
-  --shadow-xl: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 8px 10px -1px hsl(0 0% 0% / 0.16);
-  --shadow-2xl: 0px 2px 3px 0px hsl(0 0% 0% / 0.40);
-  --tracking-normal: -0.025em;
-  --spacing: 0.27rem;
-}
+        /* Framework CSS Variables */
+        :root {
+            --background: oklch(0.9940 0 0);
+            --foreground: oklch(0 0 0);
+            --card: oklch(0.9940 0 0);
+            --card-foreground: oklch(0 0 0);
+            --popover: oklch(0.9911 0 0);
+            --popover-foreground: oklch(0 0 0);
+            --primary: oklch(0.5393 0.2713 286.7462);
+            --primary-foreground: oklch(1.0000 0 0);
+            --secondary: oklch(0.9540 0.0063 255.4755);
+            --secondary-foreground: oklch(0.1344 0 0);
+            --muted: oklch(0.9702 0 0);
+            --muted-foreground: oklch(0.4386 0 0);
+            --accent: oklch(0.9393 0.0288 266.3680);
+            --accent-foreground: oklch(0.5445 0.1903 259.4848);
+            --destructive: oklch(0.6290 0.1902 23.0704);
+            --destructive-foreground: oklch(1.0000 0 0);
+            --border: oklch(0.9300 0.0094 286.2156);
+            --input: oklch(0.9401 0 0);
+            --ring: oklch(0 0 0);
+            --chart-1: oklch(0.7459 0.1483 156.4499);
+            --chart-2: oklch(0.5393 0.2713 286.7462);
+            --chart-3: oklch(0.7336 0.1758 50.5517);
+            --chart-4: oklch(0.5828 0.1809 259.7276);
+            --chart-5: oklch(0.5590 0 0);
+            --sidebar: oklch(0.9777 0.0051 247.8763);
+            --sidebar-foreground: oklch(0 0 0);
+            --sidebar-primary: oklch(0 0 0);
+            --sidebar-primary-foreground: oklch(1.0000 0 0);
+            --sidebar-accent: oklch(0.9401 0 0);
+            --sidebar-accent-foreground: oklch(0 0 0);
+            --sidebar-border: oklch(0.9401 0 0);
+            --sidebar-ring: oklch(0 0 0);
+            --font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            --font-serif: 'Lora', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --radius: 1.4rem;
+            --shadow-x: 0px;
+            --shadow-y: 2px;
+            --shadow-blur: 3px;
+            --shadow-spread: 0px;
+            --shadow-opacity: 0.16;
+            --shadow-color: hsl(0 0% 0%);
+            --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
+            --shadow-xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
+            --shadow-sm: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 1px 2px -1px hsl(0 0% 0% / 0.16);
+            --shadow: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 1px 2px -1px hsl(0 0% 0% / 0.16);
+            --shadow-md: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 2px 4px -1px hsl(0 0% 0% / 0.16);
+            --shadow-lg: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 4px 6px -1px hsl(0 0% 0% / 0.16);
+            --shadow-xl: 0px 2px 3px 0px hsl(0 0% 0% / 0.16), 0px 8px 10px -1px hsl(0 0% 0% / 0.16);
+            --shadow-2xl: 0px 2px 3px 0px hsl(0 0% 0% / 0.40);
+            --tracking-normal: -0.025em;
+            --spacing: 0.27rem;
+        }
 
-.dark {
-  --background: oklch(0.2223 0.0060 271.1393);
-  --foreground: oklch(0.9551 0 0);
-  --card: oklch(0.2568 0.0076 274.6528);
-  --card-foreground: oklch(0.9551 0 0);
-  --popover: oklch(0.2568 0.0076 274.6528);
-  --popover-foreground: oklch(0.9551 0 0);
-  --primary: oklch(0.6132 0.2294 291.7437);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.2940 0.0130 272.9312);
-  --secondary-foreground: oklch(0.9551 0 0);
-  --muted: oklch(0.2940 0.0130 272.9312);
-  --muted-foreground: oklch(0.7058 0 0);
-  --accent: oklch(0.2795 0.0368 260.0310);
-  --accent-foreground: oklch(0.7857 0.1153 246.6596);
-  --destructive: oklch(0.7106 0.1661 22.2162);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.3289 0.0092 268.3843);
-  --input: oklch(0.3289 0.0092 268.3843);
-  --ring: oklch(0.6132 0.2294 291.7437);
-  --chart-1: oklch(0.8003 0.1821 151.7110);
-  --chart-2: oklch(0.6132 0.2294 291.7437);
-  --chart-3: oklch(0.8077 0.1035 19.5706);
-  --chart-4: oklch(0.6691 0.1569 260.1063);
-  --chart-5: oklch(0.7058 0 0);
-  --sidebar: oklch(0.2011 0.0039 286.0396);
-  --sidebar-foreground: oklch(0.9551 0 0);
-  --sidebar-primary: oklch(0.6132 0.2294 291.7437);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.2940 0.0130 272.9312);
-  --sidebar-accent-foreground: oklch(0.6132 0.2294 291.7437);
-  --sidebar-border: oklch(0.3289 0.0092 268.3843);
-  --sidebar-ring: oklch(0.6132 0.2294 291.7437);
-}
+        .dark {
+            --background: oklch(0.2223 0.0060 271.1393);
+            --foreground: oklch(0.9551 0 0);
+            --card: oklch(0.2568 0.0076 274.6528);
+            --card-foreground: oklch(0.9551 0 0);
+            --popover: oklch(0.2568 0.0076 274.6528);
+            --popover-foreground: oklch(0.9551 0 0);
+            --primary: oklch(0.6132 0.2294 291.7437);
+            --primary-foreground: oklch(1.0000 0 0);
+            --secondary: oklch(0.2940 0.0130 272.9312);
+            --secondary-foreground: oklch(0.9551 0 0);
+            --muted: oklch(0.2940 0.0130 272.9312);
+            --muted-foreground: oklch(0.7058 0 0);
+            --accent: oklch(0.2795 0.0368 260.0310);
+            --accent-foreground: oklch(0.7857 0.1153 246.6596);
+            --destructive: oklch(0.7106 0.1661 22.2162);
+            --destructive-foreground: oklch(1.0000 0 0);
+            --border: oklch(0.3289 0.0092 268.3843);
+            --input: oklch(0.3289 0.0092 268.3843);
+            --ring: oklch(0.6132 0.2294 291.7437);
+            --chart-1: oklch(0.8003 0.1821 151.7110);
+            --chart-2: oklch(0.6132 0.2294 291.7437);
+            --chart-3: oklch(0.8077 0.1035 19.5706);
+            --chart-4: oklch(0.6691 0.1569 260.1063);
+            --chart-5: oklch(0.7058 0 0);
+            --sidebar: oklch(0.2011 0.0039 286.0396);
+            --sidebar-foreground: oklch(0.9551 0 0);
+            --sidebar-primary: oklch(0.6132 0.2294 291.7437);
+            --sidebar-primary-foreground: oklch(1.0000 0 0);
+            --sidebar-accent: oklch(0.2940 0.0130 272.9312);
+            --sidebar-accent-foreground: oklch(0.6132 0.2294 291.7437);
+            --sidebar-border: oklch(0.3289 0.0092 268.3843);
+            --sidebar-ring: oklch(0.6132 0.2294 291.7437);
+        }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+        @theme inline {
+            --color-background: var(--background);
+            --color-foreground: var(--foreground);
+            --color-card: var(--card);
+            --color-card-foreground: var(--card-foreground);
+            --color-popover: var(--popover);
+            --color-popover-foreground: var(--popover-foreground);
+            --color-primary: var(--primary);
+            --color-primary-foreground: var(--primary-foreground);
+            --color-secondary: var(--secondary);
+            --color-secondary-foreground: var(--secondary-foreground);
+            --color-muted: var(--muted);
+            --color-muted-foreground: var(--muted-foreground);
+            --color-accent: var(--accent);
+            --color-accent-foreground: var(--accent-foreground);
+            --color-destructive: var(--destructive);
+            --color-destructive-foreground: var(--destructive-foreground);
+            --color-border: var(--border);
+            --color-input: var(--input);
+            --color-ring: var(--ring);
+            --color-chart-1: var(--chart-1);
+            --color-chart-2: var(--chart-2);
+            --color-chart-3: var(--chart-3);
+            --color-chart-4: var(--chart-4);
+            --color-chart-5: var(--chart-5);
+            --color-sidebar: var(--sidebar);
+            --color-sidebar-foreground: var(--sidebar-foreground);
+            --color-sidebar-primary: var(--sidebar-primary);
+            --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+            --color-sidebar-accent: var(--sidebar-accent);
+            --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+            --color-sidebar-border: var(--sidebar-border);
+            --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-serif: var(--font-serif);
+            --font-sans: var(--font-sans);
+            --font-mono: var(--font-mono);
+            --font-serif: var(--font-serif);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+            --radius-sm: calc(var(--radius) - 4px);
+            --radius-md: calc(var(--radius) - 2px);
+            --radius-lg: var(--radius);
+            --radius-xl: calc(var(--radius) + 4px);
 
-  --shadow-2xs: var(--shadow-2xs);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
-  --shadow: var(--shadow);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-2xl: var(--shadow-2xl);
+            --shadow-2xs: var(--shadow-2xs);
+            --shadow-xs: var(--shadow-xs);
+            --shadow-sm: var(--shadow-sm);
+            --shadow: var(--shadow);
+            --shadow-md: var(--shadow-md);
+            --shadow-lg: var(--shadow-lg);
+            --shadow-xl: var(--shadow-xl);
+            --shadow-2xl: var(--shadow-2xl);
 
-  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
-  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
-  --tracking-normal: var(--tracking-normal);
-  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
-  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
-  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
-}
+            --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+            --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+            --tracking-normal: var(--tracking-normal);
+            --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+            --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+            --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+        }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--background);
-  color: var(--foreground);
-  letter-spacing: var(--tracking-normal);
-  transition: background-color 0.3s ease, color 0.3s ease;
-  min-height: 100vh;
-}
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--background);
+            color: var(--foreground);
+            letter-spacing: var(--tracking-normal);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
 
-/* Dark Mode Toggle Button */
-.theme-toggle {
-  padding: 0.5rem 1rem;
-  background: var(--secondary);
-  border: 1px solid var(--border);
-  color: var(--secondary-foreground);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-right: 10px;
-}
+        /* Dark Mode Toggle Button */
+        .theme-toggle {
+            padding: 0.5rem 1rem;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            color: var(--secondary-foreground);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 10px;
+        }
 
-.theme-toggle:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
-}
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
 
-/* Public Navigation Styles */
-nav.public-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(139, 125, 216, 0.2);
-  transition: all 0.3s ease;
-}
+        /* Public Navigation Styles */
+        nav.public-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(139, 125, 216, 0.2);
+            transition: all 0.3s ease;
+        }
 
-.dark nav.public-nav {
-  background-color: rgba(34, 35, 48, 0.1);
-  border-bottom: 1px solid rgba(139, 125, 216, 0.2);
-}
+        .dark nav.public-nav {
+            background-color: rgba(34, 35, 48, 0.1);
+            border-bottom: 1px solid rgba(139, 125, 216, 0.2);
+        }
 
-nav.public-nav.scrolled {
-  background-color: rgba(255, 255, 255, 0.15);
-  box-shadow: var(--shadow-md);
-}
+        nav.public-nav.scrolled {
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: var(--shadow-md);
+        }
 
-.dark nav.public-nav.scrolled {
-  background-color: rgba(34, 35, 48, 0.15);
-}
+        .dark nav.public-nav.scrolled {
+            background-color: rgba(34, 35, 48, 0.15);
+        }
 
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-nav.public-nav .logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  text-decoration: none;
-}
+        nav.public-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
 
-.nav-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-  align-items: center;
-}
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
 
-.nav-links a {
-  text-decoration: none;
-  color: var(--foreground);
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-  position: relative;
-}
+        .nav-links a {
+            text-decoration: none;
+            color: var(--foreground);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
 
-.nav-links a:hover {
-  color: var(--primary);
-}
+        .nav-links a:hover {
+            color: var(--primary);
+        }
 
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--primary);
-  transition: width 0.3s ease;
-}
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
 
-.nav-links a:hover::after {
-  width: 100%;
-}
+        .nav-links a:hover::after {
+            width: 100%;
+        }
 
-.nav-buttons {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
 
-.btn-login, .btn-logout {
-  padding: 0.6rem 1.2rem;
-  background: transparent;
-  border: 1.5px solid var(--primary);
-  color: var(--primary);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  text-decoration: none;
-  display: inline-block;
-}
+        .btn-login, .btn-logout {
+            padding: 0.6rem 1.2rem;
+            background: transparent;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+        }
 
-.btn-login:hover, .btn-logout:hover {
-  background: var(--accent);
-  color: var(--accent-foreground);
-}
+        .btn-login:hover, .btn-logout:hover {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
 
-.btn-signup {
-  padding: 0.6rem 1.2rem;
-  background: var(--primary);
-  border: none;
-  color: var(--primary-foreground);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  box-shadow: var(--shadow-sm);
-  text-decoration: none;
-  display: inline-block;
-}
+        .btn-signup {
+            padding: 0.6rem 1.2rem;
+            background: var(--primary);
+            border: none;
+            color: var(--primary-foreground);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            display: inline-block;
+        }
 
-.btn-signup:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  opacity: 0.9;
-}
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            opacity: 0.9;
+        }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .nav-links {
-    gap: 1rem;
-    font-size: 0.85rem;
-  }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
 
-  .nav-container {
-    padding: 1rem;
-  }
-}
+            .nav-container {
+                padding: 1rem;
+            }
+        }
         .variant-btn {
             padding: 10px 16px;
             border: 2px solid #ddd;
@@ -458,20 +458,20 @@ nav.public-nav .logo {
             transition: all 0.2s;
             min-width: 60px;
         }
-        
+
         .variant-btn:hover {
             border-color: #8b95ff;
             transform: translateY(-2px);
             box-shadow: 0 2px 8px rgba(139, 149, 255, 0.2);
         }
-        
+
         .variant-btn.active {
             border: 2px solid #8b95ff !important;
             background-color: #f0f0ff !important;
             color: #8b95ff !important;
             font-weight: 600 !important;
         }
-        
+
         /* Force default styles for non-active buttons */
         button.variant-btn:not(.active) {
             border: 2px solid #ddd !important;
@@ -479,32 +479,32 @@ nav.public-nav .logo {
             color: #333 !important;
             font-weight: 500 !important;
         }
-        
+
         .color-btn .color-indicator {
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
-        
+
         .color-btn.active .color-indicator {
             box-shadow: 0 0 0 2px #8b95ff, 0 1px 3px rgba(0,0,0,0.3);
         }
-        
+
         .price-container {
             margin-bottom: 15px;
         }
-        
+
         .price-details {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-top: 8px;
         }
-        
+
         .original-price {
             text-decoration: line-through;
             color: #999;
             font-size: 1.2em;
         }
-        
+
         .discount-badge {
             background: linear-gradient(135deg, #ff4d4f, #ff7875);
             color: white;
@@ -533,12 +533,12 @@ nav.public-nav .logo {
         <div class="nav-buttons">
             <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
             <% if (isLoggedIn) { %>
-                <form action="<%=request.getContextPath()%>/logout" method="post" style="margin: 0; display: inline;">
-                    <button type="submit" class="btn-logout">Logout</button>
-                </form>
+            <form action="<%=request.getContextPath()%>/logout" method="post" style="margin: 0; display: inline;">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
             <% } else { %>
-                <a href="<%=request.getContextPath()%>/login.jsp" class="btn-login">Login</a>
-                <a href="<%=request.getContextPath()%>/registerUser.jsp" class="btn-signup">Sign Up</a>
+            <a href="<%=request.getContextPath()%>/login.jsp" class="btn-login">Login</a>
+            <a href="<%=request.getContextPath()%>/registerUser.jsp" class="btn-signup">Sign Up</a>
             <% } %>
         </div>
     </div>
@@ -569,14 +569,14 @@ nav.public-nav .logo {
             double displayPrice = product.getPrice();
             double originalPrice = product.getPrice();
             double discountAmount = 0;
-            
+
             // For products with variants, if main price is 0.00, use first variant's price
             if (hasVariants && variants != null && !variants.isEmpty() && product.getPrice() == 0.00) {
                 ProductVariant firstVariant = variants.get(0);
                 if (firstVariant != null && firstVariant.getPrice() != null) {
                     originalPrice = firstVariant.getPrice().doubleValue();
                     displayPrice = originalPrice;
-                    
+
                     // Check for discount on the first variant
                     try {
                         DiscountDAO discountDAO = new DiscountDAO();
@@ -637,8 +637,8 @@ nav.public-nav .logo {
                 <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95em;">Color:</label>
                 <div class="variant-buttons" id="colorButtons" style="display: flex; flex-wrap: wrap; gap: 10px;">
                     <% for (String color : colors) { %>
-                    <button type="button" 
-                            class="variant-btn color-btn" 
+                    <button type="button"
+                            class="variant-btn color-btn"
                             data-value="<%= color %>"
                             data-option="color"
                             style="position: relative; min-width: 80px;">
@@ -649,14 +649,14 @@ nav.public-nav .logo {
                 </div>
             </div>
             <% } %>
-            
+
             <% if (!sizes.isEmpty()) { %>
             <div class="variant-option" style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95em;">Size:</label>
                 <div class="variant-buttons" id="sizeButtons" style="display: flex; flex-wrap: wrap; gap: 10px;">
                     <% for (String size : sizes) { %>
-                    <button type="button" 
-                            class="variant-btn size-btn" 
+                    <button type="button"
+                            class="variant-btn size-btn"
                             data-value="<%= size %>"
                             data-option="size"
                             style="min-width: 60px;">
@@ -666,14 +666,14 @@ nav.public-nav .logo {
                 </div>
             </div>
             <% } %>
-            
+
             <% if (!powers.isEmpty()) { %>
             <div class="variant-option" style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95em;">Power:</label>
                 <div class="variant-buttons" id="powerButtons" style="display: flex; flex-wrap: wrap; gap: 10px;">
                     <% for (String power : powers) { %>
-                    <button type="button" 
-                            class="variant-btn power-btn" 
+                    <button type="button"
+                            class="variant-btn power-btn"
                             data-value="<%= power %>"
                             data-option="power"
                             style="min-width: 80px;">
@@ -683,7 +683,7 @@ nav.public-nav .logo {
                 </div>
             </div>
             <% } %>
-            
+
             <input type="hidden" id="selectedVariantId" value="">
             <input type="hidden" id="selectedColor" value="">
             <input type="hidden" id="selectedSize" value="">
@@ -708,7 +708,7 @@ nav.public-nav .logo {
         </div>
 
         <div class="buttons">
-            <% if (!isLoggedIn) { 
+            <% if (!isLoggedIn) {
                 // Build redirect URL for login
                 String currentPageUrl = request.getRequestURI();
                 if (request.getQueryString() != null && !request.getQueryString().isEmpty()) {
@@ -716,11 +716,11 @@ nav.public-nav .logo {
                 }
                 String loginUrl = request.getContextPath() + "/login.jsp?redirect=" + java.net.URLEncoder.encode(currentPageUrl, "UTF-8");
             %>
-                <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
-                    <p style="color: #856404; margin: 0; font-weight: 500;">
-                        Please <a href="<%= loginUrl %>" style="color: #8b7dd8; text-decoration: underline; font-weight: 600;">login</a> to purchase products or write reviews
-                    </p>
-                </div>
+            <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                <p style="color: #856404; margin: 0; font-weight: 500;">
+                    Please <a href="<%= loginUrl %>" style="color: #8b7dd8; text-decoration: underline; font-weight: 600;">login</a> to purchase products or write reviews
+                </p>
+            </div>
             <% } %>
             <button class="add-to-cart"
                     id="addBtn"
@@ -751,7 +751,7 @@ nav.public-nav .logo {
 <div class="reviews-section-container" style="max-width: 1100px; margin: 40px auto; padding: 0 40px; width: 100%; box-sizing: border-box;">
     <div class="reviews-section" style="padding-top: 30px; border-top: 2px solid #e0e0e0; width: 100%;">
         <h3 style="margin-bottom: 20px; text-align: left;">Customer Reviews</h3>
-        
+
         <!-- Average Rating Display -->
         <div id="ratingSummary" style="margin-bottom: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 10px; width: 100%; box-sizing: border-box;">
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -766,38 +766,38 @@ nav.public-nav .logo {
         <!-- Add Review Form (only for logged-in users) -->
         <% if (isLoggedIn) { %>
         <div class="add-review-section" style="margin-bottom: 40px; padding: 25px; background-color: #fff; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; box-sizing: border-box;">
-                <h4 style="margin-bottom: 15px;">Write a Review</h4>
-                <form id="reviewForm">
-                    <input type="hidden" name="productId" value="<%=product.getProductId()%>">
-                    
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Your Rating (Click on stars to rate)</label>
-                        <div class="star-rating-input" style="display: flex; align-items: center; gap: 10px;">
-                            <div class="stars" id="ratingStars" style="font-size: 2em; cursor: pointer; user-select: none; font-family: Arial, sans-serif;">
-                                <span class="star" data-rating="1" style="color: #d1d5db;">☆</span>
-                                <span class="star" data-rating="2" style="color: #d1d5db;">☆</span>
-                                <span class="star" data-rating="3" style="color: #d1d5db;">☆</span>
-                                <span class="star" data-rating="4" style="color: #d1d5db;">☆</span>
-                                <span class="star" data-rating="5" style="color: #d1d5db;">☆</span>
-                            </div>
-                            <input type="hidden" id="ratingValue" name="rating" value="" required>
-                            <span id="ratingText" style="color: #666; font-weight: 600;">Click stars to rate</span>
+            <h4 style="margin-bottom: 15px;">Write a Review</h4>
+            <form id="reviewForm">
+                <input type="hidden" name="productId" value="<%=product.getProductId()%>">
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Your Rating (Click on stars to rate)</label>
+                    <div class="star-rating-input" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="stars" id="ratingStars" style="font-size: 2em; cursor: pointer; user-select: none; font-family: Arial, sans-serif;">
+                            <span class="star" data-rating="1" style="color: #d1d5db;">☆</span>
+                            <span class="star" data-rating="2" style="color: #d1d5db;">☆</span>
+                            <span class="star" data-rating="3" style="color: #d1d5db;">☆</span>
+                            <span class="star" data-rating="4" style="color: #d1d5db;">☆</span>
+                            <span class="star" data-rating="5" style="color: #d1d5db;">☆</span>
                         </div>
+                        <input type="hidden" id="ratingValue" name="rating" value="" required>
+                        <span id="ratingText" style="color: #666; font-weight: 600;">Click stars to rate</span>
                     </div>
+                </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <label for="reviewComment" style="display: block; margin-bottom: 10px; font-weight: 600;">Your Review</label>
-                        <textarea id="reviewComment" name="comment" rows="4" 
-                                  style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95em;"
-                                  placeholder="Share your experience with this product..." required></textarea>
-                    </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="reviewComment" style="display: block; margin-bottom: 10px; font-weight: 600;">Your Review</label>
+                    <textarea id="reviewComment" name="comment" rows="4"
+                              style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.95em;"
+                              placeholder="Share your experience with this product..." required></textarea>
+                </div>
 
-                    <button type="submit" style="padding: 12px 30px; background: linear-gradient(135deg, #8b7dd8, #7ba3d4); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1em;">
-                        Submit Review
-                    </button>
-                    <div id="reviewMessage" style="margin-top: 10px;"></div>
-                </form>
-            </div>
+                <button type="submit" style="padding: 12px 30px; background: linear-gradient(135deg, #8b7dd8, #7ba3d4); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1em;">
+                    Submit Review
+                </button>
+                <div id="reviewMessage" style="margin-top: 10px;"></div>
+            </form>
+        </div>
         <% } else { %>
         <!-- Login message removed - shown above with purchase message -->
         <% } %>
@@ -810,11 +810,11 @@ nav.public-nav .logo {
                 <p style="color: #999; text-align: center; padding: 20px;">Loading reviews...</p>
             </div>
         </div>
-        </div>
     </div>
 </div>
+</div>
 
-    <script>
+<script>
     const contextPath = "<%=request.getContextPath()%>";
     const hasVariants = <%= hasVariants %>;
     const baseStock = <%= product.getQuantity() %>;
@@ -823,28 +823,28 @@ nav.public-nav .logo {
 
     // Variant data from server
     const variants = [
-        <% if (hasVariants) {
-               DiscountDAO discountDAO = new DiscountDAO();
-               for (int i = 0; i < variants.size(); i++) {
-                   ProductVariant v = variants.get(i);
-                   Discount variantDiscount = null;
-                   Discount productDiscount = null;
-                   try {
-                       variantDiscount = discountDAO.getActiveDiscountForVariant(v.getVariantId());
-                       if (variantDiscount == null || !variantDiscount.isValid()) {
-                           productDiscount = discountDAO.getActiveDiscountForProduct(product.getProductId());
+            <% if (hasVariants) {
+                   DiscountDAO discountDAO = new DiscountDAO();
+                   for (int i = 0; i < variants.size(); i++) {
+                       ProductVariant v = variants.get(i);
+                       Discount variantDiscount = null;
+                       Discount productDiscount = null;
+                       try {
+                           variantDiscount = discountDAO.getActiveDiscountForVariant(v.getVariantId());
+                           if (variantDiscount == null || !variantDiscount.isValid()) {
+                               productDiscount = discountDAO.getActiveDiscountForProduct(product.getProductId());
+                           }
+                       } catch (Exception e) {
+                           e.printStackTrace();
                        }
-                   } catch (Exception e) {
-                       e.printStackTrace();
-                   }
-                   Discount variantActiveDiscount = (variantDiscount != null && variantDiscount.isValid()) ? variantDiscount : 
-                                           ((productDiscount != null && productDiscount.isValid()) ? productDiscount : null);
-                   double variantPrice = v.getPrice().doubleValue();
-                   double variantDisplayPrice = variantPrice;
-                   if (variantActiveDiscount != null && variantActiveDiscount.isValid()) {
-                       variantDisplayPrice = variantActiveDiscount.calculateDiscountedPrice(variantPrice);
-                   }
-        %>{
+                       Discount variantActiveDiscount = (variantDiscount != null && variantDiscount.isValid()) ? variantDiscount :
+                                               ((productDiscount != null && productDiscount.isValid()) ? productDiscount : null);
+                       double variantPrice = v.getPrice().doubleValue();
+                       double variantDisplayPrice = variantPrice;
+                       if (variantActiveDiscount != null && variantActiveDiscount.isValid()) {
+                           variantDisplayPrice = variantActiveDiscount.calculateDiscountedPrice(variantPrice);
+                       }
+            %>{
             id: <%= v.getVariantId() %>,
             color: "<%= v.getColor() != null ? v.getColor() : "" %>",
             size: "<%= v.getSize() != null ? v.getSize() : "" %>",
@@ -852,7 +852,7 @@ nav.public-nav .logo {
             price: <%= variantPrice %>,
             displayPrice: <%= variantDisplayPrice %>,
             quantity: <%= v.getQuantity() %>,
-            discount: <% if (variantActiveDiscount != null && variantActiveDiscount.isValid()) { 
+            discount: <% if (variantActiveDiscount != null && variantActiveDiscount.isValid()) {
                 String discountName = variantActiveDiscount.getDiscountName() != null ? variantActiveDiscount.getDiscountName() : "";
                 discountName = discountName.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
             %>{
@@ -934,7 +934,7 @@ nav.public-nav .logo {
         if (variant) {
             currentOriginalPrice = variant.price;
             currentStock = variant.quantity;
-            
+
             // Check if variant has discount
             if (variant.discount && variant.discount.isValid) {
                 currentPrice = variant.displayPrice;
@@ -953,7 +953,7 @@ nav.public-nav .logo {
                 // Hide discount details
                 if (priceDetailsEl) priceDetailsEl.style.display = "none";
             }
-            
+
             if (priceValueEl) priceValueEl.textContent = currentPrice.toFixed(2);
             if (selectedVariantIdEl) selectedVariantIdEl.value = variant.id;
 
@@ -990,7 +990,7 @@ nav.public-nav .logo {
             const hasColor = selected.color;
             const hasSize = selected.size;
             const hasPower = selected.power;
-            
+
             // If at least one option is selected but no match, show message
             if (hasColor || hasSize || hasPower) {
                 if (stockStatusEl) {
@@ -1005,22 +1005,22 @@ nav.public-nav .logo {
                 currentOriginalPrice = basePrice;
                 currentPrice = baseDisplayPrice;
                 currentStock = baseStock;
-                
+
                 // Check if base product has discount (from initial page load)
                 <% if (activeDiscount != null && activeDiscount.isValid()) { %>
-                    if (priceDetailsEl) priceDetailsEl.style.display = "flex";
-                    if (originalPriceEl) originalPriceEl.textContent = "Rs " + currentOriginalPrice.toFixed(2);
-                    if (discountBadgeEl) {
-                        <% if ("PERCENTAGE".equalsIgnoreCase(activeDiscount.getDiscountType())) { %>
-                            discountBadgeEl.textContent = "<%= activeDiscount.getDiscountValue() %>% OFF";
-                        <% } else { %>
-                            discountBadgeEl.textContent = "Rs <%= activeDiscount.getDiscountValue() %> OFF";
-                        <% } %>
-                    }
+                if (priceDetailsEl) priceDetailsEl.style.display = "flex";
+                if (originalPriceEl) originalPriceEl.textContent = "Rs " + currentOriginalPrice.toFixed(2);
+                if (discountBadgeEl) {
+                    <% if ("PERCENTAGE".equalsIgnoreCase(activeDiscount.getDiscountType())) { %>
+                    discountBadgeEl.textContent = "<%= activeDiscount.getDiscountValue() %>% OFF";
+                    <% } else { %>
+                    discountBadgeEl.textContent = "Rs <%= activeDiscount.getDiscountValue() %> OFF";
+                    <% } %>
+                }
                 <% } else { %>
-                    if (priceDetailsEl) priceDetailsEl.style.display = "none";
+                if (priceDetailsEl) priceDetailsEl.style.display = "none";
                 <% } %>
-                
+
                 if (priceValueEl) priceValueEl.textContent = currentPrice.toFixed(2);
                 if (stockStatusEl) {
                     stockStatusEl.textContent = baseStock > 0 ? "In Stock: " + baseStock : "Out of Stock";
@@ -1037,10 +1037,10 @@ nav.public-nav .logo {
     function handleVariantButtonClick(clickedButton, optionType) {
         const value = clickedButton.getAttribute("data-value");
         const hiddenInput = document.getElementById("selected" + optionType.charAt(0).toUpperCase() + optionType.slice(1));
-        
+
         // IMPORTANT: Check if button is already active BEFORE removing classes
         const wasAlreadyActive = clickedButton.classList.contains("active");
-        
+
         // Get all buttons of this type using class selector (more reliable)
         let selector = "";
         if (optionType === "color") {
@@ -1050,9 +1050,9 @@ nav.public-nav .logo {
         } else if (optionType === "power") {
             selector = "button.power-btn";
         }
-        
+
         const allButtons = document.querySelectorAll(selector);
-        
+
         // First, deselect ALL buttons of this type (visual reset)
         allButtons.forEach(btn => {
             // Remove active class - CSS will handle the styling
@@ -1064,7 +1064,7 @@ nav.public-nav .logo {
             if (minWidth) btn.style.minWidth = minWidth; // Restore min-width
             if (position) btn.style.position = position; // Restore position
         });
-        
+
         // Now decide whether to select the clicked button or leave it deselected
         if (!wasAlreadyActive) {
             // Button was NOT selected, so select it now
@@ -1075,7 +1075,7 @@ nav.public-nav .logo {
             // Active class already removed above, just clear the hidden input
             if (hiddenInput) hiddenInput.value = "";
         }
-        
+
         // Update price and stock based on new selection
         updateVariantSelection();
     }
@@ -1086,7 +1086,7 @@ nav.public-nav .logo {
         const colorButtons = document.querySelectorAll("button.color-btn");
         const sizeButtons = document.querySelectorAll("button.size-btn");
         const powerButtons = document.querySelectorAll("button.power-btn");
-        
+
         // Attach listeners to color buttons
         colorButtons.forEach(button => {
             // Remove any existing onclick handler
@@ -1098,7 +1098,7 @@ nav.public-nav .logo {
                 handleVariantButtonClick(this, "color");
             });
         });
-        
+
         // Attach listeners to size buttons
         sizeButtons.forEach(button => {
             button.onclick = null;
@@ -1108,7 +1108,7 @@ nav.public-nav .logo {
                 handleVariantButtonClick(this, "size");
             });
         });
-        
+
         // Attach listeners to power buttons
         powerButtons.forEach(button => {
             button.onclick = null;
@@ -1147,18 +1147,18 @@ nav.public-nav .logo {
     if (btn) {
         btn.addEventListener("click", () => {
             <% if (!isLoggedIn) { %>
-                // Store current page path and query to redirect back after login
-                const currentPath = window.location.pathname + window.location.search;
-                alert("Please login before purchasing products");
-                // Pass redirect URL as parameter (relative path)
-                const loginUrl = "<%=request.getContextPath()%>/login.jsp?redirect=" + encodeURIComponent(currentPath);
-                console.log("Redirecting to login with URL: " + loginUrl);
-                window.location.href = loginUrl;
-                return;
+            // Store current page path and query to redirect back after login
+            const currentPath = window.location.pathname + window.location.search;
+            alert("Please login before purchasing products");
+            // Pass redirect URL as parameter (relative path)
+            const loginUrl = "<%=request.getContextPath()%>/login.jsp?redirect=" + encodeURIComponent(currentPath);
+            console.log("Redirecting to login with URL: " + loginUrl);
+            window.location.href = loginUrl;
+            return;
             <% } %>
-            
+
             const variantId = selectedVariantIdEl ? selectedVariantIdEl.value : "";
-            
+
             if (hasVariants && !variantId) {
                 alert("Please select color, size, and power options");
                 return;
@@ -1215,16 +1215,16 @@ nav.public-nav .logo {
     if (buyNowBtn) {
         buyNowBtn.addEventListener("click", () => {
             <% if (!isLoggedIn) { %>
-                // Store current page path and query to redirect back after login
-                const currentPath = window.location.pathname + window.location.search;
-                alert("Please login before purchasing products");
-                // Pass redirect URL as parameter (relative path)
-                const loginUrl = "<%=request.getContextPath()%>/login.jsp?redirect=" + encodeURIComponent(currentPath);
-                console.log("Redirecting to login with URL: " + loginUrl);
-                window.location.href = loginUrl;
-                return;
+            // Store current page path and query to redirect back after login
+            const currentPath = window.location.pathname + window.location.search;
+            alert("Please login before purchasing products");
+            // Pass redirect URL as parameter (relative path)
+            const loginUrl = "<%=request.getContextPath()%>/login.jsp?redirect=" + encodeURIComponent(currentPath);
+            console.log("Redirecting to login with URL: " + loginUrl);
+            window.location.href = loginUrl;
+            return;
             <% } %>
-            
+
             const productId = buyNowBtn.getAttribute("data-product-id");
             const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
             const variantId = selectedVariantIdEl ? selectedVariantIdEl.value : "";
@@ -1260,10 +1260,10 @@ nav.public-nav .logo {
     // Auto-select first variant on page load if variants exist
     function autoSelectFirstVariant() {
         if (!hasVariants || variants.length === 0) return;
-        
+
         // Get the first variant
         const firstVariant = variants[0];
-        
+
         // Select the buttons for this variant - use CSS classes only
         if (firstVariant.color && firstVariant.color !== "") {
             const colorBtn = document.querySelector(`.color-btn[data-value="${firstVariant.color}"]`);
@@ -1272,7 +1272,7 @@ nav.public-nav .logo {
                 selectedColorEl.value = firstVariant.color;
             }
         }
-        
+
         if (firstVariant.size && firstVariant.size !== "") {
             const sizeBtn = document.querySelector(`.size-btn[data-value="${firstVariant.size}"]`);
             if (sizeBtn && selectedSizeEl) {
@@ -1280,7 +1280,7 @@ nav.public-nav .logo {
                 selectedSizeEl.value = firstVariant.size;
             }
         }
-        
+
         if (firstVariant.power && firstVariant.power !== "") {
             const powerBtn = document.querySelector(`.power-btn[data-value="${firstVariant.power}"]`);
             if (powerBtn && selectedPowerEl) {
@@ -1288,7 +1288,7 @@ nav.public-nav .logo {
                 selectedPowerEl.value = firstVariant.power;
             }
         }
-        
+
         // Update the UI with the first variant's data
         updateVariantSelection();
     }
@@ -1315,7 +1315,7 @@ nav.public-nav .logo {
             function highlightStars(rating) {
                 const filledStar = '\u2605'; // ★ Unicode filled star
                 const emptyStar = '\u2606'; // ☆ Unicode empty star
-                
+
                 ratingStars.forEach((star, index) => {
                     if (index < rating) {
                         star.textContent = filledStar;
@@ -1330,7 +1330,7 @@ nav.public-nav .logo {
             if (ratingStars.length > 0) {
                 // Initialize with all empty stars (0 rating)
                 highlightStars(0);
-                
+
                 ratingStars.forEach((star, index) => {
                     star.addEventListener('mouseenter', () => {
                         highlightStars(index + 1);
@@ -1366,24 +1366,24 @@ nav.public-nav .logo {
                     const avgRatingDisplay = document.getElementById('avgRatingDisplay');
                     const reviewCountDisplay = document.getElementById('reviewCountDisplay');
                     const avgStarsDisplay = document.getElementById('avgStarsDisplay');
-                    
+
                     const rating = parseFloat(avgRating) || 0;
                     const count = parseInt(reviewCount) || 0;
-                    
+
                     if (avgRatingDisplay) {
                         avgRatingDisplay.textContent = rating.toFixed(1);
                     }
                     if (reviewCountDisplay) {
                         reviewCountDisplay.textContent = count + (count === 1 ? ' review' : ' reviews');
                     }
-                    
+
                     if (avgStarsDisplay) {
                         const filledStar = '\u2605'; // ★ Unicode filled star
                         const emptyStar = '\u2606'; // ☆ Unicode empty star
                         const fullStars = Math.floor(rating);
                         const hasHalfStar = (rating % 1) >= 0.5;
                         let starsHtml = '';
-                        
+
                         for (let i = 0; i < 5; i++) {
                             if (i < fullStars) {
                                 starsHtml += filledStar;
@@ -1408,7 +1408,7 @@ nav.public-nav .logo {
                         console.error('reviewsContainer not found');
                         return;
                     }
-                    
+
                     if (!reviews || reviews.length === 0) {
                         container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No reviews yet. Be the first to review!</p>';
                         return;
@@ -1432,7 +1432,7 @@ nav.public-nav .logo {
                                     console.warn('Date parsing error:', dateErr);
                                 }
                             }
-                            
+
                             const filledStar = '\u2605'; // ★ Unicode filled star
                             const emptyStar = '\u2606'; // ☆ Unicode empty star
                             let starsHtml = '';
@@ -1462,7 +1462,7 @@ nav.public-nav .logo {
                             console.error('Error processing review:', reviewErr, review);
                         }
                     });
-                    
+
                     container.innerHTML = html;
                 } catch (err) {
                     console.error('Error in displayReviews:', err);
@@ -1491,7 +1491,7 @@ nav.public-nav .logo {
                                     console.error('Error parsing JSON:', e, 'Response:', text);
                                     throw new Error('Invalid response from server');
                                 }
-                                
+
                                 if (data.success) {
                                     try {
                                         const avgRating = parseFloat(data.avgRating) || 0;
@@ -1532,11 +1532,11 @@ nav.public-nav .logo {
             if (reviewForm) {
                 reviewForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    
+
                     try {
                         const formData = new FormData(reviewForm);
                         const rating = formData.get('rating');
-                        
+
                         // Validate that rating is selected
                         if (!rating || rating === '' || parseInt(rating) < 1 || parseInt(rating) > 5) {
                             const messageDiv = document.getElementById('reviewMessage');
@@ -1545,7 +1545,7 @@ nav.public-nav .logo {
                             }
                             return;
                         }
-                        
+
                         const params = new URLSearchParams();
                         params.append('productId', formData.get('productId'));
                         params.append('rating', rating);
@@ -1555,77 +1555,77 @@ nav.public-nav .logo {
                         if (messageDiv) messageDiv.innerHTML = '<p style="color: #666;">Submitting review...</p>';
 
                         console.log('Submitting review with params:', params.toString());
-                        
+
                         fetch(contextPath + '/productReview', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: params.toString()
                         })
-                        .then(res => {
-                            console.log('Response status:', res.status);
-                            if (!res.ok) {
-                                throw new Error('HTTP error! status: ' + res.status);
-                            }
-                            return res.text();
-                        })
-                        .then(text => {
-                            console.log('Response text:', text);
-                            try {
-                                let data;
+                            .then(res => {
+                                console.log('Response status:', res.status);
+                                if (!res.ok) {
+                                    throw new Error('HTTP error! status: ' + res.status);
+                                }
+                                return res.text();
+                            })
+                            .then(text => {
+                                console.log('Response text:', text);
                                 try {
-                                    data = JSON.parse(text);
-                                } catch (e) {
-                                    console.error('Error parsing JSON:', e, 'Response:', text);
-                                    throw new Error('Invalid response from server');
-                                }
-                                
-                                if (data.success) {
-                                    if (messageDiv) messageDiv.innerHTML = '<p style="color: #4caf50;">✓ Review submitted successfully!</p>';
-                                    
-                                    // Reset form
+                                    let data;
                                     try {
-                                        reviewForm.reset();
-                                        selectedRating = 0;
-                                        if (ratingValue) ratingValue.value = '';
-                                        if (ratingText) ratingText.textContent = 'Click stars to rate';
-                                        highlightStars(0);
-                                    } catch (resetErr) {
-                                        console.warn('Error resetting form:', resetErr);
+                                        data = JSON.parse(text);
+                                    } catch (e) {
+                                        console.error('Error parsing JSON:', e, 'Response:', text);
+                                        throw new Error('Invalid response from server');
                                     }
-                                    
-                                    // Reload reviews after a short delay
-                                    setTimeout(() => {
+
+                                    if (data.success) {
+                                        if (messageDiv) messageDiv.innerHTML = '<p style="color: #4caf50;">✓ Review submitted successfully!</p>';
+
+                                        // Reset form
                                         try {
-                                            loadReviews();
-                                            if (messageDiv) {
-                                                messageDiv.innerHTML = '';
-                                            }
-                                        } catch (loadErr) {
-                                            console.error('Error reloading reviews:', loadErr);
-                                            if (messageDiv) {
-                                                messageDiv.innerHTML = '<p style="color: #ff9800;">Review saved, but error loading updated reviews. Please refresh the page.</p>';
-                                            }
+                                            reviewForm.reset();
+                                            selectedRating = 0;
+                                            if (ratingValue) ratingValue.value = '';
+                                            if (ratingText) ratingText.textContent = 'Click stars to rate';
+                                            highlightStars(0);
+                                        } catch (resetErr) {
+                                            console.warn('Error resetting form:', resetErr);
                                         }
-                                    }, 1000);
-                                } else {
+
+                                        // Reload reviews after a short delay
+                                        setTimeout(() => {
+                                            try {
+                                                loadReviews();
+                                                if (messageDiv) {
+                                                    messageDiv.innerHTML = '';
+                                                }
+                                            } catch (loadErr) {
+                                                console.error('Error reloading reviews:', loadErr);
+                                                if (messageDiv) {
+                                                    messageDiv.innerHTML = '<p style="color: #ff9800;">Review saved, but error loading updated reviews. Please refresh the page.</p>';
+                                                }
+                                            }
+                                        }, 1000);
+                                    } else {
+                                        if (messageDiv) {
+                                            const errorMsg = data.error || 'Error submitting review';
+                                            messageDiv.innerHTML = '<p style="color: #e74c3c;">' + escapeHtml(errorMsg) + '</p>';
+                                        }
+                                    }
+                                } catch (parseErr) {
+                                    console.error('Error processing response:', parseErr);
                                     if (messageDiv) {
-                                        const errorMsg = data.error || 'Error submitting review';
-                                        messageDiv.innerHTML = '<p style="color: #e74c3c;">' + escapeHtml(errorMsg) + '</p>';
+                                        messageDiv.innerHTML = '<p style="color: #e74c3c;">Error processing server response. Please try again.</p>';
                                     }
                                 }
-                            } catch (parseErr) {
-                                console.error('Error processing response:', parseErr);
+                            })
+                            .catch(err => {
+                                console.error('Error submitting review:', err);
                                 if (messageDiv) {
-                                    messageDiv.innerHTML = '<p style="color: #e74c3c;">Error processing server response. Please try again.</p>';
+                                    messageDiv.innerHTML = '<p style="color: #e74c3c;">Error submitting review: ' + escapeHtml(err.message) + '. Please try again.</p>';
                                 }
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Error submitting review:', err);
-                            if (messageDiv) {
-                                messageDiv.innerHTML = '<p style="color: #e74c3c;">Error submitting review: ' + escapeHtml(err.message) + '. Please try again.</p>';
-                            }
-                        });
+                            });
                     } catch (err) {
                         console.error('Error in form submission handler:', err);
                         const messageDiv = document.getElementById('reviewMessage');
