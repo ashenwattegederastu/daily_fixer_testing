@@ -76,7 +76,7 @@
                     <button type="submit" style="flex: 1; background: var(--primary); color: var(--primary-foreground); padding: 0.75rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
                         Save Availability
                     </button>
-                    <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandas hmain.jsp" 
+                    <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp" 
                        style="flex: 1; text-align: center; background: var(--secondary); color: var(--secondary-foreground); padding: 0.75rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">
                         Cancel
                     </a>

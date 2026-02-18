@@ -70,10 +70,20 @@
         const container = document.getElementById('messagesContainer');
         container.scrollTop = container.scrollHeight;
         
-        // Poll for new messages every 3 seconds
+        // Poll for new messages every 5 seconds using AJAX
+        let lastMessageCount = ${messages.size()};
+        
         setInterval(function() {
-            location.reload();
-        }, 3000);
+            fetch('${pageContext.request.contextPath}/chats/messages?chatId=${chat.chatId}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.messages && data.messages.length > lastMessageCount) {
+                        // New messages available, reload page
+                        location.reload();
+                    }
+                })
+                .catch(err => console.error('Error polling messages:', err));
+        }, 5000);
     </script>
 </body>
 </html>

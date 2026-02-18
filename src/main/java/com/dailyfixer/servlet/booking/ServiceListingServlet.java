@@ -27,7 +27,6 @@ public class ServiceListingServlet extends HttpServlet {
             // Get filter parameters
             String categoryFilter = request.getParameter("category");
             String searchQuery = request.getParameter("search");
-            String cityFilter = request.getParameter("city");
             
             // Apply filters
             if (categoryFilter != null && !categoryFilter.isEmpty()) {
@@ -48,7 +47,6 @@ public class ServiceListingServlet extends HttpServlet {
             request.setAttribute("categories", categories);
             request.setAttribute("selectedCategory", categoryFilter);
             request.setAttribute("searchQuery", searchQuery);
-            request.setAttribute("cityFilter", cityFilter);
             
             request.getRequestDispatcher("/pages/services/service-listing.jsp").forward(request, response);
             
