@@ -374,9 +374,9 @@
                                     var html = '';
                                     subCategories.forEach(function (cat) {
                                         html += '<div class="category-card" onclick="showTrees(' + cat.categoryId + ', \'' + escapeJs(cat.name) + '\')">' +
-                                            '<div class="category-icon">📂</div>' +
+                                            '<div class="category-icon"><i class="ph ph-folder"></i></div>' +
                                             '<div class="category-name">' + escapeHtml(cat.name) + '</div>' +
-                                            '<div class="category-count">View guides</div>' +
+                                            '<div class="category-count">View Guides</div>' +
                                             '</div>';
                                     });
                                     grid.innerHTML = html;
@@ -422,9 +422,9 @@
 
                             var html = '';
                             trees.forEach(function (tree) {
-                                var stars = '★'.repeat(Math.round(tree.averageRating)) + '☆'.repeat(5 - Math.round(tree.averageRating));
+                                var stars = '<i class="ph-fill ph-star"></i>'.repeat(Math.round(tree.averageRating)) + '<i class="ph ph-star"></i>'.repeat(5 - Math.round(tree.averageRating));
                                 html += '<a href="' + contextPath + '/pages/diagnostic/diagnostic-runner.jsp?id=' + tree.treeId + '" class="tree-card">' +
-                                    '<div class="tree-info">' +
+                                    '<div class="tree-info">' + '<i class="ph ph-tree"></i>'+
                                     '<h3>' + escapeHtml(tree.title) + '</h3>' +
                                     '<div class="tree-meta">' +
                                     '<span>By ' + escapeHtml(tree.creatorUsername) + '</span>' +

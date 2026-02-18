@@ -8,10 +8,17 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Repair Guides | Daily Fixer</title>
+            <!-- Importing Phosphor Icon Library Locally from assets-->
             <link
-                href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-                rel="stylesheet">
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+                    rel="stylesheet"
+                    type="text/css"
+                    href="${pageContext.request.contextPath}/assets/icons/regular/style.css"
+            />
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="${pageContext.request.contextPath}/assets/icons/fill/style.css"
+            />
             <style>
                 .page-container {
                     max-width: 1400px;
@@ -162,37 +169,8 @@
         </head>
 
         <body>
-            <!-- Navigation -->
-            <nav id="navbar" class="public-nav">
-                <div class="nav-container">
-                    <a href="${pageContext.request.contextPath}/index.jsp" class="logo">Daily Fixer</a>
-                    <ul class="nav-links">
-                        <li><a href="${pageContext.request.contextPath}/pages/diagnostic/diagnostic-browse.jsp">Diagnostic Tool</a></li>
-                        <li><a href="${pageContext.request.contextPath}/guides" class="active">View Repair Guides</a>
-                        </li>
-                        <li><a href="${pageContext.request.contextPath}/findtech.jsp">Book a Technician</a></li>
-                        <li><a href="${pageContext.request.contextPath}/store_main.jsp">Store</a></li>
-                    </ul>
-                    <div class="nav-buttons">
-                        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
-                            aria-label="Toggle dark mode">🌙 Dark</button>
-                        <c:choose>
-                            <c:when test="${not empty sessionScope.currentUser}">
-                                <a href="${pageContext.request.contextPath}/pages/dashboards/${sessionScope.currentUser.role}dash/${sessionScope.currentUser.role}dashmain.jsp"
-                                    class="btn-login" style="text-decoration: none; padding: 0.6rem 1.2rem;">
-                                    Hi, ${sessionScope.currentUser.firstName}
-                                </a>
-                                <a href="${pageContext.request.contextPath}/logout" class="btn-logout">Logout</a>
-                            </c:when>
-                            <c:otherwise>
-                                <a href="${pageContext.request.contextPath}/login.jsp" class="btn-login">Login</a>
-                                <a href="${pageContext.request.contextPath}/preliminarySignup.jsp"
-                                    class="btn-signup">Sign Up</a>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-            </nav>
+            <!-- Shared Header -->
+            <jsp:include page="/pages/shared/header.jsp" />
 
             <div class="page-container">
                 <div class="page-header">
@@ -204,25 +182,25 @@
                 <div class="filters-section">
                     <form class="filters-form" action="${pageContext.request.contextPath}/guides" method="get">
                         <div class="filter-group">
-                            <label for="keyword">Search</label>
+                            <label for="keyword"><i class="ph ph-magnifying-glass"></i> Search</label>
                             <input type="text" id="keyword" name="keyword" placeholder="Search guides..."
                                 value="${keyword}">
                         </div>
                         <div class="filter-group">
-                            <label for="mainCategory">Category</label>
+                            <label for="mainCategory"><i class="ph ph-squares-four"></i> Category</label>
                             <select id="mainCategory" name="mainCategory" onchange="updateSubCategories()">
                                 <option value="">Loading categories...</option>
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label for="subCategory">Sub-Category</label>
+                            <label for="subCategory"><i class="ph ph-squares-four"></i> Sub-Category</label>
                             <select id="subCategory" name="subCategory">
                                 <option value="">All Sub-Categories</option>
                             </select>
                         </div>
                         <div class="filter-buttons">
-                            <button type="submit" class="btn-primary">Search</button>
-                            <a href="${pageContext.request.contextPath}/guides" class="btn-secondary">Clear</a>
+                            <button type="submit" class="btn-primary"><i class="ph ph-magnifying-glass"></i> Search</button>
+                            <a href="${pageContext.request.contextPath}/guides" class="btn-secondary"><i class="ph ph-broom"></i> Clear</a>
                         </div>
                     </form>
                 </div>
@@ -242,7 +220,7 @@
                                         <c:otherwise>
                                             <div class="guide-card-image"
                                                 style="display: flex; align-items: center; justify-content: center; font-size: 3rem;">
-                                                📖</div>
+                                                <i class="ph ph-image-broken"></i></div>
                                         </c:otherwise>
                                     </c:choose>
                                     <div class="guide-card-body">
@@ -251,7 +229,7 @@
                                             <span class="guide-card-badge">${guide.mainCategory}</span>
                                             <span class="guide-card-badge">${guide.subCategory}</span>
                                             <span class="guide-card-badge"
-                                                style="background: var(--muted); color: var(--foreground);">👁️
+                                                style="background: var(--muted); color: var(--foreground);"> <i class="ph ph-eye" style="margin-right:4px;"></i>
                                                 ${guide.viewCount}</span>
                                         </div>
                                         <p class="guide-card-author">By ${guide.creatorName}</p>
@@ -269,7 +247,7 @@
                 </c:choose>
             </div>
 
-            <script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
+
             <script>
                 // Dynamic category data loaded from server
                 let categoriesData = [];

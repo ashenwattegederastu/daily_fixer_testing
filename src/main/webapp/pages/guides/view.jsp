@@ -3,15 +3,22 @@
 
         <!DOCTYPE html>
         <html lang="en">
-
+        <!-- Importing Phosphor Icon Library Locally from assets-->
+        <link
+                rel="stylesheet"
+                type="text/css"
+                href="${pageContext.request.contextPath}/assets/icons/regular/style.css"
+        />
+        <link
+                rel="stylesheet"
+                type="text/css"
+                href="${pageContext.request.contextPath}/assets/icons/fill/style.css"
+        />
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${guide.title} | Daily Fixer</title>
-            <link
-                href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-                rel="stylesheet">
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+
             <style>
                 .page-container {
                     max-width: 1000px;
@@ -289,35 +296,8 @@
         </head>
 
         <body>
-            <!-- Navigation -->
-            <nav id="navbar" class="public-nav">
-                <div class="nav-container">
-                    <a href="${pageContext.request.contextPath}/index.jsp" class="logo">Daily Fixer</a>
-                    <ul class="nav-links">
-                        <li><a href="${pageContext.request.contextPath}/diagnostic.jsp">Diagnostic Tool</a></li>
-                        <li><a href="${pageContext.request.contextPath}/guides">View Repair Guides</a></li>
-                        <li><a href="${pageContext.request.contextPath}/findtech.jsp">Book a Technician</a></li>
-                        <li><a href="${pageContext.request.contextPath}/store_main.jsp">Store</a></li>
-                    </ul>
-                    <div class="nav-buttons">
-                        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
-                        <c:choose>
-                            <c:when test="${not empty sessionScope.currentUser}">
-                                <a href="${pageContext.request.contextPath}/pages/dashboards/${sessionScope.currentUser.role}dash/${sessionScope.currentUser.role}dashmain.jsp"
-                                    class="btn-login" style="text-decoration: none; padding: 0.6rem 1.2rem;">
-                                    Hi, ${sessionScope.currentUser.firstName}
-                                </a>
-                                <a href="${pageContext.request.contextPath}/logout" class="btn-logout">Logout</a>
-                            </c:when>
-                            <c:otherwise>
-                                <a href="${pageContext.request.contextPath}/login.jsp" class="btn-login">Login</a>
-                                <a href="${pageContext.request.contextPath}/preliminarySignup.jsp"
-                                    class="btn-signup">Sign Up</a>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-            </nav>
+            <!-- Shared Header -->
+            <jsp:include page="/pages/shared/header.jsp" />
 
             <div class="page-container">
                 <!-- Breadcrumb -->
@@ -358,15 +338,17 @@
                         <span style="font-weight: 500;">Was this guide helpful?</span>
                         <button class="rating-btn ${userRating == 'UP' ? 'active-up' : ''}" id="upBtn"
                             onclick="rateGuide('UP')">
-                            👍 <span id="upCount">${upCount}</span>
+                            <i class="ph ph-thumbs-up" style="font-size: 1.5rem;"></i>
+                            <span id="upCount">${upCount}</span>
                         </button>
                         <button class="rating-btn ${userRating == 'DOWN' ? 'active-down' : ''}" id="downBtn"
                             onclick="rateGuide('DOWN')">
-                            👎 <span id="downCount">${downCount}</span>
+                            <i class="ph ph-thumbs-down" style="font-size: 1.5rem;"></i>
+                            <span id="downCount">${downCount}</span>
                         </button>
                         <div
                             style="margin-left: auto; display: flex; align-items: center; gap: 5px; color: var(--muted-foreground);">
-                            <span>👁️ ${guide.viewCount} views</span>
+                            <span><i class="ph ph-eye" style="margin-right:4px;"></i> ${guide.viewCount} views</span>
                         </div>
                     </div>
                 </div>
@@ -467,7 +449,7 @@
                 </div>
             </div>
 
-            <script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
+
             <script>
                 function rateGuide(rating) {
                     <c:if test="${empty sessionScope.currentUser}">
