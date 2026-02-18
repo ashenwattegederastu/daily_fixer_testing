@@ -5,11 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Calendar - Technician Dashboard</title>
-    <jsp:include page="../../shared/header.jsp" />
+    <title>My Bookings - Technician Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
 </head>
 <body>
-    <div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <jsp:include page="sidebar.jsp" />
+    
+    <div class="dashboard-container">
         <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: var(--foreground);">My Bookings</h1>
         
         <c:if test="${param.completed}">

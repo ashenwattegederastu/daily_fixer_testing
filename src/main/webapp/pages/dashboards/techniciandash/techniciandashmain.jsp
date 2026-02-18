@@ -83,10 +83,11 @@
     <h3>Navigation</h3>
     <ul>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp" class="active">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp">Bookings</a></li>
+        <li><a href="${pageContext.request.contextPath}/availability">Set Availability</a></li>
+        <li><a href="${pageContext.request.contextPath}/bookings/requests">Booking Requests</a></li>
+        <li><a href="${pageContext.request.contextPath}/bookings/calendar">My Bookings</a></li>
+        <li><a href="${pageContext.request.contextPath}/chats">Chats</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp">Service Listings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp">Accepted Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
     </ul>
 </aside>
