@@ -41,7 +41,7 @@
     function updateToggleButton(theme) {
         const toggleBtn = document.getElementById('theme-toggle-btn');
         if (toggleBtn) {
-            toggleBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+            toggleBtn.innerHTML = theme === 'dark' ? '<i class="ph ph-sun"></i>' : '<i class="ph ph-moon"></i>';
             toggleBtn.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
         }
     }

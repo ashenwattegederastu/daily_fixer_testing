@@ -218,7 +218,7 @@ body {
 /* Dark Mode Toggle Button */
 .theme-toggle {
   padding: 0.5rem 1rem;
-  background: var(--secondary);
+  background: transparent;
   border: 1px solid var(--border);
   color: var(--secondary-foreground);
   border-radius: var(--radius-md);

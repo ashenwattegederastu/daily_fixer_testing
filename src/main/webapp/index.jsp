@@ -13,6 +13,17 @@
                         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
                         rel="stylesheet">
                 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+                <!-- Importing Phosphor Icon Library Locally from assets-->
+                <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="${pageContext.request.contextPath}/assets/icons/regular/style.css"
+                />
+                <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href="${pageContext.request.contextPath}/assets/icons/fill/style.css"
+                />
             </head>
 
             <body>
@@ -59,17 +70,17 @@
                         <h2 class="section-title">Why Choose Our Repair Guides?</h2>
                         <div class="features-grid">
                             <div class="feature-card">
-                                <div class="feature-icon">📚</div>
+                                <div class="feature-icon"><i class="ph ph-books"></i></div>
                                 <h3>Comprehensive Library</h3>
                                 <p>Thousands of detailed guides covering everything from electronics to appliances.</p>
                             </div>
                             <div class="feature-card">
-                                <div class="feature-icon">👥</div>
+                                <div class="feature-icon"><i class="ph ph-users-three"></i></div>
                                 <h3>Community Driven</h3>
                                 <p>Learn from experts and experienced technicians in our active community.</p>
                             </div>
                             <div class="feature-card">
-                                <div class="feature-icon">⚡</div>
+                                <div class="feature-icon"><i class="ph ph-pencil-ruler"></i></div>
                                 <h3>Easy to Follow</h3>
                                 <p>Step-by-step instructions with photos and videos for every repair.</p>
                             </div>

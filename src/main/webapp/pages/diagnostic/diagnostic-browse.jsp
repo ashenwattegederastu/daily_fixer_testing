@@ -68,7 +68,7 @@
                     color: var(--primary-foreground);
                     border: none;
                     border-radius: var(--radius-lg);
-                    font-weight: 600;
+                    font-weight: 1900;
                     cursor: pointer;
                     transition: all 0.2s ease;
                 }
@@ -258,7 +258,7 @@
                         <div class="search-box">
                             <input type="text" id="searchInput"
                                 placeholder="Search for a problem (e.g., 'leaking faucet')...">
-                            <button onclick="performSearch()">Search</button>
+                            <button onclick="performSearch()"><i class="ph ph-magnifying-glass"></i></button>
                         </div>
                     </div>
 
@@ -302,9 +302,9 @@
                         let categoriesData = [];
 
                         const categoryIcons = {
-                            'Home Repair': '🏠',
-                            'Home Electronic Repair': '📱',
-                            'Vehicle Repair': '🚗'
+                            'Home Repair': '<i class="ph ph-house"></i>',
+                            'Home Electronic Repair': '<i class="ph ph-devices"></i>',
+                            'Vehicle Repair': '<i class="ph ph-van"></i>',
                         };
 
                         document.addEventListener('DOMContentLoaded', function () {
