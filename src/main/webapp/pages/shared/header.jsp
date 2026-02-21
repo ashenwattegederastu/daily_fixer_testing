@@ -34,7 +34,7 @@
                     <li><a href="${pageContext.request.contextPath}/pages/diagnostic/diagnostic-browse.jsp">Diagnostic
                             Tool</a></li>
                     <li><a href="${pageContext.request.contextPath}/guides">View Repair Guides</a></li>
-                    <li><a href="#">Book a Technician</a></li>
+                    <li><a href="${pageContext.request.contextPath}/services">Book a Technician</a></li>
                     <li><a href="${pageContext.request.contextPath}/store_main.jsp">Store</a></li>
                 </ul>
 
