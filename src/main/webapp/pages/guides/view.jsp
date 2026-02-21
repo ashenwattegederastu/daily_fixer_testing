@@ -356,10 +356,10 @@
                 <!-- Requirements -->
                 <c:if test="${not empty guide.requirements}">
                     <div class="requirements-section">
-                        <h2 class="section-title">🔧 Things You Need</h2>
+                        <h2 class="section-title"><i class="ph ph-list-checks"></i> Things You Need</h2>
                         <ul class="requirements-list">
                             <c:forEach var="req" items="${guide.requirements}">
-                                <li>✓ ${req}</li>
+                                <li><i class="ph ph-check-fat"></i> ${req}</li>
                             </c:forEach>
                         </ul>
                     </div>
@@ -368,7 +368,7 @@
                 <!-- Video Section -->
                 <c:if test="${not empty guide.youtubeEmbedUrl}">
                     <div class="video-section">
-                        <h2 class="section-title">🎥 Video Overview</h2>
+                        <h2 class="section-title"><i class="ph ph-youtube-logo"></i> Video Overview</h2>
                         <div class="video-embed">
                             <iframe src="${guide.youtubeEmbedUrl}" allowfullscreen></iframe>
                         </div>
@@ -378,7 +378,7 @@
                 <!-- Steps -->
                 <c:if test="${not empty guide.steps}">
                     <div class="steps-section">
-                        <h2 class="section-title">📋 Step-by-Step Guide</h2>
+                        <h2 class="section-title"><i class="ph ph-clipboard-text"></i> Step-by-Step Guide</h2>
                         <c:forEach var="step" items="${guide.steps}" varStatus="status">
                             <div class="step-item">
                                 <div class="step-header">
@@ -401,7 +401,7 @@
 
                 <!-- Comments -->
                 <div class="comments-section">
-                    <h2 class="section-title">💬 Comments</h2>
+                    <h2 class="section-title"><i class="ph ph-chat-dots"></i> Comments</h2>
 
                     <c:if test="${not empty sessionScope.currentUser}">
                         <form class="comment-form" action="${pageContext.request.contextPath}/guides/comment"
