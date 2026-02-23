@@ -1,5 +1,6 @@
 package com.dailyfixer.dao;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 
@@ -16,7 +17,7 @@ public class ProductDAO {
             ps.setString(2, p.getType());
             ps.setDouble(3, p.getQuantity());
             ps.setString(4, p.getQuantityUnit());
-            ps.setDouble(5, p.getPrice());
+            ps.setBigDecimal(5, p.getPrice());
             ps.setBytes(6, p.getImage());
             ps.setString(7, p.getStoreUsername());
             ps.setString(8, p.getDescription());
@@ -50,7 +51,7 @@ public class ProductDAO {
                 p.setType(rs.getString("type"));
                 p.setQuantity(rs.getInt("quantity"));
                 p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setDescription(rs.getString("description"));
                 p.setStoreUsername(rs.getString("store_username"));
@@ -83,7 +84,7 @@ public class ProductDAO {
                 p.setType(rs.getString("type"));
                 p.setQuantity(rs.getInt("quantity"));
                 p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setDescription(rs.getString("description"));
                 p.setStoreUsername(rs.getString("store_username"));
@@ -119,7 +120,7 @@ public class ProductDAO {
                 p.setType(rs.getString("type"));
                 p.setQuantity(rs.getInt("quantity"));
                 p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setDescription(rs.getString("description"));
                 p.setStoreUsername(rs.getString("store_username")); // Get store username
@@ -136,7 +137,7 @@ public class ProductDAO {
             ps.setString(2, p.getType());
             ps.setDouble(3, p.getQuantity());
             ps.setString(4, p.getQuantityUnit());
-            ps.setDouble(5, p.getPrice());
+            ps.setBigDecimal(5, p.getPrice());
             ps.setBytes(6, p.getImage());
             ps.setString(7, p.getDescription());
             ps.setInt(8, p.getProductId());
@@ -152,17 +153,15 @@ public class ProductDAO {
      * @return true if successful, false otherwise
      */
     public boolean reduceProductQuantity(int productId, int quantityToReduce) {
-        String sql = "UPDATE products SET quantity = GREATEST(0, quantity - ?) WHERE product_id = ?";
+        // Conditional update prevents overselling: only succeeds when stock is sufficient (§3.6)
+        String sql = "UPDATE products SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ?";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, quantityToReduce);
             ps.setInt(2, productId);
+            ps.setInt(3, quantityToReduce);
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Reduced stock for product ID " + productId + " by " + quantityToReduce);
-                return true;
-            }
-            return false;
+            return rowsAffected > 0;
         } catch (Exception e) {
             System.err.println("Error reducing product quantity: " + e.getMessage());
             e.printStackTrace();
@@ -181,11 +180,11 @@ public class ProductDAO {
 
     public List<Product> getProductsByCategory(String category) throws Exception {
         List<Product> list = new ArrayList<>();
-        // JOIN with users and stores to get store_id for location filtering
+        // Case-insensitive category match (§7.4)
         String sql = "SELECT p.*, s.store_id FROM products p " +
                 "LEFT JOIN users u ON p.store_username = u.username " +
                 "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                "WHERE p.type = ?";
+                "WHERE LOWER(p.type) = LOWER(?)";
 
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -200,7 +199,7 @@ public class ProductDAO {
                 p.setType(rs.getString("type"));
                 p.setQuantity(rs.getInt("quantity"));
                 p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setStoreUsername(rs.getString("store_username"));
                 p.setDescription(rs.getString("description"));
@@ -313,7 +312,7 @@ public class ProductDAO {
                 p.setType(rs.getString("type"));
                 p.setQuantity(rs.getInt("quantity"));
                 p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setStoreUsername(rs.getString("store_username"));
                 p.setDescription(rs.getString("description"));
@@ -382,7 +381,7 @@ public class ProductDAO {
                 p.setType(rs.getString("type"));
                 p.setQuantity(rs.getInt("quantity"));
                 p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setStoreUsername(rs.getString("store_username"));
                 p.setDescription(rs.getString("description"));

@@ -100,17 +100,15 @@ public class ProductVariantDAO {
      * @return true if successful, false otherwise
      */
     public boolean reduceVariantQuantity(int variantId, int quantityToReduce) {
-        String sql = "UPDATE product_variants SET quantity = GREATEST(0, quantity - ?) WHERE variant_id = ?";
+        // Conditional update prevents overselling: only succeeds when stock is sufficient (§3.6)
+        String sql = "UPDATE product_variants SET quantity = quantity - ? WHERE variant_id = ? AND quantity >= ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, quantityToReduce);
             stmt.setInt(2, variantId);
+            stmt.setInt(3, quantityToReduce);
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Reduced stock for variant ID " + variantId + " by " + quantityToReduce);
-                return true;
-            }
-            return false;
+            return rowsAffected > 0;
         } catch (Exception e) {
             System.err.println("Error reducing variant quantity: " + e.getMessage());
             e.printStackTrace();

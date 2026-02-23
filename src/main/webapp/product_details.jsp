@@ -566,12 +566,12 @@ nav.public-nav .logo {
         <%
             // Check for active discount
             Discount activeDiscount = null;
-            double displayPrice = product.getPrice();
-            double originalPrice = product.getPrice();
+            double displayPrice = product.getPrice().doubleValue();
+            double originalPrice = product.getPrice().doubleValue();
             double discountAmount = 0;
             
             // For products with variants, if main price is 0.00, use first variant's price
-            if (hasVariants && variants != null && !variants.isEmpty() && product.getPrice() == 0.00) {
+            if (hasVariants && variants != null && !variants.isEmpty() && product.getPrice().doubleValue() == 0.00) {
                 ProductVariant firstVariant = variants.get(0);
                 if (firstVariant != null && firstVariant.getPrice() != null) {
                     originalPrice = firstVariant.getPrice().doubleValue();
@@ -602,7 +602,7 @@ nav.public-nav .logo {
                     DiscountDAO discountDAO = new DiscountDAO();
                     activeDiscount = discountDAO.getActiveDiscountForProduct(product.getProductId());
                     if (activeDiscount != null && activeDiscount.isValid()) {
-                        originalPrice = product.getPrice();
+                        originalPrice = product.getPrice().doubleValue();
                         displayPrice = activeDiscount.calculateDiscountedPrice(originalPrice);
                         discountAmount = originalPrice - displayPrice;
                     }

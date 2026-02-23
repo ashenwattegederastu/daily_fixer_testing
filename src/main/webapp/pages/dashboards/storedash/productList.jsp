@@ -398,8 +398,8 @@ img.service-thumb {
                     List<ProductVariant> variants = null;
                     boolean hasVariants = false;
                     int totalVariantStock = 0;
-                    double minPrice = p.getPrice();
-                    double maxPrice = p.getPrice();
+                    double minPrice = p.getPrice().doubleValue();
+                    double maxPrice = p.getPrice().doubleValue();
                     
                     try {
                         variants = variantDAO.getVariantsByProductId(p.getProductId());
@@ -421,8 +421,8 @@ img.service-thumb {
                     }
                     
                     // Get display price
-                    double displayPrice = p.getPrice();
-                    if (hasVariants && p.getPrice() == 0.00 && variants.get(0).getPrice() != null) {
+                    double displayPrice = p.getPrice().doubleValue();
+                    if (hasVariants && p.getPrice().doubleValue() == 0.00 && variants.get(0).getPrice() != null) {
                         displayPrice = variants.get(0).getPrice().doubleValue();
                     }
                     

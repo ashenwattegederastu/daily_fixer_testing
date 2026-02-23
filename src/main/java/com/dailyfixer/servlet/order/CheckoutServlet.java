@@ -1,7 +1,13 @@
 package com.dailyfixer.servlet.order;
 
 import com.dailyfixer.dao.OrderDAO;
+import com.dailyfixer.dao.ProductDAO;
+import com.dailyfixer.dao.ProductVariantDAO;
+import com.dailyfixer.dao.StoreDAO;
+import com.dailyfixer.model.CartItem;
 import com.dailyfixer.model.Order;
+import com.dailyfixer.model.OrderItem;
+import com.dailyfixer.model.Store;
 import com.dailyfixer.model.User;
 
 import jakarta.servlet.ServletException;
@@ -9,14 +15,21 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * CheckoutServlet - Handles customer form submission from checkout page.
- * Creates an order in the database and redirects to PayHere payment.
+ *
+ * Creates per-store orders with order_items, validates stock before committing,
+ * and redirects to PayHere payment for the first order.
  *
  * URL: /checkout
  * Method: POST
@@ -25,113 +38,188 @@ import java.util.UUID;
 public class CheckoutServlet extends HttpServlet {
 
     private OrderDAO orderDAO;
+    private ProductDAO productDAO;
+    private ProductVariantDAO variantDAO;
+    private StoreDAO storeDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
         orderDAO = new OrderDAO();
-        System.out.println("CheckoutServlet initialized");
+        productDAO = new ProductDAO();
+        variantDAO = new ProductVariantDAO();
+        storeDAO = new StoreDAO();
     }
 
-    /**
-     * Handle POST request from checkout form.
-     * Creates order and redirects to PayHereServlet.
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println("=== CheckoutServlet: Processing checkout ===");
-
         try {
-            // Get form parameters
             String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            String city = request.getParameter("city");
-            String product = request.getParameter("product");
+            String lastName  = request.getParameter("lastName");
+            String email     = request.getParameter("email");
+            String phone     = request.getParameter("phone");
+            String address   = request.getParameter("address");
+            String city      = request.getParameter("city");
+            String product   = request.getParameter("product");
             String amountStr = request.getParameter("amount");
 
-            // Log received data
-            System.out.println("Customer: " + firstName + " " + lastName);
-            System.out.println("Email: " + email);
-            System.out.println("Product: " + product);
-            System.out.println("Amount: " + amountStr);
-
-            // Validate required fields
             if (isEmpty(firstName) || isEmpty(lastName) || isEmpty(email) ||
                     isEmpty(phone) || isEmpty(address) || isEmpty(city) ||
                     isEmpty(product) || isEmpty(amountStr)) {
-
-                System.err.println("Missing required fields");
                 response.sendRedirect("checkout.html?error=missing_fields");
                 return;
             }
 
-            // Parse amount
             BigDecimal amount;
             try {
                 amount = new BigDecimal(amountStr.replace(",", ""));
             } catch (NumberFormatException e) {
-                System.err.println("Invalid amount format: " + amountStr);
                 response.sendRedirect("checkout.html?error=invalid_amount");
                 return;
             }
 
-            // Generate unique order ID (UUID-based, shortened for readability)
-            String orderId = generateOrderId();
-            System.out.println("Generated Order ID: " + orderId);
+            HttpSession session = request.getSession();
+            User currentUser = (User) session.getAttribute("currentUser");
 
-            // Create Order object
-            Order order = new Order(orderId, firstName, lastName, email,
-                    phone, address, city, product, amount);
+            // Retrieve items queued for checkout (§3.4)
+            @SuppressWarnings("unchecked")
+            Map<String, CartItem> itemsToCheckout =
+                    (Map<String, CartItem>) session.getAttribute("itemsToCheckout");
 
-            // Set buyer_id if user is logged in
-            User currentUser = (User) request.getSession().getAttribute("currentUser");
-            if (currentUser != null) {
-                order.setBuyerId(currentUser.getUserId());
-                System.out.println("Order linked to user ID: " + currentUser.getUserId());
-            } else {
-                System.out.println("Guest checkout - no buyer_id set");
-            }
-
-            // Save order to database
-            boolean saved = orderDAO.createOrder(order);
-            if (!saved) {
-                System.err.println("Failed to save order to database");
-                response.sendRedirect("checkout.html?error=database_error");
+            if (itemsToCheckout == null || itemsToCheckout.isEmpty()) {
+                response.sendRedirect("checkout.html?error=empty_cart");
                 return;
             }
 
-            System.out.println("Order saved successfully: " + orderId);
+            // Validate stock for every item before creating any order (§3.5)
+            for (CartItem item : itemsToCheckout.values()) {
+                int available;
+                try {
+                    if (item.getVariantId() != null) {
+                        available = variantDAO.getVariantById(item.getVariantId()).getQuantity();
+                    } else {
+                        available = productDAO.getProductById(item.getProductId()).getQuantity();
+                    }
+                } catch (Exception e) {
+                    response.sendRedirect("checkout.html?error=stock_check_failed");
+                    return;
+                }
+                if (available < item.getQuantity()) {
+                    response.sendRedirect("checkout.html?error=insufficient_stock&product=" +
+                            item.getName().replace(" ", "+"));
+                    return;
+                }
+            }
 
-            // Store order in session for PayHere servlet
-            request.getSession().setAttribute("currentOrder", order);
+            // Group items by store for per-store orders (§4.1 Option A)
+            Map<Integer, List<CartItem>> byStore = groupByStore(itemsToCheckout);
 
-            // Redirect to PayHere servlet for payment processing
-            response.sendRedirect("payhere?order_id=" + orderId);
+            String firstOrderId = null;
+            Order firstOrder = null;
+
+            for (Map.Entry<Integer, List<CartItem>> entry : byStore.entrySet()) {
+                int storeId = entry.getKey();
+                List<CartItem> storeItems = entry.getValue();
+
+                // Calculate per-store total
+                BigDecimal storeTotal = BigDecimal.ZERO;
+                StringBuilder productNames = new StringBuilder();
+                for (CartItem item : storeItems) {
+                    storeTotal = storeTotal.add(
+                            BigDecimal.valueOf(item.getPrice()).multiply(BigDecimal.valueOf(item.getQuantity())));
+                    if (productNames.length() > 0) productNames.append(", ");
+                    productNames.append(item.getName());
+                }
+
+                String orderId = generateOrderId();
+                Order order = new Order(orderId, firstName, lastName, email,
+                        phone, address, city, productNames.toString(), storeTotal);
+
+                // Resolve store username from storeId
+                Store store = storeDAO.getStoreById(storeId);
+                if (store != null) {
+                    String username = resolveStoreUsername(store.getUserId());
+                    order.setStoreUsername(username);
+                }
+                if (currentUser != null) {
+                    order.setBuyerId(currentUser.getUserId());
+                }
+
+                boolean saved = orderDAO.createOrder(order);
+                if (!saved) {
+                    response.sendRedirect("checkout.html?error=database_error");
+                    return;
+                }
+
+                // Create order_items (§3.4)
+                for (CartItem item : storeItems) {
+                    BigDecimal unitPrice = BigDecimal.valueOf(item.getPrice());
+                    BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+                    OrderItem oi = new OrderItem(
+                            orderId, storeId,
+                            item.getProductId(), item.getVariantId(),
+                            item.getName(),
+                            item.getQuantity(),
+                            unitPrice, totalPrice);
+                    orderDAO.createOrderItem(oi);
+                }
+
+                if (firstOrderId == null) {
+                    firstOrderId = orderId;
+                    firstOrder = order;
+                }
+            }
+
+            // Clear cart and itemsToCheckout after successful order creation
+            session.removeAttribute("cart");
+            session.removeAttribute("itemsToCheckout");
+            session.setAttribute("currentOrder", firstOrder);
+
+            response.sendRedirect("payhere?order_id=" + firstOrderId);
 
         } catch (Exception e) {
-            System.err.println("Error processing checkout: " + e.getMessage());
             e.printStackTrace();
             response.sendRedirect("checkout.html?error=server_error");
         }
     }
 
     /**
-     * Generate a unique order ID.
-     * Format: DF-XXXXXXXX (8 character hex)
+     * Group cart items by their storeId.
+     * Items with storeId == 0 (unknown store) are placed in a catch-all group.
      */
+    private Map<Integer, List<CartItem>> groupByStore(Map<String, CartItem> items) {
+        Map<Integer, List<CartItem>> map = new LinkedHashMap<>();
+        for (CartItem item : items.values()) {
+            int sid = item.getStoreId(); // 0 if unknown
+            map.computeIfAbsent(sid, k -> new ArrayList<>()).add(item);
+        }
+        return map;
+    }
+
+    /** Resolve a store owner's username from user_id (used for order.store_username). */
+    private String resolveStoreUsername(int userId) {
+        try {
+            java.sql.Connection conn = com.dailyfixer.util.DBConnection.getConnection();
+            try (java.sql.PreparedStatement ps =
+                    conn.prepareStatement("SELECT username FROM users WHERE user_id = ?")) {
+                ps.setInt(1, userId);
+                java.sql.ResultSet rs = ps.executeQuery();
+                if (rs.next()) return rs.getString("username");
+            } finally {
+                conn.close();
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
     private String generateOrderId() {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         return "DF-" + uuid.substring(0, 8).toUpperCase();
     }
 
-    /**
-     * Check if a string is null or empty.
-     */
     private boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
     }
@@ -139,7 +227,7 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Redirect GET requests to checkout page
         response.sendRedirect("checkout.html");
     }
 }
+

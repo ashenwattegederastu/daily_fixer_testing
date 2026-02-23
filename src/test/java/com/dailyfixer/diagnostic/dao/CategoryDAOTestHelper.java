@@ -1,6 +1,6 @@
 package com.dailyfixer.diagnostic.dao;
 
-import com.dailyfixer.diagnostic.model.Category;
+import com.dailyfixer.model.Category;
 import com.dailyfixer.util.TestDBConnection;
 
 import java.sql.*;

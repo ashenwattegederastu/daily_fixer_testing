@@ -1,5 +1,6 @@
 package com.dailyfixer.model;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 
 public class Product {
@@ -8,7 +9,7 @@ public class Product {
     private String type;
     private int quantity;
     private String quantityUnit;
-    private double price;
+    private BigDecimal price;
     private byte[] image;
     private String storeUsername;
     private String description;
@@ -55,12 +56,17 @@ public class Product {
         this.quantityUnit = quantityUnit;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    /** Convenience setter for code that still passes a double. */
+    public void setPrice(double price) {
+        this.price = BigDecimal.valueOf(price);
     }
 
     public byte[] getImage() {
@@ -145,3 +151,4 @@ public class Product {
         this.variantQuantity = variantQuantity;
     }
 }
+

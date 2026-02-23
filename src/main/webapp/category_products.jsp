@@ -594,8 +594,8 @@ nav.public-nav .logo {
                                                         <% if (products !=null && !products.isEmpty()) { for (Product
                                                             item : products) { 
                                                             // Get display price - use first variant price if main price is 0.00
-                                                            double displayPrice = item.getPrice();
-                                                            if (item.getPrice() == 0.00) {
+                                                            double displayPrice = item.getPrice().doubleValue();
+                                                            if (item.getPrice().doubleValue() == 0.00) {
                                                                 try {
                                                                     ProductVariantDAO variantDAO = new ProductVariantDAO();
                                                                     List<ProductVariant> variants = variantDAO.getVariantsByProductId(item.getProductId());

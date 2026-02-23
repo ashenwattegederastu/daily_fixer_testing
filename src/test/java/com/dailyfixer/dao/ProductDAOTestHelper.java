@@ -20,7 +20,7 @@ public class ProductDAOTestHelper {
             ps.setString(2, p.getType());
             ps.setInt(3, p.getQuantity());
             ps.setString(4, p.getQuantityUnit());
-            ps.setDouble(5, p.getPrice());
+            ps.setBigDecimal(5, p.getPrice());
             ps.setBytes(6, p.getImage());
             ps.setString(7, p.getStoreUsername());
             ps.setString(8, p.getDescription());
@@ -54,7 +54,7 @@ public class ProductDAOTestHelper {
                     p.setType(rs.getString("type"));
                     p.setQuantity(rs.getInt("quantity"));
                     p.setQuantityUnit(rs.getString("quantity_unit"));
-                    p.setPrice(rs.getDouble("price"));
+                    p.setPrice(rs.getBigDecimal("price"));
                     p.setImage(rs.getBytes("image"));
                     p.setDescription(rs.getString("description"));
                     p.setStoreUsername(rs.getString("store_username"));
@@ -80,7 +80,7 @@ public class ProductDAOTestHelper {
                     p.setType(rs.getString("type"));
                     p.setQuantity(rs.getInt("quantity"));
                     p.setQuantityUnit(rs.getString("quantity_unit"));
-                    p.setPrice(rs.getDouble("price"));
+                    p.setPrice(rs.getBigDecimal("price"));
                     p.setImage(rs.getBytes("image"));
                     p.setDescription(rs.getString("description"));
                     p.setStoreUsername(rs.getString("store_username"));
@@ -99,7 +99,7 @@ public class ProductDAOTestHelper {
             ps.setString(2, p.getType());
             ps.setInt(3, p.getQuantity());
             ps.setString(4, p.getQuantityUnit());
-            ps.setDouble(5, p.getPrice());
+            ps.setBigDecimal(5, p.getPrice());
             ps.setBytes(6, p.getImage());
             ps.setString(7, p.getDescription());
             ps.setInt(8, p.getProductId());
