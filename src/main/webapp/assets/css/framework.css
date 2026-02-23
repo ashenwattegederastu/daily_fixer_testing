@@ -291,7 +291,8 @@ nav.public-nav .theme-toggle {
 
 /* Main Content */
 .main-content,
-.container {
+.container,
+.dashboard-container {
   flex: 1;
   margin-left: 240px;
   margin-top: 83px;

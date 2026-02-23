@@ -25,170 +25,10 @@
                                                     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
                                                     rel="stylesheet">
 
+
+                                                <link rel="stylesheet"
+                                                    href="${pageContext.request.contextPath}/assets/css/framework.css">
                                                 <style>
-                                                    :root {
-                                                        --panel-color: #dcdaff;
-                                                        --accent: #8b95ff;
-                                                        --accent-dark: #6b75df;
-                                                        --text-dark: #000000;
-                                                        --text-secondary: #555555;
-                                                        --text-muted: #888888;
-                                                        --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
-                                                        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
-                                                        --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.16);
-                                                        --gradient-primary: linear-gradient(135deg, #8b95ff 0%, #a8b4ff 100%);
-                                                        --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-                                                    }
-
-                                                    * {
-                                                        margin: 0;
-                                                        padding: 0;
-                                                        box-sizing: border-box;
-                                                    }
-
-                                                    body {
-                                                        font-family: 'Inter', sans-serif;
-                                                        background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
-                                                        color: var(--text-dark);
-                                                        display: flex;
-                                                        min-height: 100vh;
-                                                    }
-
-                                                    /* Top Navbar */
-                                                    .topbar {
-                                                        position: fixed;
-                                                        top: 0;
-                                                        left: 0;
-                                                        right: 0;
-                                                        height: 76px;
-                                                        background: rgba(220, 218, 255, 0.95);
-                                                        backdrop-filter: blur(10px);
-                                                        border-bottom: 1px solid rgba(139, 149, 255, 0.2);
-                                                        display: flex;
-                                                        justify-content: space-between;
-                                                        align-items: center;
-                                                        padding: 0 30px;
-                                                        z-index: 200;
-                                                        box-shadow: var(--shadow-sm);
-                                                    }
-
-                                                    .topbar .logo {
-                                                        font-size: 1.5em;
-                                                        font-weight: 700;
-                                                        background: var(--gradient-primary);
-                                                        -webkit-background-clip: text;
-                                                        -webkit-text-fill-color: transparent;
-                                                        background-clip: text;
-                                                    }
-
-                                                    .topbar .panel-name {
-                                                        font-weight: 600;
-                                                        flex: 1;
-                                                        text-align: center;
-                                                        color: var(--text-dark);
-                                                    }
-
-                                                    .topbar-actions {
-                                                        display: flex;
-                                                        gap: 15px;
-                                                        align-items: center;
-                                                    }
-
-                                                    .topbar .home-btn,
-                                                    .topbar .logout-btn {
-                                                        padding: 0.6rem 1.2rem;
-                                                        border: none;
-                                                        border-radius: 10px;
-                                                        cursor: pointer;
-                                                        font-weight: 600;
-                                                        font-size: 0.9rem;
-                                                        text-decoration: none;
-                                                        transition: all 0.3s ease;
-                                                    }
-
-                                                    .topbar .home-btn {
-                                                        background: var(--gradient-success);
-                                                        color: #fff;
-                                                        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-                                                    }
-
-                                                    .topbar .logout-btn {
-                                                        background: var(--gradient-primary);
-                                                        color: #fff;
-                                                        box-shadow: 0 4px 15px rgba(139, 149, 255, 0.3);
-                                                    }
-
-                                                    .topbar .home-btn:hover,
-                                                    .topbar .logout-btn:hover {
-                                                        transform: translateY(-2px);
-                                                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-                                                    }
-
-                                                    /* Sidebar */
-                                                    .sidebar {
-                                                        width: 240px;
-                                                        background: rgba(220, 218, 255, 0.95);
-                                                        backdrop-filter: blur(10px);
-                                                        height: 100vh;
-                                                        position: fixed;
-                                                        top: 0;
-                                                        left: 0;
-                                                        padding-top: 96px;
-                                                        box-shadow: var(--shadow-md);
-                                                        overflow-y: auto;
-                                                        z-index: 100;
-                                                    }
-
-                                                    .sidebar ul {
-                                                        list-style: none;
-                                                    }
-
-                                                    .sidebar a {
-                                                        display: block;
-                                                        padding: 14px 24px;
-                                                        text-decoration: none;
-                                                        color: var(--text-dark);
-                                                        font-weight: 500;
-                                                        border-left: 4px solid transparent;
-                                                        margin: 4px 0;
-                                                        transition: all 0.3s ease;
-                                                    }
-
-                                                    .sidebar a:hover,
-                                                    .sidebar a.active {
-                                                        background: linear-gradient(90deg, rgba(139, 149, 255, 0.2) 0%, transparent 100%);
-                                                        border-left-color: var(--accent);
-                                                        padding-left: 28px;
-                                                    }
-
-                                                    /* Main Content */
-                                                    .container {
-                                                        flex: 1;
-                                                        margin-left: 240px;
-                                                        margin-top: 76px;
-                                                        padding: 40px;
-                                                        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-                                                        min-height: calc(100vh - 76px);
-                                                    }
-
-                                                    .page-header {
-                                                        margin-bottom: 30px;
-                                                    }
-
-                                                    .page-header h2 {
-                                                        font-size: 2em;
-                                                        font-weight: 700;
-                                                        background: var(--gradient-primary);
-                                                        -webkit-background-clip: text;
-                                                        -webkit-text-fill-color: transparent;
-                                                        background-clip: text;
-                                                    }
-
-                                                    .page-header p {
-                                                        color: var(--text-secondary);
-                                                        margin-top: 8px;
-                                                    }
-
                                                     /* Order Cards Grid */
                                                     .orders-grid {
                                                         display: grid;
@@ -212,7 +52,7 @@
                                                     }
 
                                                     .order-header {
-                                                        background: var(--gradient-primary);
+                                                        background: var(--gradient-primary, linear-gradient(135deg, #8b95ff 0%, #a8b4ff 100%));
                                                         padding: 16px 20px;
                                                         display: flex;
                                                         justify-content: space-between;
@@ -257,6 +97,7 @@
                                                         width: 80px;
                                                         height: 80px;
                                                         border-radius: 12px;
+                                                        border: 1px solid rgba(0, 0, 0, 0.1);
                                                         object-fit: cover;
                                                         background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
                                                         flex-shrink: 0;
@@ -294,7 +135,7 @@
                                                     .product-meta {
                                                         display: flex;
                                                         gap: 16px;
-                                                        color: var(--text-muted);
+                                                        color: var(--text-muted, #888888);
                                                         font-size: 0.85em;
                                                     }
 
@@ -303,12 +144,12 @@
                                                         padding: 2px 10px;
                                                         border-radius: 20px;
                                                         font-weight: 500;
-                                                        color: var(--accent-dark);
+                                                        color: var(--accent-dark, #6b75df);
                                                     }
 
                                                     .product-price {
                                                         font-weight: 600;
-                                                        color: var(--accent-dark);
+                                                        color: var(--accent-dark, #6b75df);
                                                     }
 
                                                     /* Order Footer */
@@ -326,12 +167,12 @@
                                                     }
 
                                                     .order-total span {
-                                                        color: var(--text-muted);
+                                                        color: var(--text-muted, #888888);
                                                         font-size: 0.85em;
                                                     }
 
                                                     .order-total strong {
-                                                        color: var(--accent-dark);
+                                                        color: var(--accent-dark, #6b75df);
                                                         font-weight: 700;
                                                     }
 
@@ -387,7 +228,7 @@
                                                     .empty-icon {
                                                         width: 120px;
                                                         height: 120px;
-                                                        background: var(--gradient-primary);
+                                                        background: var(--gradient-primary, linear-gradient(135deg, #8b95ff 0%, #a8b4ff 100%));
                                                         border-radius: 50%;
                                                         display: flex;
                                                         align-items: center;
@@ -413,7 +254,7 @@
 
                                                     .btn-shop {
                                                         padding: 14px 32px;
-                                                        background: var(--gradient-primary);
+                                                        background: var(--gradient-primary, linear-gradient(135deg, #8b95ff 0%, #a8b4ff 100%));
                                                         color: #fff;
                                                         border-radius: 12px;
                                                         text-decoration: none;
@@ -430,15 +271,6 @@
 
                                                     /* Responsive */
                                                     @media (max-width: 768px) {
-                                                        .sidebar {
-                                                            display: none;
-                                                        }
-
-                                                        .container {
-                                                            margin-left: 0;
-                                                            padding: 20px;
-                                                        }
-
                                                         .orders-grid {
                                                             grid-template-columns: 1fr;
                                                         }
@@ -448,37 +280,11 @@
 
                                             <body>
 
-                                                <header class="topbar">
-                                                    <div class="logo">Daily Fixer</div>
-                                                    <div class="panel-name">User Panel</div>
-                                                    <div class="topbar-actions">
-                                                        <a href="${pageContext.request.contextPath}"
-                                                            class="home-btn">Home</a>
-                                                        <a href="${pageContext.request.contextPath}/logout"
-                                                            class="logout-btn">Log Out</a>
-                                                    </div>
-                                                </header>
 
-                                                <aside class="sidebar">
-                                                    <ul>
-                                                        <li><a
-                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp">Dashboard</a>
-                                                        </li>
-                                                        <li><a
-                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp">Notifications</a>
-                                                        </li>
-                                                        <li><a
-                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/myBookings.jsp">My
-                                                                Bookings</a></li>
-                                                        <li><a href="${pageContext.request.contextPath}/user/orders"
-                                                                class="active">My Purchases</a></li>
-                                                        <li><a
-                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp">My
-                                                                Profile</a></li>
-                                                    </ul>
-                                                </aside>
 
-                                                <main class="container">
+                                                <jsp:include page="sidebar.jsp" />
+
+                                                <main class="dashboard-container">
                                                     <div class="page-header">
                                                         <h2>My Purchases</h2>
                                                         <p>Track your orders and view purchase history</p>
