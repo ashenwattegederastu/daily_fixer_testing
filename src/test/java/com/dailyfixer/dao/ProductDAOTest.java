@@ -68,7 +68,7 @@ class ProductDAOTest {
         assertEquals("Tool", retrieved.getType());
         assertEquals(100, retrieved.getQuantity());
         assertEquals("pieces", retrieved.getQuantityUnit());
-        assertEquals(8.50, retrieved.getPrice(), 0.01);
+        assertEquals(new java.math.BigDecimal("8.50"), retrieved.getPrice());
         assertEquals("toolstore", retrieved.getStoreUsername());
         assertEquals("Phillips screwdriver", retrieved.getDescription());
     }
@@ -155,7 +155,7 @@ class ProductDAOTest {
         // Assert
         Product updated = productDAO.getProductById(productId);
         assertEquals("Torque Wrench", updated.getName());
-        assertEquals(29.99, updated.getPrice(), 0.01);
+        assertEquals(new java.math.BigDecimal("29.99"), updated.getPrice());
         assertEquals(20, updated.getQuantity());
         assertEquals("Professional torque wrench", updated.getDescription());
     }

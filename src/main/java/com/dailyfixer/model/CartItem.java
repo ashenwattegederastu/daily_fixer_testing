@@ -10,10 +10,13 @@ public class CartItem {
     private String variantColor;
     private String variantSize;
     private String variantPower;
-    private double originalPrice; // Base price before discount
-    private double discountAmount; // Discount amount applied
-    private String discountName; // Name of the discount applied
-    private String discountType; // "PERCENTAGE" or "FIXED"
+    private double originalPrice;
+    private double discountAmount;
+    private String discountName;
+    private String discountType;
+    // Store info for multi-store order splitting (§3.3)
+    private int storeId;
+    private String storeUsername;
 
     public CartItem(int productId, String name, double price, int quantity, String imageBase64) {
         this.productId = productId;
@@ -68,32 +71,37 @@ public class CartItem {
     public String getVariantSize() { return variantSize; }
     public String getVariantPower() { return variantPower; }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-    
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setPrice(double price) { this.price = price; }
     public void setVariantId(Integer variantId) { this.variantId = variantId; }
     public void setVariantColor(String variantColor) { this.variantColor = variantColor; }
     public void setVariantSize(String variantSize) { this.variantSize = variantSize; }
     public void setVariantPower(String variantPower) { this.variantPower = variantPower; }
-    
+
     public double getOriginalPrice() { return originalPrice; }
     public void setOriginalPrice(double originalPrice) { this.originalPrice = originalPrice; }
-    
+
     public double getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(double discountAmount) { this.discountAmount = discountAmount; }
-    
+
     public String getDiscountName() { return discountName; }
     public void setDiscountName(String discountName) { this.discountName = discountName; }
-    
+
     public String getDiscountType() { return discountType; }
     public void setDiscountType(String discountType) { this.discountType = discountType; }
-    
-    // Helper method to calculate total discount for this item
+
+    public int getStoreId() { return storeId; }
+    public void setStoreId(int storeId) { this.storeId = storeId; }
+
+    public String getStoreUsername() { return storeUsername; }
+    public void setStoreUsername(String storeUsername) { this.storeUsername = storeUsername; }
+
+    // Composite cart key that avoids collision between product IDs and variant IDs (§3.2)
+    public String getCartKey() {
+        return variantId != null ? "V-" + variantId : "P-" + productId;
+    }
+
+    // Total discount for all units of this item
     public double getTotalDiscount() {
         return discountAmount * quantity;
     }

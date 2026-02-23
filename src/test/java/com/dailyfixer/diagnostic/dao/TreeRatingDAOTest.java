@@ -1,6 +1,6 @@
 package com.dailyfixer.diagnostic.dao;
 
-import com.dailyfixer.diagnostic.model.TreeRating;
+import com.dailyfixer.model.TreeRating;
 import com.dailyfixer.model.User;
 import com.dailyfixer.dao.UserDAOTestHelper;
 import com.dailyfixer.util.TestDBConnection;

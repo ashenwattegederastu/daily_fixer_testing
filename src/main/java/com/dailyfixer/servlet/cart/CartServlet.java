@@ -1,12 +1,14 @@
 package com.dailyfixer.servlet.cart;
 
+import com.dailyfixer.dao.DiscountDAO;
 import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.ProductVariantDAO;
-import com.dailyfixer.dao.DiscountDAO;
+import com.dailyfixer.dao.StoreDAO;
 import com.dailyfixer.model.CartItem;
+import com.dailyfixer.model.Discount;
 import com.dailyfixer.model.Product;
 import com.dailyfixer.model.ProductVariant;
-import com.dailyfixer.model.Discount;
+import com.dailyfixer.model.Store;
 import com.dailyfixer.model.User;
 
 import jakarta.servlet.ServletException;
@@ -29,19 +31,18 @@ public class CartServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
 
-        // Check if user is logged in
         User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser == null) {
             out.print("{\"error\":\"Please login before purchasing products\"}");
             return;
         }
 
-        Map<Integer, CartItem> cart;
+        Map<String, CartItem> cart;
         Object obj = session.getAttribute("cart");
 
         if (obj instanceof Map<?, ?>) {
             @SuppressWarnings("unchecked")
-            Map<Integer, CartItem> tempCart = (Map<Integer, CartItem>) obj;
+            Map<String, CartItem> tempCart = (Map<String, CartItem>) obj;
             cart = tempCart;
         } else {
             cart = new HashMap<>();
@@ -73,17 +74,16 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            double price = product.getPrice();
+            double price = product.getPrice().doubleValue();
             int stock = product.getQuantity();
             String variantColor = null;
             String variantSize = null;
             String variantPower = null;
 
-            // If variant is selected, use variant price and stock
             if (variantId != null) {
                 ProductVariantDAO variantDAO = new ProductVariantDAO();
                 ProductVariant variant = variantDAO.getVariantById(variantId);
-                
+
                 if (variant == null || variant.getProductId() != productId) {
                     out.print("{\"error\":\"Invalid variant\"}");
                     return;
@@ -96,7 +96,6 @@ public class CartServlet extends HttpServlet {
                 variantPower = variant.getPower();
             }
 
-            // Stock check
             if (stock <= 0) {
                 out.print("{\"error\":\"Product is out of stock\"}");
                 return;
@@ -107,32 +106,39 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            // Use variantId as part of cart key if variant exists
-            // This allows same product with different variants to be separate cart items
-            int cartKey = variantId != null ? variantId : productId;
+            // Resolve storeId for this product (§3.3)
+            int storeId = product.getStoreId();
+            String storeUsername = product.getStoreUsername();
+            if (storeId == 0 && storeUsername != null) {
+                StoreDAO storeDAO = new StoreDAO();
+                Store store = storeDAO.getStoreByUsername(storeUsername);
+                if (store != null) {
+                    storeId = store.getStoreId();
+                }
+            }
 
-            // Check for active discount
+            // Composite cart key prevents collision between product IDs and variant IDs (§3.2)
+            String cartKey = variantId != null ? "V-" + variantId : "P-" + productId;
+
             double originalPrice = price;
             double discountedPrice = price;
             double discountAmount = 0;
             String discountName = null;
             String discountType = null;
-            
+
             try {
                 DiscountDAO discountDAO = new DiscountDAO();
                 Discount discount = null;
-                
+
                 if (variantId != null) {
-                    // First check for variant-specific discount
                     discount = discountDAO.getActiveDiscountForVariant(variantId);
-                    // If no variant discount, check for product-level discount
                     if (discount == null || !discount.isValid()) {
                         discount = discountDAO.getActiveDiscountForProduct(productId);
                     }
                 } else {
                     discount = discountDAO.getActiveDiscountForProduct(productId);
                 }
-                
+
                 if (discount != null && discount.isValid()) {
                     originalPrice = price;
                     discountedPrice = discount.calculateDiscountedPrice(price);
@@ -141,7 +147,6 @@ public class CartServlet extends HttpServlet {
                     discountType = discount.getDiscountType();
                 }
             } catch (Exception e) {
-                // If discount check fails, use original price
                 e.printStackTrace();
             }
 
@@ -163,11 +168,12 @@ public class CartServlet extends HttpServlet {
                         discountName,
                         discountType
                 );
+                item.setStoreId(storeId);
+                item.setStoreUsername(storeUsername);
                 cart.put(cartKey, item);
             } else {
                 int newQty = item.getQuantity() + quantity;
                 item.setQuantity(Math.min(newQty, stock));
-                // Update discount info if it changed
                 if (discountName != null) {
                     item.setOriginalPrice(originalPrice);
                     item.setPrice(discountedPrice);
@@ -192,3 +198,4 @@ public class CartServlet extends HttpServlet {
         }
     }
 }
+
