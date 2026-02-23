@@ -15,7 +15,7 @@ public class ProductDAO {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getType());
-            ps.setDouble(3, p.getQuantity());
+            ps.setInt(3, p.getQuantity());
             ps.setString(4, p.getQuantityUnit());
             ps.setBigDecimal(5, p.getPrice());
             ps.setBytes(6, p.getImage());
@@ -135,7 +135,7 @@ public class ProductDAO {
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getName());
             ps.setString(2, p.getType());
-            ps.setDouble(3, p.getQuantity());
+            ps.setInt(3, p.getQuantity());
             ps.setString(4, p.getQuantityUnit());
             ps.setBigDecimal(5, p.getPrice());
             ps.setBytes(6, p.getImage());

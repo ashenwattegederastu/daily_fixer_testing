@@ -4,9 +4,11 @@ import com.dailyfixer.dao.OrderDAO;
 import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.ProductVariantDAO;
 import com.dailyfixer.dao.StoreDAO;
+import com.dailyfixer.dao.UserDAO;
 import com.dailyfixer.model.CartItem;
 import com.dailyfixer.model.Order;
 import com.dailyfixer.model.OrderItem;
+import com.dailyfixer.model.ProductVariant;
 import com.dailyfixer.model.Store;
 import com.dailyfixer.model.User;
 
@@ -41,14 +43,16 @@ public class CheckoutServlet extends HttpServlet {
     private ProductDAO productDAO;
     private ProductVariantDAO variantDAO;
     private StoreDAO storeDAO;
+    private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        orderDAO = new OrderDAO();
+        orderDAO  = new OrderDAO();
         productDAO = new ProductDAO();
         variantDAO = new ProductVariantDAO();
-        storeDAO = new StoreDAO();
+        storeDAO   = new StoreDAO();
+        userDAO    = new UserDAO();
     }
 
     @Override
@@ -98,9 +102,19 @@ public class CheckoutServlet extends HttpServlet {
                 int available;
                 try {
                     if (item.getVariantId() != null) {
-                        available = variantDAO.getVariantById(item.getVariantId()).getQuantity();
+                        ProductVariant variant = variantDAO.getVariantById(item.getVariantId());
+                        if (variant == null) {
+                            response.sendRedirect("checkout.html?error=product_not_found");
+                            return;
+                        }
+                        available = variant.getQuantity();
                     } else {
-                        available = productDAO.getProductById(item.getProductId()).getQuantity();
+                        com.dailyfixer.model.Product p = productDAO.getProductById(item.getProductId());
+                        if (p == null) {
+                            response.sendRedirect("checkout.html?error=product_not_found");
+                            return;
+                        }
+                        available = p.getQuantity();
                     }
                 } catch (Exception e) {
                     response.sendRedirect("checkout.html?error=stock_check_failed");
@@ -137,11 +151,13 @@ public class CheckoutServlet extends HttpServlet {
                 Order order = new Order(orderId, firstName, lastName, email,
                         phone, address, city, productNames.toString(), storeTotal);
 
-                // Resolve store username from storeId
-                Store store = storeDAO.getStoreById(storeId);
-                if (store != null) {
-                    String username = resolveStoreUsername(store.getUserId());
-                    order.setStoreUsername(username);
+                // Resolve store username from storeId via UserDAO (avoids inline SQL)
+                if (storeId > 0) {
+                    Store store = storeDAO.getStoreById(storeId);
+                    if (store != null) {
+                        String username = userDAO.getUsernameById(store.getUserId());
+                        order.setStoreUsername(username);
+                    }
                 }
                 if (currentUser != null) {
                     order.setBuyerId(currentUser.getUserId());
@@ -155,7 +171,7 @@ public class CheckoutServlet extends HttpServlet {
 
                 // Create order_items (§3.4)
                 for (CartItem item : storeItems) {
-                    BigDecimal unitPrice = BigDecimal.valueOf(item.getPrice());
+                    BigDecimal unitPrice  = BigDecimal.valueOf(item.getPrice());
                     BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
                     OrderItem oi = new OrderItem(
                             orderId, storeId,
@@ -172,7 +188,7 @@ public class CheckoutServlet extends HttpServlet {
                 }
             }
 
-            // Clear cart and itemsToCheckout after successful order creation
+            // Clear cart and checkout queue after successful order creation
             session.removeAttribute("cart");
             session.removeAttribute("itemsToCheckout");
             session.setAttribute("currentOrder", firstOrder);
@@ -192,27 +208,9 @@ public class CheckoutServlet extends HttpServlet {
     private Map<Integer, List<CartItem>> groupByStore(Map<String, CartItem> items) {
         Map<Integer, List<CartItem>> map = new LinkedHashMap<>();
         for (CartItem item : items.values()) {
-            int sid = item.getStoreId(); // 0 if unknown
-            map.computeIfAbsent(sid, k -> new ArrayList<>()).add(item);
+            map.computeIfAbsent(item.getStoreId(), k -> new ArrayList<>()).add(item);
         }
         return map;
-    }
-
-    /** Resolve a store owner's username from user_id (used for order.store_username). */
-    private String resolveStoreUsername(int userId) {
-        try {
-            java.sql.Connection conn = com.dailyfixer.util.DBConnection.getConnection();
-            try (java.sql.PreparedStatement ps =
-                    conn.prepareStatement("SELECT username FROM users WHERE user_id = ?")) {
-                ps.setInt(1, userId);
-                java.sql.ResultSet rs = ps.executeQuery();
-                if (rs.next()) return rs.getString("username");
-            } finally {
-                conn.close();
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
     }
 
     private String generateOrderId() {

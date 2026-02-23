@@ -196,4 +196,19 @@ public class UserDAO {
         }
         return null;
     }
+
+    /** Return only the username for a given user_id. Returns null if not found. */
+    public String getUsernameById(int userId) {
+        String sql = "SELECT username FROM users WHERE user_id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getString("username");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
