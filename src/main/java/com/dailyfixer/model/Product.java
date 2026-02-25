@@ -13,6 +13,9 @@ public class Product {
     private String storeUsername;
     private String description;
     private int storeId;
+    private boolean isActive = true;
+    private java.sql.Timestamp createdAt;
+    private java.sql.Timestamp updatedAt;
 
     // Getters and Setters
     public int getProductId() {
@@ -106,6 +109,15 @@ public class Product {
     public void setStoreId(int storeId) {
         this.storeId = storeId;
     }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
+
+    public java.sql.Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(java.sql.Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public java.sql.Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(java.sql.Timestamp updatedAt) { this.updatedAt = updatedAt; }
 
     // Transient fields for variable products (not in products table)
     private boolean hasVariants;

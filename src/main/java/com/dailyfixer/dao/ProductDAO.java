@@ -9,7 +9,7 @@ import com.dailyfixer.util.DBConnection;
 public class ProductDAO {
 
     public void addProduct(Product p) throws Exception {
-        String sql = "INSERT INTO products (name, type, quantity, quantity_unit, price, image, store_username, description) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
+        String sql = "INSERT INTO products (name, type, quantity, quantity_unit, price, image, store_username, description, store_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, p.getName());
@@ -20,6 +20,12 @@ public class ProductDAO {
             ps.setBytes(6, p.getImage());
             ps.setString(7, p.getStoreUsername());
             ps.setString(8, p.getDescription());
+            if (p.getStoreId() > 0) {
+                ps.setInt(9, p.getStoreId());
+            } else {
+                ps.setNull(9, java.sql.Types.INTEGER);
+            }
+            ps.setBoolean(10, p.isActive());
             ps.executeUpdate();
 
             // Get generated product ID
@@ -38,23 +44,13 @@ public class ProductDAO {
 
     public List<Product> getAllProducts(String storeUsername) throws Exception {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM products WHERE store_username=?";
+        String sql = "SELECT * FROM products WHERE store_username=? AND is_active = TRUE";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, storeUsername);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Product p = new Product();
-                p.setProductId(rs.getInt("product_id"));
-                p.setName(rs.getString("name"));
-                p.setType(rs.getString("type"));
-                p.setQuantity(rs.getInt("quantity"));
-                p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
-                p.setImage(rs.getBytes("image"));
-                p.setDescription(rs.getString("description"));
-                p.setStoreUsername(rs.getString("store_username"));
-                list.add(p);
+                list.add(mapProduct(rs));
             }
         }
         return list;
@@ -77,16 +73,7 @@ public class ProductDAO {
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Product p = new Product();
-                p.setProductId(rs.getInt("product_id"));
-                p.setName(rs.getString("name"));
-                p.setType(rs.getString("type"));
-                p.setQuantity(rs.getInt("quantity"));
-                p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
-                p.setImage(rs.getBytes("image"));
-                p.setDescription(rs.getString("description"));
-                p.setStoreUsername(rs.getString("store_username"));
+                Product p = mapProduct(rs);
 
                 // Populate variation data
                 int variantCount = rs.getInt("variant_count");
@@ -106,26 +93,16 @@ public class ProductDAO {
     }
 
     public Product getProductById(int id) throws Exception {
-        Product p = null;
         String sql = "SELECT * FROM products WHERE product_id=?";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                p = new Product();
-                p.setProductId(rs.getInt("product_id"));
-                p.setName(rs.getString("name"));
-                p.setType(rs.getString("type"));
-                p.setQuantity(rs.getInt("quantity"));
-                p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
-                p.setImage(rs.getBytes("image"));
-                p.setDescription(rs.getString("description"));
-                p.setStoreUsername(rs.getString("store_username")); // Get store username
+                return mapProduct(rs);
             }
         }
-        return p;
+        return null;
     }
 
     public void updateProduct(Product p) throws Exception {
@@ -146,22 +123,21 @@ public class ProductDAO {
 
     /**
      * Reduce product quantity by the specified amount.
-     * 
-     * @param productId        The product ID
-     * @param quantityToReduce The quantity to reduce
-     * @return true if successful, false otherwise
+     * Returns false if insufficient stock.
      */
     public boolean reduceProductQuantity(int productId, int quantityToReduce) {
-        String sql = "UPDATE products SET quantity = GREATEST(0, quantity - ?) WHERE product_id = ?";
+        String sql = "UPDATE products SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ?";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, quantityToReduce);
             ps.setInt(2, productId);
+            ps.setInt(3, quantityToReduce);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Reduced stock for product ID " + productId + " by " + quantityToReduce);
                 return true;
             }
+            System.out.println("Insufficient stock for product ID " + productId);
             return false;
         } catch (Exception e) {
             System.err.println("Error reducing product quantity: " + e.getMessage());
@@ -181,11 +157,10 @@ public class ProductDAO {
 
     public List<Product> getProductsByCategory(String category) throws Exception {
         List<Product> list = new ArrayList<>();
-        // JOIN with users and stores to get store_id for location filtering
         String sql = "SELECT p.*, s.store_id FROM products p " +
                 "LEFT JOIN users u ON p.store_username = u.username " +
                 "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                "WHERE p.type = ?";
+                "WHERE LOWER(p.type) = LOWER(?) AND p.is_active = TRUE";
 
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -194,18 +169,67 @@ public class ProductDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Product p = new Product();
-                p.setProductId(rs.getInt("product_id"));
-                p.setName(rs.getString("name"));
-                p.setType(rs.getString("type"));
-                p.setQuantity(rs.getInt("quantity"));
-                p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
-                p.setImage(rs.getBytes("image"));
-                p.setStoreUsername(rs.getString("store_username"));
-                p.setDescription(rs.getString("description"));
-                p.setStoreId(rs.getInt("store_id")); // Set store_id for location filtering
-                list.add(p);
+                list.add(mapProduct(rs));
+            }
+        }
+        return list;
+    }
+
+    public List<Product> getProductsByCategoryPaged(String category, int page, int pageSize) throws Exception {
+        List<Product> list = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+        String sql = "SELECT p.*, s.store_id FROM products p " +
+                "LEFT JOIN users u ON p.store_username = u.username " +
+                "LEFT JOIN stores s ON u.user_id = s.user_id " +
+                "WHERE LOWER(p.type) = LOWER(?) AND p.is_active = TRUE " +
+                "LIMIT ? OFFSET ?";
+
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, category);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapProduct(rs));
+            }
+        }
+        return list;
+    }
+
+    public List<Product> searchProducts(String searchTerm, String sortBy, Double minPrice, Double maxPrice) throws Exception {
+        List<Product> list = new ArrayList<>();
+        String cleanTerm = searchTerm != null ? searchTerm.trim().toLowerCase() : "";
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.*, s.store_id FROM products p " +
+                "LEFT JOIN users u ON p.store_username = u.username " +
+                "LEFT JOIN stores s ON u.user_id = s.user_id " +
+                "WHERE p.is_active = TRUE");
+
+        if (!cleanTerm.isEmpty()) {
+            sql.append(" AND (LOWER(p.name) LIKE ? OR LOWER(p.description) LIKE ?)");
+        }
+        if (minPrice != null) sql.append(" AND p.price >= ?");
+        if (maxPrice != null) sql.append(" AND p.price <= ?");
+
+        if ("price_asc".equals(sortBy)) sql.append(" ORDER BY p.price ASC");
+        else if ("price_desc".equals(sortBy)) sql.append(" ORDER BY p.price DESC");
+        else sql.append(" ORDER BY p.name ASC");
+
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (!cleanTerm.isEmpty()) {
+                String pattern = "%" + cleanTerm + "%";
+                ps.setString(idx++, pattern);
+                ps.setString(idx++, pattern);
+            }
+            if (minPrice != null) ps.setDouble(idx++, minPrice);
+            if (maxPrice != null) ps.setDouble(idx++, maxPrice);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapProduct(rs));
             }
         }
         return list;
@@ -273,7 +297,7 @@ public class ProductDAO {
         String sql = "SELECT p.*, s.store_id FROM products p " +
                 "LEFT JOIN users u ON p.store_username = u.username " +
                 "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                "WHERE " + whereClause.toString() + " " +
+                "WHERE " + whereClause.toString() + " AND p.is_active = TRUE " +
                 orderClause.toString();
 
         try (Connection con = DBConnection.getConnection();
@@ -307,18 +331,7 @@ public class ProductDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Product p = new Product();
-                p.setProductId(rs.getInt("product_id"));
-                p.setName(rs.getString("name"));
-                p.setType(rs.getString("type"));
-                p.setQuantity(rs.getInt("quantity"));
-                p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
-                p.setImage(rs.getBytes("image"));
-                p.setStoreUsername(rs.getString("store_username"));
-                p.setDescription(rs.getString("description"));
-                p.setStoreId(rs.getInt("store_id"));
-                list.add(p);
+                list.add(mapProduct(rs));
             }
         }
         return list;
@@ -364,7 +377,7 @@ public class ProductDAO {
         String sql = "SELECT p.*, s.store_id FROM products p " +
                 "LEFT JOIN users u ON p.store_username = u.username " +
                 "LEFT JOIN stores s ON u.user_id = s.user_id " +
-                "WHERE p.type = ? AND p.product_id != ? " +
+                "WHERE p.type = ? AND p.product_id != ? AND p.is_active = TRUE " +
                 "LIMIT ?";
 
         try (Connection con = DBConnection.getConnection();
@@ -376,21 +389,28 @@ public class ProductDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Product p = new Product();
-                p.setProductId(rs.getInt("product_id"));
-                p.setName(rs.getString("name"));
-                p.setType(rs.getString("type"));
-                p.setQuantity(rs.getInt("quantity"));
-                p.setQuantityUnit(rs.getString("quantity_unit"));
-                p.setPrice(rs.getDouble("price"));
-                p.setImage(rs.getBytes("image"));
-                p.setStoreUsername(rs.getString("store_username"));
-                p.setDescription(rs.getString("description"));
-                p.setStoreId(rs.getInt("store_id"));
-                list.add(p);
+                list.add(mapProduct(rs));
             }
         }
         return list;
+    }
+
+    private Product mapProduct(ResultSet rs) throws SQLException {
+        Product p = new Product();
+        p.setProductId(rs.getInt("product_id"));
+        p.setName(rs.getString("name"));
+        p.setType(rs.getString("type"));
+        p.setQuantity(rs.getInt("quantity"));
+        p.setQuantityUnit(rs.getString("quantity_unit"));
+        p.setPrice(rs.getDouble("price"));
+        p.setImage(rs.getBytes("image"));
+        p.setStoreUsername(rs.getString("store_username"));
+        p.setDescription(rs.getString("description"));
+        try { p.setStoreId(rs.getInt("store_id")); } catch (SQLException ignored) {}
+        try { p.setActive(rs.getBoolean("is_active")); } catch (SQLException ignored) {}
+        try { p.setCreatedAt(rs.getTimestamp("created_at")); } catch (SQLException ignored) {}
+        try { p.setUpdatedAt(rs.getTimestamp("updated_at")); } catch (SQLException ignored) {}
+        return p;
     }
 
 }

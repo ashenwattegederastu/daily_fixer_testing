@@ -532,10 +532,44 @@ public class OrderDAO {
             int buyerId = rs.getInt("buyer_id");
             order.setBuyerId(rs.wasNull() ? null : buyerId);
         } catch (SQLException e) {
-            // Column doesn't exist, set to null
             order.setBuyerId(null);
         }
+        // Get store_id if column exists
+        try {
+            int storeId = rs.getInt("store_id");
+            order.setStoreId(rs.wasNull() ? null : storeId);
+        } catch (SQLException e) {
+            order.setStoreId(null);
+        }
         return order;
+    }
+
+    /**
+     * Get orders by store ID, optionally filtered by status.
+     */
+    public List<Order> getOrdersByStoreId(int storeId, String status) {
+        List<Order> orders = new ArrayList<>();
+        String sql;
+        if (status != null && !status.isBlank()) {
+            sql = "SELECT * FROM orders WHERE store_id = ? AND UPPER(TRIM(status)) = UPPER(TRIM(?)) ORDER BY created_at DESC";
+        } else {
+            sql = "SELECT * FROM orders WHERE store_id = ? ORDER BY created_at DESC";
+        }
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, storeId);
+            if (status != null && !status.isBlank()) {
+                stmt.setString(2, status);
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                orders.add(mapResultSetToOrder(rs));
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting orders by store ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return orders;
     }
 
     /**

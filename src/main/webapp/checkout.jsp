@@ -24,14 +24,14 @@
     }
     
     // First check if itemsToCheckout already exists in session (from previous page load)
-Map<Integer, CartItem> itemsToCheckout = (Map<Integer, CartItem>) session.getAttribute("itemsToCheckout");
+Map<String, CartItem> itemsToCheckout = (Map<String, CartItem>) session.getAttribute("itemsToCheckout");
 
 // If not in session, build from cart or Buy Now parameters
 if (itemsToCheckout == null || itemsToCheckout.isEmpty()) {
-    itemsToCheckout = new HashMap<>();
+    itemsToCheckout = new java.util.LinkedHashMap<>();
     
     // Get cart from session
-    Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+    Map<String, CartItem> cart = (Map<String, CartItem>) session.getAttribute("cart");
 
     if (cart != null && !cart.isEmpty()) {
         itemsToCheckout.putAll(cart);
@@ -121,7 +121,7 @@ if (itemsToCheckout == null || itemsToCheckout.isEmpty()) {
                 discountName,
                 discountType
             );
-            int cartKey = variantId != null ? variantId : productId;
+            String cartKey = variantId != null ? "V-" + variantId : "P-" + productId;
             itemsToCheckout.put(cartKey, item);
         }
     }

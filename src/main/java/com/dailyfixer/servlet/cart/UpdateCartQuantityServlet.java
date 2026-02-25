@@ -47,21 +47,21 @@ public class UpdateCartQuantityServlet extends HttpServlet {
             }
 
             HttpSession session = request.getSession();
-            Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+            Map<String, CartItem> cart = (Map<String, CartItem>) session.getAttribute("cart");
 
             if (cart == null || cart.isEmpty()) {
                 out.print("{\"error\":\"Cart is empty\"}");
                 return;
             }
 
-            // Determine the cart key: use cartKey parameter if provided, otherwise use variantId if exists, else productId
-            Integer cartKey;
+            // Determine the cart key
+            String cartKey;
             if (cartKeyStr != null && !cartKeyStr.isBlank()) {
-                cartKey = Integer.parseInt(cartKeyStr);
+                cartKey = cartKeyStr;
             } else if (variantIdStr != null && !variantIdStr.isBlank()) {
-                cartKey = Integer.parseInt(variantIdStr);
+                cartKey = "V-" + variantIdStr;
             } else {
-                cartKey = productId;
+                cartKey = "P-" + productId;
             }
 
             if (!cart.containsKey(cartKey)) {

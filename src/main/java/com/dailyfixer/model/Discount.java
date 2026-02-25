@@ -11,6 +11,7 @@ public class Discount {
     private Timestamp startDate;
     private Timestamp endDate;
     private String storeUsername;
+    private Integer storeId;
     private boolean isActive;
 
     public Discount() {}
@@ -47,6 +48,9 @@ public class Discount {
 
     public String getStoreUsername() { return storeUsername; }
     public void setStoreUsername(String storeUsername) { this.storeUsername = storeUsername; }
+
+    public Integer getStoreId() { return storeId; }
+    public void setStoreId(Integer storeId) { this.storeId = storeId; }
 
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }

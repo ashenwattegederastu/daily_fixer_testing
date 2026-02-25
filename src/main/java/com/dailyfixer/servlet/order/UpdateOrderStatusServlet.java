@@ -91,6 +91,8 @@ public class UpdateOrderStatusServlet extends HttpServlet {
                "PROCESSING".equals(status) ||
                "OUT_FOR_DELIVERY".equals(status) ||
                "DELIVERED".equals(status) ||
-               "PAID".equals(status); // Allow PAID for backward compatibility
+               "PAID".equals(status) ||
+               "CANCELLED".equals(status) ||
+               "FAILED".equals(status);
     }
 }

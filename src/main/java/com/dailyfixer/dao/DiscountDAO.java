@@ -241,6 +241,7 @@ public class DiscountDAO {
         discount.setEndDate(rs.getTimestamp("end_date"));
         discount.setStoreUsername(rs.getString("store_username"));
         discount.setActive(rs.getBoolean("is_active"));
+        try { discount.setStoreId(rs.getInt("store_id")); } catch (SQLException ignored) {}
         return discount;
     }
 }

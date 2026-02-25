@@ -36,12 +36,12 @@ public class CartServlet extends HttpServlet {
             return;
         }
 
-        Map<Integer, CartItem> cart;
+        Map<String, CartItem> cart;
         Object obj = session.getAttribute("cart");
 
         if (obj instanceof Map<?, ?>) {
             @SuppressWarnings("unchecked")
-            Map<Integer, CartItem> tempCart = (Map<Integer, CartItem>) obj;
+            Map<String, CartItem> tempCart = (Map<String, CartItem>) obj;
             cart = tempCart;
         } else {
             cart = new HashMap<>();
@@ -107,9 +107,8 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            // Use variantId as part of cart key if variant exists
-            // This allows same product with different variants to be separate cart items
-            int cartKey = variantId != null ? variantId : productId;
+            // Use string key for cart: "V-{variantId}" or "P-{productId}"
+            String cartKey = variantId != null ? "V-" + variantId : "P-" + productId;
 
             // Check for active discount
             double originalPrice = price;
