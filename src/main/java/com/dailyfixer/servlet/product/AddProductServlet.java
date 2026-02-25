@@ -9,6 +9,8 @@ import com.dailyfixer.model.Product;
 import com.dailyfixer.model.ProductVariant;
 import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.ProductVariantDAO;
+import com.dailyfixer.dao.StoreDAO;
+import com.dailyfixer.model.Store;
 import com.dailyfixer.model.User;
 
 @MultipartConfig(maxFileSize = 16177215) // 16 MB max
@@ -69,6 +71,13 @@ public class AddProductServlet extends HttpServlet {
             p.setStoreUsername(storeUsername);
             p.setDescription(description);
             if (inputStream != null) p.setImage(inputStream.readAllBytes());
+
+            // Look up store_id for this store owner
+            StoreDAO storeDAO = new StoreDAO();
+            Store store = storeDAO.getStoreByUsername(storeUsername);
+            if (store != null) {
+                p.setStoreId(store.getStoreId());
+            }
 
             // 5. Save to database and get product ID
             ProductDAO productDAO = new ProductDAO();

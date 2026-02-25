@@ -16,20 +16,10 @@ import java.util.List;
 public class OrderDAO {
 
     // SQL Statements
-    private static final String INSERT_ORDER = "INSERT INTO orders (order_id, customer_name, email, phone, address, city, "
-            +
-            "total_amount, currency, status, store_username, product_name, buyer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    // Fallback INSERT without store_username (if column doesn't exist)
-    private static final String INSERT_ORDER_FALLBACK = "INSERT INTO orders (order_id, customer_name, email, phone, address, city, "
-            +
-            "total_amount, currency, status, product_name, buyer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    // Fallback INSERT without store_username and product_name (if columns don't
-    // exist)
-    private static final String INSERT_ORDER_MINIMAL = "INSERT INTO orders (order_id, customer_name, email, phone, address, city, "
-            +
-            "total_amount, currency, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_ORDER =
+            "INSERT INTO orders (order_id, customer_name, first_name, last_name, email, phone, address, city, " +
+            "total_amount, currency, status, store_username, store_id, product_name, buyer_id) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String SELECT_ORDER_BY_ID = "SELECT * FROM orders WHERE order_id = ?";
 
@@ -95,88 +85,38 @@ public class OrderDAO {
             conn = getConnection();
             stmt = conn.prepareStatement(INSERT_ORDER);
 
-            // Combine first name and last name into customer_name
             String customerName = order.getFirstName();
             if (order.getLastName() != null && !order.getLastName().isEmpty()) {
                 customerName += " " + order.getLastName();
             }
 
-            // Try with store_username and product_name first
-            try {
-                stmt.setString(1, order.getOrderId());
-                stmt.setString(2, customerName);
-                stmt.setString(3, order.getEmail());
-                stmt.setString(4, order.getPhone());
-                stmt.setString(5, order.getAddress());
-                stmt.setString(6, order.getCity());
-                stmt.setBigDecimal(7, order.getAmount()); // Maps to total_amount in DB
-                stmt.setString(8, order.getCurrency());
-                stmt.setString(9, order.getStatus());
-                stmt.setString(10, order.getStoreUsername()); // Store username
-                stmt.setString(11, order.getProductName()); // Product name
-                if (order.getBuyerId() != null) {
-                    stmt.setInt(12, order.getBuyerId());
-                } else {
-                    stmt.setNull(12, Types.INTEGER);
-                }
-
-                int rowsAffected = stmt.executeUpdate();
-                System.out.println("Order created: " + order.getOrderId() + " | Rows affected: " + rowsAffected);
-                return rowsAffected > 0;
-            } catch (SQLException e) {
-                // If store_username or product_name column doesn't exist, try fallback
-                if (e.getMessage().contains("store_username") || e.getMessage().contains("product_name")
-                        || e.getMessage().contains("Unknown column")) {
-                    System.out.println("store_username or product_name column not found, using fallback INSERT");
-                    try {
-                        stmt = conn.prepareStatement(INSERT_ORDER_FALLBACK);
-                        stmt.setString(1, order.getOrderId());
-                        stmt.setString(2, customerName);
-                        stmt.setString(3, order.getEmail());
-                        stmt.setString(4, order.getPhone());
-                        stmt.setString(5, order.getAddress());
-                        stmt.setString(6, order.getCity());
-                        stmt.setBigDecimal(7, order.getAmount());
-                        stmt.setString(8, order.getCurrency());
-                        stmt.setString(9, order.getStatus());
-                        stmt.setString(10, order.getProductName()); // Product name
-                        if (order.getBuyerId() != null) {
-                            stmt.setInt(11, order.getBuyerId());
-                        } else {
-                            stmt.setNull(11, Types.INTEGER);
-                        }
-
-                        int rowsAffected = stmt.executeUpdate();
-                        System.out.println("Order created (fallback with product_name): " + order.getOrderId()
-                                + " | Rows affected: " + rowsAffected);
-                        return rowsAffected > 0;
-                    } catch (SQLException e2) {
-                        // If product_name also doesn't exist, use minimal INSERT
-                        if (e2.getMessage().contains("product_name") || e2.getMessage().contains("Unknown column")) {
-                            System.out.println("product_name column not found, using minimal INSERT");
-                            stmt = conn.prepareStatement(INSERT_ORDER_MINIMAL);
-                            stmt.setString(1, order.getOrderId());
-                            stmt.setString(2, customerName);
-                            stmt.setString(3, order.getEmail());
-                            stmt.setString(4, order.getPhone());
-                            stmt.setString(5, order.getAddress());
-                            stmt.setString(6, order.getCity());
-                            stmt.setBigDecimal(7, order.getAmount());
-                            stmt.setString(8, order.getCurrency());
-                            stmt.setString(9, order.getStatus());
-
-                            int rowsAffected = stmt.executeUpdate();
-                            System.out.println("Order created (minimal): " + order.getOrderId() + " | Rows affected: "
-                                    + rowsAffected);
-                            return rowsAffected > 0;
-                        } else {
-                            throw e2; // Re-throw if it's a different error
-                        }
-                    }
-                } else {
-                    throw e; // Re-throw if it's a different error
-                }
+            stmt.setString(1, order.getOrderId());
+            stmt.setString(2, customerName);
+            stmt.setString(3, order.getFirstName());
+            stmt.setString(4, order.getLastName());
+            stmt.setString(5, order.getEmail());
+            stmt.setString(6, order.getPhone());
+            stmt.setString(7, order.getAddress());
+            stmt.setString(8, order.getCity());
+            stmt.setBigDecimal(9, order.getAmount());
+            stmt.setString(10, order.getCurrency());
+            stmt.setString(11, order.getStatus());
+            stmt.setString(12, order.getStoreUsername());
+            if (order.getStoreId() != null) {
+                stmt.setInt(13, order.getStoreId());
+            } else {
+                stmt.setNull(13, Types.INTEGER);
             }
+            stmt.setString(14, order.getProductName());
+            if (order.getBuyerId() != null) {
+                stmt.setInt(15, order.getBuyerId());
+            } else {
+                stmt.setNull(15, Types.INTEGER);
+            }
+
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Order created: " + order.getOrderId() + " | Rows affected: " + rowsAffected);
+            return rowsAffected > 0;
 
         } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error creating order: " + e.getMessage());
@@ -486,21 +426,25 @@ public class OrderDAO {
         Order order = new Order();
         order.setOrderId(rs.getString("order_id"));
 
-        // Split customer_name into first_name and last_name
-        String customerName = rs.getString("customer_name");
-        if (customerName != null && !customerName.isEmpty()) {
-            String[] nameParts = customerName.trim().split("\\s+", 2);
-            if (nameParts.length > 0) {
-                order.setFirstName(nameParts[0]);
-                order.setLastName(nameParts.length > 1 ? nameParts[1] : "");
-            } else {
-                order.setFirstName(customerName);
-                order.setLastName("");
-            }
-        } else {
-            order.setFirstName("");
-            order.setLastName("");
+        // Read first_name and last_name from dedicated columns, fall back to splitting customer_name
+        String firstName = null;
+        String lastName = null;
+        try {
+            firstName = rs.getString("first_name");
+            lastName = rs.getString("last_name");
+        } catch (SQLException e) {
+            // Columns don't exist yet, fall back to splitting customer_name
         }
+        if (firstName == null || firstName.isEmpty()) {
+            String customerName = rs.getString("customer_name");
+            if (customerName != null && !customerName.isEmpty()) {
+                String[] nameParts = customerName.trim().split("\\s+", 2);
+                firstName = nameParts[0];
+                lastName = nameParts.length > 1 ? nameParts[1] : "";
+            }
+        }
+        order.setFirstName(firstName != null ? firstName : "");
+        order.setLastName(lastName != null ? lastName : "");
 
         order.setEmail(rs.getString("email"));
         order.setPhone(rs.getString("phone"));
