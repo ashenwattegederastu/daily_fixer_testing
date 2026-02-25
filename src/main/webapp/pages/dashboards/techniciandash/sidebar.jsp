@@ -232,8 +232,8 @@
                                 id="nav-completed">Completed Bookings</a></li>
                         <li><a href="${pageContext.request.contextPath}/chats" id="nav-chats">Chats</a></li>
                         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp"
-                                id="nav-services">Service Listings</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp"
+                               id="nav-services">Service Listings</a></li>
+                        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp"
                                 id="nav-profile">My Profile</a></li>
                     </ul>
                 </div>

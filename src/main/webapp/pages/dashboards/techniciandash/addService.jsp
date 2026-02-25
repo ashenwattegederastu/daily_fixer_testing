@@ -1,220 +1,126 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="com.dailyfixer.model.User" %>
+  <%@ page import="com.dailyfixer.model.User" %>
 
-<%
-  User user = (User) session.getAttribute("currentUser");
-  if (user == null || user.getRole() == null || !"technician".equalsIgnoreCase(user.getRole())) {
-    response.sendRedirect(request.getContextPath() + "/login.jsp");
-    return;
-  }
-%>
+    <% User user=(User) session.getAttribute("currentUser"); if (user==null || user.getRole()==null ||
+      !"technician".equalsIgnoreCase(user.getRole())) { response.sendRedirect(request.getContextPath() + "/login.jsp" );
+      return; } %>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Add New Service | Daily Fixer</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <!DOCTYPE html>
+      <html lang="en">
 
-<style>
-:root {
-    --panel-color: #dcdaff;
-    --accent: #8b95ff;
-    --text-dark: #000000;
-    --text-secondary: #333333;
-    --shadow-sm: 0 4px 12px rgba(0,0,0,0.12);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.18);
-    --shadow-lg: 0 12px 36px rgba(0,0,0,0.22);
-}
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add New Service | Daily Fixer</title>
+        <!-- Use our shared framework font stack instead of directly loading Inter -->
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet">
+        <!-- Include global framework.css for styles and dark mode -->
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+      </head>
 
-/* Reset */
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: var(--text-dark);
-    display: flex;
-    min-height: 100vh;
-}
+      <body class="dashboard-layout">
 
-/* Top Navbar */
-.topbar {
-    position: fixed;
-    top:0; left:0; right:0;
-    height:76px;
-    background-color: var(--panel-color);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    z-index: 200;
-    box-shadow: var(--shadow-md);
-}
-.topbar .logo { font-size: 1.5em; font-weight: 700; color: var(--accent); }
-.topbar .panel-name { font-weight: 600; flex:1; text-align:center; color: var(--text-dark); }
-.topbar .logout-btn {
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, var(--accent), #7ba3d4);
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-sm);
-    text-decoration: none;
-}
-.topbar .logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    opacity: 0.9;
-}
+        <jsp:include page="sidebar.jsp" />
 
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background-color: var(--panel-color);
-    height: 100vh;
-    position: fixed;
-    top:0;
-    left:0;
-    padding-top: 96px;
-    box-shadow: var(--shadow-md);
-    overflow-y: auto;
-    z-index: 100;
-}
-.sidebar h3 { padding: 0 20px 12px; font-size: 0.85em; color: var(--text-dark); text-transform: uppercase; }
-.sidebar ul { list-style:none; }
-.sidebar a {
-    display:block;
-    padding:12px 20px;
-    text-decoration:none;
-    color: var(--text-dark);
-    font-weight:500;
-    border-left:3px solid transparent;
-    border-radius:0 8px 8px 0;
-    margin-bottom:4px;
-    transition: all 0.2s;
-}
-.sidebar a:hover, .sidebar a.active {
-    background-color: #f0f0ff;
-    border-left-color: var(--accent);
-}
+        <main class="dashboard-container">
 
-/* Main Content */
-.container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
-    padding:30px;
-}
-.container h2 {
-    font-size:1.6em;
-    margin-bottom:20px;
-    color: #000000;
-}
+          <div style="margin-bottom: 24px;">
+            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp"
+              class="btn-secondary"
+              style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; padding: 0.5rem 1rem;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256">
+                <path fill="currentColor"
+                  d="M224 128a8 8 0 0 1-8 8H59.31l58.35 58.34a8 8 0 0 1-11.32 11.32l-72-72a8 8 0 0 1 0-11.32l72-72a8 8 0 0 1 11.32 11.32L59.31 120H216a8 8 0 0 1 8 8Z" />
+              </svg>
+              Back to Listings
+            </a>
+          </div>
 
-.form-container {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    max-width: 700px;
-    margin: 0 auto;
-}
-.form-container h2 { margin-bottom: 20px; color: var(--text-dark); }
-label { display:block; margin-top:15px; font-weight:bold; color: var(--text-dark); }
-input[type="text"], input[type="number"], select { width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-top:5px; font-size: 14px; }
-input[type="file"] { margin-top:5px; }
-.submit-btn {
-    margin-top:25px; padding:12px 25px; background: var(--accent); color:white; border:none; border-radius:8px;
-    font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow: var(--shadow-sm);
-}
-.submit-btn:hover { 
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    opacity: 0.9;
-}
-.back-link { display:inline-block; margin-top:15px; text-decoration:none; color: var(--accent); font-weight: 500; }
-.back-link:hover { text-decoration:underline; }
-</style>
-</head>
-<body>
+          <!-- Form layout using standard framework constraints -->
+          <div class="form-container">
+            <h2 style="margin-bottom: 24px; color: var(--foreground); font-size: 1.8rem;">Add New Service</h2>
 
-<header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Technician Dashboard</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
-</header>
+            <form action="${pageContext.request.contextPath}/AddServiceServlet" method="post"
+              enctype="multipart/form-data">
 
-<aside class="sidebar">
-    <h3>Navigation</h3>
-    <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp">Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" class="active">Service Listings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp">Accepted Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp">My Profile</a></li>
-    </ul>
-</aside>
+              <div class="form-group">
+                <label>Service Name:</label>
+                <input type="text" name="serviceName" required placeholder="e.g. Broken Pipe Repair">
+              </div>
 
-<div class="container">
-  <main class="dashboard">
-    <div class="form-container">
-      <h2>Add New Service</h2>
-      <form action="${pageContext.request.contextPath}/AddServiceServlet" method="post" enctype="multipart/form-data">
-        <label>Service Name:</label>
-        <input type="text" name="serviceName" required>
+              <div class="form-group">
+                <label>Category:</label>
+                <input type="text" name="category" required placeholder="e.g. Plumbing">
+              </div>
 
-        <label>Category:</label>
-        <input type="text" name="category" required>
+              <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                  <label>Pricing Type:</label>
+                  <select name="pricingType" id="pricingType" class="filter-select"
+                    style="width: 100%; border: 2px solid var(--border); box-shadow: none;" required
+                    onchange="toggleRates()">
+                    <option value="">Select Type</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="fixed">Fixed</option>
+                  </select>
+                </div>
+              </div>
 
-        <label>Pricing Type:</label>
-        <select name="pricingType" id="pricingType" required onchange="toggleRates()">
-          <option value="">Select Type</option>
-          <option value="hourly">Hourly</option>
-          <option value="fixed">Fixed</option>
-        </select>
+              <div class="form-group" id="hourlyRateDiv" style="display:none;">
+                <label>Hourly Rate (Rs):</label>
+                <input type="number" name="hourlyRate" min="0" step="1"
+                  style="width: 100%; padding: 10px 15px; border: 2px solid var(--border); border-radius: var(--radius-md); background-color: var(--input); color: var(--foreground);">
+              </div>
 
-        <div id="hourlyRateDiv" style="display:none;">
-          <label>Hourly Rate (Rs):</label>
-          <input type="number" name="hourlyRate" min="0" step="1">
-        </div>
+              <div class="form-group" id="fixedRateDiv" style="display:none;">
+                <label>Fixed Charge (Rs):</label>
+                <input type="number" name="fixedRate" min="0" step="1"
+                  style="width: 100%; padding: 10px 15px; border: 2px solid var(--border); border-radius: var(--radius-md); background-color: var(--input); color: var(--foreground);">
+              </div>
 
-        <div id="fixedRateDiv" style="display:none;">
-          <label>Fixed Charge (Rs):</label>
-          <input type="number" name="fixedRate" min="0" step="1">
-        </div>
+              <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                  <label>Inspection Charge (Rs):</label>
+                  <input type="number" name="inspectionCharge" min="0" step="1" required
+                    style="width: 100%; padding: 10px 15px; border: 2px solid var(--border); border-radius: var(--radius-md); background-color: var(--input); color: var(--foreground);">
+                </div>
+                <div>
+                  <label>Transport Charge (Rs):</label>
+                  <input type="number" name="transportCharge" min="0" step="1" required
+                    style="width: 100%; padding: 10px 15px; border: 2px solid var(--border); border-radius: var(--radius-md); background-color: var(--input); color: var(--foreground);">
+                </div>
+              </div>
 
-        <label>Inspection Charge (Rs):</label>
-        <input type="number" name="inspectionCharge" min="0" step="1" required>
+              <div class="form-group">
+                <label>Available Dates / Schedule:</label>
+                <input type="text" name="availableDates" placeholder="E.g. Mon-Fri, 9am-5pm" required>
+              </div>
 
-        <label>Transport Charge (Rs):</label>
-        <input type="number" name="transportCharge" min="0" step="1" required>
+              <div class="form-group" style="margin-top: 24px;">
+                <label>Service Thumbnail Image:</label>
+                <input type="file" name="serviceImage" accept="image/*" style="background-color: var(--card);">
+              </div>
 
-        <label>Available Dates:</label>
-        <input type="text" name="availableDates" placeholder="E.g. Mon-Fri, 9am-5pm" required>
+              <div class="form-actions">
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Create
+                  Service</button>
+              </div>
+            </form>
+          </div>
+        </main>
 
-        <label>Service Image:</label>
-        <input type="file" name="serviceImage" accept="image/*">
+        <script>
+          function toggleRates() {
+            const type = document.getElementById('pricingType').value;
+            document.getElementById('hourlyRateDiv').style.display = type === 'hourly' ? 'block' : 'none';
+            document.getElementById('fixedRateDiv').style.display = type === 'fixed' ? 'block' : 'none';
+          }
+        </script>
 
-        <button type="submit" class="submit-btn">Add Service</button>
-      </form>
-      <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" class="back-link">← Back to Service Listings</a>
-    </div>
-  </main>
-</div>
+        <!-- Essential dark mode script -->
+        <script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
+      </body>
 
-<script>
-  function toggleRates() {
-    const type = document.getElementById('pricingType').value;
-    document.getElementById('hourlyRateDiv').style.display = type === 'hourly' ? 'block' : 'none';
-    document.getElementById('fixedRateDiv').style.display = type === 'fixed' ? 'block' : 'none';
-  }
-</script>
-
-</body>
-</html>
+      </html>
