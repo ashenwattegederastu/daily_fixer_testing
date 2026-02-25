@@ -41,7 +41,7 @@
                 <!-- Dynamic Login/Logout -->
                 <div class="nav-buttons">
                     <button id="theme-toggle-btn" class="btn-login" onclick="toggleTheme()"
-                        aria-label="Toggle dark mode"><i class="ph ph-sun"></i></button>
+                        aria-label="Toggle dark mode"><i class="ph ph-sun" style="font-size: 50rem"></i></button>
                     <c:choose>
                         <c:when test="${not empty sessionScope.currentUser}">
                             <!-- User is logged in -->
@@ -54,8 +54,7 @@
                         <c:otherwise>
                             <!-- Guest -->
                             <a href="${pageContext.request.contextPath}/login.jsp" class="btn-login">Login</a>
-                            <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="btn-signup">Sign
-                                Up</a>
+                            <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="btn-signup">Sign Up</a>
                         </c:otherwise>
                     </c:choose>
                 </div>

@@ -154,7 +154,7 @@ input[type="file"] { margin-top: 5px; }
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" class="active">Service Listings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp">Accepted Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp">My Profile</a></li>
     </ul>
 </aside>
 

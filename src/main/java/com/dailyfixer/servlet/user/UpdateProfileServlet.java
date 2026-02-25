@@ -25,7 +25,7 @@ public class UpdateProfileServlet extends HttpServlet {
             // Update session
             User updatedUser = userDAO.getUserById(userId);
             request.getSession().setAttribute("currentUser", updatedUser);
-            response.sendRedirect(request.getContextPath() + "/pages/dashboards/userdash/myProfile.jsp");
+            response.sendRedirect(request.getContextPath() + "/pages/dashboards/userdash/technicianProfile.jsp");
         } else {
             response.getWriter().println("<script>alert('Update failed. Try again.');history.back();</script>");
         }

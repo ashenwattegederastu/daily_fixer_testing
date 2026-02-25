@@ -903,23 +903,23 @@ nav.public-nav {
   z-index: 1000;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid rgba(139, 125, 216, 0.2);
   transition: all 0.3s ease;
 }
 
 .dark nav.public-nav {
-  background-color: rgba(34, 35, 48, 0.1);
+  background: rgba(20, 20, 25, 0.6);
   border-bottom: 1px solid rgba(139, 125, 216, 0.2);
 }
 
 nav.public-nav.scrolled {
-  background-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.85);
   box-shadow: var(--shadow-md);
 }
 
 .dark nav.public-nav.scrolled {
-  background-color: rgba(34, 35, 48, 0.15);
+  background: rgba(20, 20, 25, 0.8);
 }
 
 .nav-container {
@@ -949,7 +949,7 @@ nav.public-nav .logo {
   text-decoration: none;
   color: var(--foreground);
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: color 0.3s ease;
   position: relative;
 }

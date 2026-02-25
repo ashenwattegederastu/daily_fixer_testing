@@ -48,13 +48,13 @@ public class UserBookingsServlet extends HttpServlet {
 
             switch (pathInfo) {
                 case "/active":
-                    bookings = bookingDAO.getBookingsByUserAndStatuses(userId, "REQUESTED", "ACCEPTED");
+                    bookings = bookingDAO.getBookingsByUserAndStatuses(userId, "REQUESTED", "ACCEPTED",
+                            "TECHNICIAN_COMPLETED");
                     request.setAttribute("activeBookings", bookings);
                     targetJsp = "/pages/dashboards/userdash/activeBookings.jsp";
                     break;
                 case "/completed":
-                    bookings = bookingDAO.getBookingsByUserAndStatuses(userId, "TECHNICIAN_COMPLETED",
-                            "FULLY_COMPLETED");
+                    bookings = bookingDAO.getBookingsByUserAndStatuses(userId, "FULLY_COMPLETED");
                     request.setAttribute("completedBookings", bookings);
                     targetJsp = "/pages/dashboards/userdash/completedBookings.jsp";
                     break;

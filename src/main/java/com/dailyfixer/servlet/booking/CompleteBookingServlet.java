@@ -11,39 +11,41 @@ import java.io.IOException;
 
 @WebServlet("/bookings/complete")
 public class CompleteBookingServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         try {
             HttpSession session = request.getSession();
             User currentUser = (User) session.getAttribute("currentUser");
-            
+
             if (currentUser == null) {
                 response.sendRedirect(request.getContextPath() + "/login.jsp");
                 return;
             }
-            
+
             int bookingId = Integer.parseInt(request.getParameter("bookingId"));
             String completionType = request.getParameter("completionType"); // "technician" or "user"
-            
+
             BookingDAO bookingDAO = new BookingDAO();
             Booking booking = bookingDAO.getBookingById(bookingId);
-            
+
             if (booking == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Booking not found");
                 return;
             }
-            
+
             // Technician marks as completed
             if ("technician".equals(completionType)) {
                 if (booking.getTechnicianId() != currentUser.getUserId()) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Unauthorized");
                     return;
                 }
-                
+
                 if (!"ACCEPTED".equals(booking.getStatus())) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Booking must be accepted to mark as complete");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                            "Booking must be accepted to mark as complete");
                     return;
                 }
-                
+
                 bookingDAO.updateBookingStatus(bookingId, "TECHNICIAN_COMPLETED");
                 response.sendRedirect(request.getContextPath() + "/bookings/calendar?completed=true");
             }
@@ -53,22 +55,22 @@ public class CompleteBookingServlet extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Unauthorized");
                     return;
                 }
-                
+
                 if (!"TECHNICIAN_COMPLETED".equals(booking.getStatus())) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Technician must mark as complete first");
                     return;
                 }
-                
+
                 bookingDAO.updateBookingStatus(bookingId, "FULLY_COMPLETED");
-                response.sendRedirect(request.getContextPath() + "/pages/dashboards/userdash/userdashmain.jsp?confirmed=true");
-            }
-            else {
+                response.sendRedirect(request.getContextPath() + "/user/bookings/completed?confirmed=true");
+            } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid completion type");
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error completing booking: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error completing booking: " + e.getMessage());
         }
     }
 }

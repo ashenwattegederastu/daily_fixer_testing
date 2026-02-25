@@ -70,6 +70,10 @@
                                             <span class="status-badge priority-medium"
                                                   style="background: #d1fae5; color: #065f46;">Accepted</span>
                                         </c:when>
+                                        <c:when test="${b.status eq 'TECHNICIAN_COMPLETED'}">
+                                            <span class="status-badge"
+                                                  style="background: #e0e7ff; color: #3730a3;">Awaiting Confirmation</span>
+                                        </c:when>
                                         <c:otherwise>
                                             <span class="status-badge priority-low"
                                                   style="background: #fef3c7; color: #92400e;">Pending</span>
@@ -81,6 +85,14 @@
                                         <a href="${pageContext.request.contextPath}/chats?userId=${fn:replace(b.technicianName, ' ', '')}"
                                            class="btn-primary"
                                            style="padding: 4px 10px; font-size: 0.8em; margin-right: 5px;">Message</a>
+                                        <c:if test="${b.status eq 'TECHNICIAN_COMPLETED'}">
+                                            <form method="post" action="${pageContext.request.contextPath}/bookings/complete" style="display: inline;">
+                                                <input type="hidden" name="bookingId" value="${b.bookingId}">
+                                                <input type="hidden" name="completionType" value="user">
+                                                <button type="submit" class="btn-secondary"
+                                                        style="padding: 4px 10px; font-size: 0.8em; background: #4f46e5; color: white; border: none; cursor: pointer;">Confirm Completion</button>
+                                            </form>
+                                        </c:if>
                                     </div>
                                 </td>
                             </tr>

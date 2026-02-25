@@ -88,7 +88,7 @@
         <li><a href="${pageContext.request.contextPath}/bookings/calendar">My Bookings</a></li>
         <li><a href="${pageContext.request.contextPath}/chats">Chats</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp">Service Listings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp">My Profile</a></li>
     </ul>
 </aside>
 
