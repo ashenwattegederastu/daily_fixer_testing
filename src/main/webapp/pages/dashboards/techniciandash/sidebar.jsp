@@ -7,16 +7,10 @@
             !=null && currentUser.getUsername() !=null ? currentUser.getUsername() : "tech" ; String
             avatarLetter=firstName.length()> 0 ? firstName.substring(0, 1).toUpperCase() : "T";
             %>
-            <link
-                    rel="stylesheet"
-                    type="text/css"
-                    href="${pageContext.request.contextPath}/assets/icons/regular/style.css"
-            />
-            <link
-                    rel="stylesheet"
-                    type="text/css"
-                    href="${pageContext.request.contextPath}/assets/icons/fill/style.css"
-            />
+            <link rel="stylesheet" type="text/css"
+                href="${pageContext.request.contextPath}/assets/icons/regular/style.css" />
+            <link rel="stylesheet" type="text/css"
+                href="${pageContext.request.contextPath}/assets/icons/fill/style.css" />
             <style>
                 /* Fix HTML/Body height for dashboard */
                 html,
@@ -105,7 +99,7 @@
                 }
 
                 /* Icon sizing */
-                .sidebar-nav ul li a i.ph{
+                .sidebar-nav ul li a i.ph {
                     font-size: 20px;
                     line-height: 1;
                 }
@@ -238,13 +232,15 @@
                     <h3>Navigation</h3>
                     <ul>
                         <li>
-                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp" id="nav-dashboard">
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp"
+                                id="nav-dashboard">
                                 <i class="ph ph-presentation-chart"></i>
                                 Dashboard
                             </a>
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" id="nav-services">
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp"
+                                id="nav-services">
                                 <i class="ph ph-wrench"></i>
                                 Service Listings
                             </a>
@@ -268,7 +264,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/technician/bookings/completed" id="nav-completed">
+                            <a href="${pageContext.request.contextPath}/technician/bookings/completed"
+                                id="nav-completed">
                                 <i class="ph ph-check-square-offset"></i>
                                 Completed Bookings
                             </a>
@@ -280,9 +277,29 @@
                             </a>
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp" id="nav-profile">
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp"
+                                id="nav-profile">
                                 <i class="ph ph-user"></i>
                                 My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp" id="nav-my-guides">
+                                <i class="ph ph-book-open-text"></i>
+                                My Guides
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/guides/create" id="nav-create-guide">
+                                <i class="ph ph-pencil-line"></i>
+                                Create Guide
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"
+                                id="nav-guide-comments">
+                                <i class="ph ph-chat-text"></i>
+                                Guide Comments
                             </a>
                         </li>
                     </ul>
@@ -340,6 +357,12 @@
                         document.getElementById('nav-completed')?.classList.add('active');
                     } else if (currentPath.includes('/chats')) {
                         document.getElementById('nav-chats')?.classList.add('active');
+                    } else if (currentPath.includes('/my-guides')) {
+                        document.getElementById('nav-my-guides')?.classList.add('active');
+                    } else if (currentPath.includes('/guides/create')) {
+                        document.getElementById('nav-create-guide')?.classList.add('active');
+                    } else if (currentPath.includes('/guideComments')) {
+                        document.getElementById('nav-guide-comments')?.classList.add('active');
                     }
                 });
             </script>

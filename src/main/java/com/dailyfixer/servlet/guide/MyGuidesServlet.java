@@ -38,7 +38,7 @@ public class MyGuidesServlet extends HttpServlet {
         }
 
         String role = currentUser.getRole();
-        if (!"admin".equals(role) && !"volunteer".equals(role)) {
+        if (!"admin".equals(role) && !"volunteer".equals(role) && !"technician".equals(role)) {
             response.sendRedirect(request.getContextPath() + "/guides");
             return;
         }

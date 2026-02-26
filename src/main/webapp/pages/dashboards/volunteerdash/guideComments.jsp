@@ -4,7 +4,8 @@
             <%@ page import="com.dailyfixer.model.User" %>
 
                 <% User currentUser=(User) session.getAttribute("currentUser"); if (currentUser==null ||
-                    !"volunteer".equalsIgnoreCase(currentUser.getRole())) {
+                    (!"volunteer".equalsIgnoreCase(currentUser.getRole()) &&
+                    !"technician".equalsIgnoreCase(currentUser.getRole()))) {
                     response.sendRedirect(request.getContextPath() + "/pages/shared/login.jsp" ); return; } int
                     userId=currentUser.getUserId(); GuideCommentDAO dao=new GuideCommentDAO(); List<GuideComment>
                     myComments = dao.getCommentsByGuideOwner(userId);
@@ -133,7 +134,10 @@
 
                         <header class="topbar">
                             <div class="logo">Daily Fixer</div>
-                            <div class="panel-name">Volunteer Panel</div>
+                            <div class="panel-name">
+                                <%= "technician" .equalsIgnoreCase(currentUser.getRole()) ? "Technician Panel"
+                                    : "Volunteer Panel" %>
+                            </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
                                     aria-label="Toggle dark mode">🌙

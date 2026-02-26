@@ -6,7 +6,7 @@
                     <%@ page import="java.util.List" %>
 
                         <% User user=(User) session.getAttribute("currentUser"); if (user==null ||
-                            (!"admin".equals(user.getRole()) && !"volunteer".equals(user.getRole()))) {
+                            (!"admin".equals(user.getRole()) && !"volunteer".equals(user.getRole()) && !"technician".equals(user.getRole()))) {
                             response.sendRedirect(request.getContextPath() + "/login.jsp" ); return; } GuideDAO
                             guideDAO=new GuideDAO(); List<Guide> guides = guideDAO.getGuidesByCreator(user.getUserId());
                             request.setAttribute("guides", guides);
@@ -115,6 +115,7 @@
                                         <c:choose>
                                             <c:when test="${sessionScope.currentUser.role == 'admin'}">Admin Panel
                                             </c:when>
+                                            <c:when test="${sessionScope.currentUser.role == 'technician'}">Technician Panel</c:when>
                                             <c:otherwise>Volunteer Panel</c:otherwise>
                                         </c:choose>
                                     </div>
