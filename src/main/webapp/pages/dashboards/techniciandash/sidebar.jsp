@@ -7,7 +7,16 @@
             !=null && currentUser.getUsername() !=null ? currentUser.getUsername() : "tech" ; String
             avatarLetter=firstName.length()> 0 ? firstName.substring(0, 1).toUpperCase() : "T";
             %>
-
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="${pageContext.request.contextPath}/assets/icons/regular/style.css"
+            />
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="${pageContext.request.contextPath}/assets/icons/fill/style.css"
+            />
             <style>
                 /* Fix HTML/Body height for dashboard */
                 html,
@@ -85,13 +94,20 @@
                 }
 
                 .sidebar-nav ul li a {
-                    display: block;
+                    display: flex;
                     padding: 12px 20px;
                     color: var(--foreground);
                     text-decoration: none;
                     font-weight: 500;
                     transition: all 0.2s;
                     border-left: 3px solid transparent;
+                    gap: 10px;
+                }
+
+                /* Icon sizing */
+                .sidebar-nav ul li a i.ph{
+                    font-size: 20px;
+                    line-height: 1;
                 }
 
                 .sidebar-nav ul li a:hover {
@@ -175,6 +191,7 @@
                     text-decoration: none;
                     font-size: 0.9em;
                     display: block;
+                    box-sizing: border-box;
                 }
 
                 .action-btn:hover {
@@ -220,21 +237,54 @@
                 <div class="sidebar-nav">
                     <h3>Navigation</h3>
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp"
-                                id="nav-dashboard">Dashboard</a></li>
-                        <li><a href="${pageContext.request.contextPath}/availability" id="nav-availability">Set
-                                Availability</a></li>
-                        <li><a href="${pageContext.request.contextPath}/bookings/requests" id="nav-requests">Booking
-                                Requests</a></li>
-                        <li><a href="${pageContext.request.contextPath}/bookings/calendar" id="nav-calendar">My
-                                Bookings</a></li>
-                        <li><a href="${pageContext.request.contextPath}/technician/bookings/completed"
-                                id="nav-completed">Completed Bookings</a></li>
-                        <li><a href="${pageContext.request.contextPath}/chats" id="nav-chats">Chats</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp"
-                               id="nav-services">Service Listings</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp"
-                                id="nav-profile">My Profile</a></li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp" id="nav-dashboard">
+                                <i class="ph ph-presentation-chart"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" id="nav-services">
+                                <i class="ph ph-wrench"></i>
+                                Service Listings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/availability" id="nav-availability">
+                                <i class="ph ph-calendar-dots"></i>
+                                Set Availability
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/bookings/requests" id="nav-requests">
+                                <i class="ph ph-envelope"></i>
+                                Booking Requests
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/bookings/calendar" id="nav-calendar">
+                                <i class="ph ph-clipboard-text"></i>
+                                My Bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/technician/bookings/completed" id="nav-completed">
+                                <i class="ph ph-check-square-offset"></i>
+                                Completed Bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/chats" id="nav-chats">
+                                <i class="ph ph-chats-circle"></i>
+                                Chats
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/technicianProfile.jsp" id="nav-profile">
+                                <i class="ph ph-user"></i>
+                                My Profile
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -256,7 +306,10 @@
                     <div class="sidebar-actions">
                         <button id="theme-toggle-btn" class="action-btn theme-toggle" onclick="toggleTheme()"
                             aria-label="Toggle dark mode">🌙 Theme Setup</button>
-                        <a href="${pageContext.request.contextPath}/logout" class="action-btn logout-btn">Log Out</a>
+                        <a href="${pageContext.request.contextPath}/logout" class="action-btn logout-btn">
+                            <i class="ph ph-sign-out"></i>
+                            Log Out
+                        </a>
                     </div>
                 </div>
             </aside>
