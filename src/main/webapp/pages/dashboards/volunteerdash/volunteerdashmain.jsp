@@ -23,6 +23,10 @@
                             href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
                             rel="stylesheet">
                         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+                        <link rel="stylesheet" type="text/css"
+                              href="${pageContext.request.contextPath}/assets/icons/regular/style.css" />
+                        <link rel="stylesheet" type="text/css"
+                              href="${pageContext.request.contextPath}/assets/icons/fill/style.css" />
                         <style>
                             .container {
                                 flex: 1;
@@ -212,6 +216,11 @@
                                 margin: 0 auto;
                                 display: block;
                             }
+
+                            i.ph {
+                                font-size: 20px;
+                                line-height: 1;
+                            }
                         </style>
                     </head>
 
@@ -284,11 +293,11 @@
                                         Score Breakdown</h4>
                                     <div class="charts-container">
                                         <div class="chart-wrapper">
-                                            <h5>📊 Bar Chart View</h5>
+                                            <h5><i class="ph ph-chart-bar"></i> Bar Chart View</h5>
                                             <canvas id="reputationChart" width="350" height="220"></canvas>
                                         </div>
                                         <div class="chart-wrapper">
-                                            <h5>📈 Radar Chart View</h5>
+                                            <h5><i class="ph ph-graph"></i> Radar Chart View</h5>
                                             <canvas id="reputationRadarChart" width="350" height="280"></canvas>
                                         </div>
                                     </div>
@@ -325,7 +334,7 @@
                                         <% } else { %>
                                             <div
                                                 style="margin-top: 25px; text-align: center; color: var(--accent-foreground); font-weight: 600;">
-                                                🏆 You have reached the highest tier!
+                                                <i class="ph ph-trophy"></i> You have reached the highest tier!
                                             </div>
                                             <% } %>
                             </div>
@@ -340,16 +349,16 @@
                                     </p>
                                     <ul style="list-style: none; padding: 0;">
                                         <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                                            <span style="font-size: 1.2em;">🔧</span>
+                                            <span style="font-size: 1.2em;"><i class="ph ph-pipe-wrench"></i></span>
                                             <span>Reach <strong>Diagnostic Contributor</strong> tier (150+
                                                 Reputation)</span>
                                         </li>
                                         <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                                            <span style="font-size: 1.2em;">⭐</span>
+                                            <span style="font-size: 1.2em;"><i class="ph ph-star"></i></span>
                                             <span>Maintain <strong>90%+ Approval Rating</strong></span>
                                         </li>
                                         <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                                            <span style="font-size: 1.2em;">📚</span>
+                                            <span style="font-size: 1.2em;"><i class="ph ph-clipboard-text"></i></span>
                                             <span>Contribute at least <strong>10 High-Quality Guides</strong></span>
                                         </li>
                                     </ul>
@@ -396,19 +405,19 @@
                                     <div class="quick-links">
                                         <a href="${pageContext.request.contextPath}/guides/create"
                                             class="quick-link-btn">
-                                            <span>✏️</span> Create Guide
+                                            <span><i class="ph ph-pencil-ruler"></i></span> Create Guide
                                         </a>
                                         <a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"
                                             class="quick-link-btn">
-                                            <span>📂</span> My Guides
+                                            <span><i class="ph ph-folder"></i></span> My Guides
                                         </a>
                                         <a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"
                                             class="quick-link-btn">
-                                            <span>💬</span> Comments
+                                            <span><i class="ph ph-chat-circle-dots"></i></span> Comments
                                         </a>
                                         <a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp"
                                             class="quick-link-btn">
-                                            <span>👤</span> Profile
+                                            <span><i class="ph ph-user"></i></span> Profile
                                         </a>
                                     </div>
                                 </div>
