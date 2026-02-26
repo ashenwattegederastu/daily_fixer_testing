@@ -234,36 +234,7 @@
 
                 <body class="dashboard-layout">
 
-                    <header class="topbar">
-                        <div class="logo">Daily Fixer</div>
-                        <div class="panel-name">Volunteer Panel</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
-                                aria-label="Toggle dark mode">🌙 Dark</button>
-                            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
-                        </div>
-                    </header>
-
-                    <aside class="sidebar">
-                        <h3>Navigation</h3>
-                        <ul>
-                            <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp">Dashboard</a>
-                            </li>
-                            <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp">My Guides</a>
-                            </li>
-                            <li><a href="${pageContext.request.contextPath}/guides/create">Create Guide</a></li>
-                            <li><a href="${pageContext.request.contextPath}/guides">View All Guides</a></li>
-                            <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp">Guide
-                                    Comments</a></li>
-                            <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/diagnostic-trees.jsp"
-                                    class="active">Diagnostic Trees</a></li>
-                            <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp">My
-                                    Profile</a></li>
-                        </ul>
-                    </aside>
+                    <jsp:include page="/pages/dashboards/volunteerdash/sidebar.jsp" />
 
                     <main class="main-content">
                         <% if (hasAccess) { %>

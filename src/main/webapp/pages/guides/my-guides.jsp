@@ -6,9 +6,10 @@
                     <%@ page import="java.util.List" %>
 
                         <% User user=(User) session.getAttribute("currentUser"); if (user==null ||
-                            (!"admin".equals(user.getRole()) && !"volunteer".equals(user.getRole()) && !"technician".equals(user.getRole()))) {
-                            response.sendRedirect(request.getContextPath() + "/login.jsp" ); return; } GuideDAO
-                            guideDAO=new GuideDAO(); List<Guide> guides = guideDAO.getGuidesByCreator(user.getUserId());
+                            (!"admin".equals(user.getRole()) && !"volunteer".equals(user.getRole()) &&
+                            !"technician".equals(user.getRole()))) { response.sendRedirect(request.getContextPath()
+                            + "/login.jsp" ); return; } GuideDAO guideDAO=new GuideDAO(); List<Guide> guides =
+                            guideDAO.getGuidesByCreator(user.getUserId());
                             request.setAttribute("guides", guides);
                             %>
 
@@ -24,6 +25,92 @@
                                     rel="stylesheet">
                                 <link rel="stylesheet"
                                     href="${pageContext.request.contextPath}/assets/css/framework.css">
+                                <c:if test="${sessionScope.currentUser.role == 'admin'}">
+                                    <style>
+                                        .topbar {
+                                            position: fixed;
+                                            top: 0;
+                                            left: 0;
+                                            right: 0;
+                                            height: 76px;
+                                            background-color: var(--card);
+                                            border-bottom: 1px solid var(--border);
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                            padding: 0 30px;
+                                            z-index: 200;
+                                        }
+
+                                        .topbar .logo {
+                                            font-size: 1.5rem;
+                                            font-weight: 700;
+                                            color: var(--primary);
+                                        }
+
+                                        .topbar .panel-name {
+                                            font-weight: 600;
+                                            flex: 1;
+                                            text-align: center;
+                                            color: var(--foreground);
+                                        }
+
+                                        .sidebar {
+                                            width: 240px;
+                                            background-color: var(--card);
+                                            height: 100vh;
+                                            position: fixed;
+                                            top: 0;
+                                            left: 0;
+                                            padding-top: 96px;
+                                            border-right: 1px solid var(--border);
+                                            z-index: 100;
+                                        }
+
+                                        .sidebar h3 {
+                                            padding: 0 20px 15px;
+                                            font-size: 0.85rem;
+                                            color: var(--muted-foreground);
+                                            text-transform: uppercase;
+                                            letter-spacing: 0.5px;
+                                        }
+
+                                        .sidebar ul {
+                                            list-style: none;
+                                            padding: 0;
+                                            margin: 0;
+                                        }
+
+                                        .sidebar li {
+                                            margin-bottom: 5px;
+                                        }
+
+                                        .sidebar a {
+                                            display: flex;
+                                            align-items: center;
+                                            padding: 12px 20px;
+                                            color: var(--foreground);
+                                            text-decoration: none;
+                                            font-weight: 500;
+                                            border-left: 3px solid transparent;
+                                            transition: all 0.2s ease;
+                                        }
+
+                                        .sidebar a:hover,
+                                        .sidebar a.active {
+                                            background-color: var(--muted);
+                                            color: var(--primary);
+                                            border-left-color: var(--primary);
+                                        }
+
+                                        .main-content {
+                                            margin-left: 240px;
+                                            padding: 106px 30px 30px;
+                                            min-height: 100vh;
+                                        }
+                                    </style>
+                                </c:if>
+
                                 <style>
                                     .page-header {
                                         display: flex;
@@ -109,37 +196,44 @@
 
                             <body>
 
-                                <header class="topbar">
-                                    <div class="logo">Daily Fixer</div>
-                                    <div class="panel-name">
-                                        <c:choose>
-                                            <c:when test="${sessionScope.currentUser.role == 'admin'}">Admin Panel
-                                            </c:when>
-                                            <c:when test="${sessionScope.currentUser.role == 'technician'}">Technician Panel</c:when>
-                                            <c:otherwise>Volunteer Panel</c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">🌙
-                                            Dark</button>
-                                        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log
-                                            Out</a>
-                                    </div>
-                                </header>
+                                <c:choose>
+                                    <c:when test="${sessionScope.currentUser.role == 'admin'}">
+                                        <header class="topbar">
+                                            <div class="logo">Daily Fixer</div>
+                                            <div class="panel-name">Admin Panel</div>
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <button id="theme-toggle-btn" class="theme-toggle"
+                                                    onclick="toggleTheme()">🌙
+                                                    Dark</button>
+                                                <a href="${pageContext.request.contextPath}/logout"
+                                                    class="logout-btn">Log
+                                                    Out</a>
+                                            </div>
+                                        </header>
 
-                                <aside class="sidebar">
-                                    <h3>Navigation</h3>
-                                    <ul>
-                                        <li><a
-                                                href="${pageContext.request.contextPath}/pages/dashboards/${sessionScope.currentUser.role}dash/${sessionScope.currentUser.role}dashmain.jsp">Dashboard</a>
-                                        </li>
-                                        <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"
-                                                class="active">My Guides</a></li>
-                                        <li><a href="${pageContext.request.contextPath}/guides/create">Create Guide</a>
-                                        </li>
-                                        <li><a href="${pageContext.request.contextPath}/guides">View All Guides</a></li>
-                                    </ul>
-                                </aside>
+                                        <aside class="sidebar">
+                                            <h3>Navigation</h3>
+                                            <ul>
+                                                <li><a
+                                                        href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp">Dashboard</a>
+                                                </li>
+                                                <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"
+                                                        class="active">My Guides</a></li>
+                                                <li><a href="${pageContext.request.contextPath}/guides/create">Create
+                                                        Guide</a>
+                                                </li>
+                                                <li><a href="${pageContext.request.contextPath}/guides">View All
+                                                        Guides</a></li>
+                                            </ul>
+                                        </aside>
+                                    </c:when>
+                                    <c:when test="${sessionScope.currentUser.role == 'technician'}">
+                                        <jsp:include page="/pages/dashboards/techniciandash/sidebar.jsp" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <jsp:include page="/pages/dashboards/volunteerdash/sidebar.jsp" />
+                                    </c:otherwise>
+                                </c:choose>
 
                                 <main class="main-content">
                                     <div class="page-header">
