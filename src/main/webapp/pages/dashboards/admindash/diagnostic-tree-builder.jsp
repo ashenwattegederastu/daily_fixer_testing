@@ -304,40 +304,28 @@
                             background: oklch(0.6290 0.1902 156.4499 / 0.2);
                             color: oklch(0.6290 0.1902 156.4499);
                         }
+
+                        /* Main content offset for new sidebar */
+                        .main-content {
+                            flex: 1;
+                            margin-left: 240px;
+                            margin-top: 83px;
+                            padding: 40px 30px;
+                        }
+
+                        @media (max-width: 900px) {
+                            .main-content {
+                                margin-left: 0 !important;
+                                margin-top: 60px !important;
+                                padding-top: 40px !important;
+                            }
+                        }
                     </style>
                 </head>
 
                 <body class="dashboard-layout">
 
-                    <header class="topbar">
-                        <div class="logo">Daily Fixer</div>
-                        <div class="panel-name">Tree Builder</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
-                                aria-label="Toggle dark mode">🌙 Dark</button>
-                            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
-                        </div>
-                    </header>
-
-                    <aside class="sidebar">
-                        <h3>Navigation</h3>
-                        <ul>
-                            <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp">Dashboard</a>
-                            </li>
-                            <li><a href="${pageContext.request.contextPath}/admin/users">User Management</a></li>
-                            <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/admindash/flags.jsp">Flags</a>
-                            </li>
-                            <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/admindash/transactions.jsp">Transactions</a>
-                            </li>
-                            <li><a href="${pageContext.request.contextPath}/pages/guides/admin-list.jsp">Manage
-                                    Guides</a></li>
-                            <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/diagnostic-trees.jsp"
-                                    class="active">Diagnostic Trees</a></li>
-                        </ul>
-                    </aside>
+                    <jsp:include page="/pages/dashboards/admindash/sidebar.jsp" />
 
                     <main class="main-content">
                         <div class="page-header">
