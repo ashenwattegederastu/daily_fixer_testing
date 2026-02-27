@@ -40,6 +40,8 @@
                             </li>
                             <li><a href="${pageContext.request.contextPath}/admin/products"> Manage Products</a></li>
                             <li><a href="${pageContext.request.contextPath}/admin/users"> User Management</a></li>
+                            <li><a href="${pageContext.request.contextPath}/admin/volunteer-requests"> Volunteer
+                                    Requests</a></li>
                             <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/flags.jsp">
                                     Flags</a></li>
                             <li><a

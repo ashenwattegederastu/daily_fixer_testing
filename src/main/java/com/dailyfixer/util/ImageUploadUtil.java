@@ -79,6 +79,38 @@ public class ImageUploadUtil {
         return relativePath;
     }
 
+    private static final String VOLUNTEER_UPLOAD_DIR = "assets/images/uploads/volunteers";
+
+    /**
+     * Saves a volunteer-related upload (profile picture, proof image, sample guide
+     * PDF).
+     *
+     * @param filePart   The uploaded file part
+     * @param prefix     A prefix like "profile_username" or "proof_0_username"
+     * @param webAppPath The absolute path to the webapp directory
+     * @return The relative path to the saved file (for storing in DB)
+     */
+    public static String saveVolunteerUpload(Part filePart, String prefix, String webAppPath) throws IOException {
+        if (filePart == null || filePart.getSize() == 0) {
+            return null;
+        }
+
+        String fileName = prefix + "_" + System.currentTimeMillis() + getExtension(filePart);
+        String relativePath = VOLUNTEER_UPLOAD_DIR + "/" + fileName;
+
+        Path uploadPath = Paths.get(webAppPath, VOLUNTEER_UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = Paths.get(webAppPath, relativePath);
+        try (InputStream input = filePart.getInputStream()) {
+            Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return relativePath;
+    }
+
     /**
      * Deletes an image file.
      * 

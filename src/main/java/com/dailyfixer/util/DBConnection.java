@@ -23,7 +23,7 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/df_test_tech"
+    private static final String URL = "jdbc:mysql://localhost:3306/df_test_tech_vol"
             + "?useSSL=false"
             + "&serverTimezone=UTC"
             + "&allowPublicKeyRetrieval=true";
