@@ -7,6 +7,16 @@
             <meta charset="UTF-8">
             <title>Volunteer Signup - Daily Fixer</title>
             <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="${pageContext.request.contextPath}/assets/icons/regular/style.css"
+            />
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="${pageContext.request.contextPath}/assets/icons/fill/style.css"
+            />
             <style>
                 body {
                     display: flex;
@@ -136,7 +146,7 @@
                     background-color: var(--input);
                     color: var(--foreground);
                     transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
-                    font-family: var(--font-sans);
+                    font-family: var(--font-sans), serif;
                 }
 
                 .form-group input[type="email"]:focus,
@@ -393,7 +403,7 @@
                 <div class="form-container">
                     <div class="page-header">
                         <h2>Volunteer Signup</h2>
-                        <p>Join DailyFixer as a Volunteer Guide Writer</p>
+                        <p>Join DailyFixer as a Volunteer</p>
                     </div>
 
                     <!-- Step Indicator -->
@@ -419,7 +429,7 @@
 
                                     <!-- ===== STEP 1: Basic Account Info ===== -->
                                     <div class="form-step active" id="step1">
-                                        <div class="section-title">📋 Basic Account Information</div>
+                                        <div class="section-title"><i class="ph ph-user-check"></i> Basic Account Information</div>
                                         <div class="section-subtitle">These are required for your account.</div>
 
                                         <div class="form-group">
@@ -501,7 +511,7 @@
                                             <label>Profile Picture (Optional)</label>
                                             <div class="file-upload-area"
                                                 onclick="document.getElementById('profilePicture').click()">
-                                                <div class="upload-icon">📷</div>
+                                                <div class="upload-icon"><i class="ph ph-images-square"></i></div>
                                                 <div class="upload-text">Click to upload profile picture</div>
                                                 <div class="upload-hint">JPG, PNG — Max 2MB</div>
                                             </div>
@@ -522,7 +532,7 @@
 
                                     <!-- ===== STEP 2: Professional Info ===== -->
                                     <div class="form-step" id="step2">
-                                        <div class="section-title">💼 Professional Information</div>
+                                        <div class="section-title"><i class="ph ph-toolbox"></i> Professional Information</div>
                                         <div class="section-subtitle">Help us understand your expertise.</div>
 
                                         <div class="form-group">
@@ -636,7 +646,7 @@
                                             <label>Or Upload a Sample Guide PDF</label>
                                             <div class="file-upload-area"
                                                 onclick="document.getElementById('sampleGuideFile').click()">
-                                                <div class="upload-icon">📄</div>
+                                                <div class="upload-icon"><i class="ph ph-file-pdf"></i></div>
                                                 <div class="upload-text">Click to upload PDF</div>
                                                 <div class="upload-hint">PDF only — Max 5MB</div>
                                             </div>
@@ -658,7 +668,7 @@
 
                                     <!-- ===== STEP 3: Qualification Proofs ===== -->
                                     <div class="form-step" id="step3">
-                                        <div class="section-title">📎 Qualification Proof Upload</div>
+                                        <div class="section-title"><i class="ph ph-certificate"></i> Qualification Proof Upload</div>
                                         <div class="section-subtitle">Upload up to 5 images to prove your
                                             qualifications. (JPG/PNG, max 2MB each)</div>
 
@@ -692,7 +702,7 @@
                                                 <div class="form-group">
                                                     <div class="file-upload-area"
                                                         onclick="document.getElementById('proofImage_0').click()">
-                                                        <div class="upload-icon">🖼️</div>
+                                                        <div class="upload-icon"><i class="ph ph-images-square"></i> or <i class="ph ph-file-pdf"></i></div>
                                                         <div class="upload-text">Click to upload image</div>
                                                         <div class="upload-hint">JPG, PNG — Max 2MB</div>
                                                     </div>
@@ -728,7 +738,7 @@
 
                                     <!-- ===== STEP 4: Agreement & Declaration ===== -->
                                     <div class="form-step" id="step4">
-                                        <div class="section-title">✅ Agreement & Declaration</div>
+                                        <div class="section-title"><i class="ph ph-check-square-offset"></i> Agreement & Declaration</div>
                                         <div class="section-subtitle">Please read and agree to the following before
                                             submitting.</div>
 
@@ -857,41 +867,40 @@
                     const block = document.createElement('div');
                     block.className = 'proof-block';
                     block.id = 'proofBlock_' + i;
-                    block.innerHTML = `
-            <div class="proof-header">
-                <span class="proof-number">Proof #` + (i + 1) + `</span>
-                <button type="button" class="btn-remove-proof" onclick="removeProofBlock(` + i + `)">✕ Remove</button>
-            </div>
-            <div class="form-group">
-                <label>Proof Type</label>
-                <select name="proofType_` + i + `" class="filter-select" style="width:100%">
-                    <option value="">Select type...</option>
-                    <option value="Educational Certificate">Educational Certificate</option>
-                    <option value="Technical Certification">Technical Certification</option>
-                    <option value="Trade License">Trade License</option>
-                    <option value="Workshop Training Certificate">Workshop Training Certificate</option>
-                    <option value="Work Experience Letter">Work Experience Letter</option>
-                    <option value="Portfolio Screenshot">Portfolio Screenshot</option>
-                    <option value="Previous Published Guide">Previous Published Guide</option>
-                    <option value="Professional ID">Professional ID</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <div class="file-upload-area" onclick="document.getElementById('proofImage_` + i + `').click()">
-                    <div class="upload-icon">🖼️</div>
-                    <div class="upload-text">Click to upload image</div>
-                    <div class="upload-hint">JPG, PNG — Max 2MB</div>
-                </div>
-                <input type="file" id="proofImage_` + i + `" name="proofImage_` + i + `" accept="image/jpeg,image/png"
-                       style="display:none" onchange="showFileName(this, 'proofPreview_` + i + `')">
-                <div id="proofPreview_` + i + `" class="file-preview"></div>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <input type="text" name="proofDesc_` + i + `" placeholder="Brief description of this proof">
-            </div>
-        `;
+                    block.innerHTML = //this is the start of the inner html
+                        `<div class="proof-header">
+                            <span class="proof-number">Proof #` + (i + 1) + `</span>
+                            <button type="button" class="btn-remove-proof" onclick="removeProofBlock(` + i + `)">✕ Remove</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Proof Type</label>
+                            <select name="proofType_` + i + `" class="filter-select" style="width:100%">
+                                <option value="">Select type...</option>
+                                <option value="Educational Certificate">Educational Certificate</option>
+                                <option value="Technical Certification">Technical Certification</option>
+                                <option value="Trade License">Trade License</option>
+                                <option value="Workshop Training Certificate">Workshop Training Certificate</option>
+                                <option value="Work Experience Letter">Work Experience Letter</option>
+                                <option value="Portfolio Screenshot">Portfolio Screenshot</option>
+                                <option value="Previous Published Guide">Previous Published Guide</option>
+                                <option value="Professional ID">Professional ID</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="file-upload-area" onclick="document.getElementById('proofImage_` + i + `').click()">
+                                <div class="upload-icon"><i class="ph ph-images-square"></i></div>
+                                <div class="upload-text">Click to upload image</div>
+                                <div class="upload-hint">JPG, PNG — Max 2MB</div>
+                            </div>
+                            <input type="file" id="proofImage_` + i + `" name="proofImage_` + i + `" accept="image/jpeg,image/png"
+                                   style="display:none" onchange="showFileName(this, 'proofPreview_` + i + `')">
+                            <div id="proofPreview_` + i + `" class="file-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" name="proofDesc_` + i + `" placeholder="Brief description of this proof">
+                        </div>`;//this is the end of the inner html
                     container.appendChild(block);
                     proofCount++;
 

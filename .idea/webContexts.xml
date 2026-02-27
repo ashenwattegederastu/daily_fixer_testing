@@ -3,10 +3,12 @@
   <component name="WebContextManager">
     <option name="state">
       <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/admindash/volunteerRequestDetail.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/admindash" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/techniciandash/editService.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/techniciandash" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/userdash/myProfile.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/userdash" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/volunteerdash/volunteerdashmain.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/dashboards/volunteerdash" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/registerStore.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/registerVolunteer.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/store.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/store_main.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
       </map>
