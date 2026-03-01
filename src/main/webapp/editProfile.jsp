@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -43,10 +46,10 @@
         <form action="${pageContext.request.contextPath}/UpdateProfileServlet" method="post" class="profile-form">
             <input type="hidden" name="userId" value="${sessionScope.currentUser.userId}">
 
-            <label>First Name</label>
+            <label><fmt:message key="profile.first_name"/></label>
             <input type="text" name="firstName" value="${sessionScope.currentUser.firstName}" required>
 
-            <label>Last Name</label>
+            <label><fmt:message key="profile.last_name"/></label>
             <input type="text" name="lastName" value="${sessionScope.currentUser.lastName}" required>
 
             <label>Phone Number</label>
@@ -61,7 +64,7 @@
             </select>
 
             <div class="profile-buttons">
-                <button type="submit" class="btn edit">Save Changes</button>
+                <button type="submit" class="btn edit"><fmt:message key="profile.save"/></button>
                 <a href="<%= request.getContextPath() + profilePath %>" class="btn reset">Cancel</a>
             </div>
         </form>

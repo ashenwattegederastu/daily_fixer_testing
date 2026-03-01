@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +45,7 @@
                         required>
             </div>
 
-            <button type="submit" class="login-btn">Send Reset Link</button>
+            <button type="submit" class="login-btn"><fmt:message key="auth.forgot.send"/></button>
         </form>
 
         <div class="login-footer">

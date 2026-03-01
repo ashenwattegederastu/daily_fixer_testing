@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -24,27 +27,33 @@
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Admin Panel</div>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="admin.panel"/></div>
     <div style="display: flex; align-items: center; gap: 10px;">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
-        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
     </div>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp"> Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/admin/users"> User Management</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/flags.jsp" class="active"> Flags</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/transactions.jsp"> Transactions</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp"><fmt:message key="admin.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/admin/users"><fmt:message key="admin.user_management"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/flags.jsp" class="active"><fmt:message key="admin.flags"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/transactions.jsp"><fmt:message key="admin.transactions"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="main-content">
     <div class="dashboard-header">
-        <h1>Flags Management</h1>
+        <h1><fmt:message key="admin.flags.title"/></h1>
         <p>Review and manage system flags and reports</p>
     </div>
 

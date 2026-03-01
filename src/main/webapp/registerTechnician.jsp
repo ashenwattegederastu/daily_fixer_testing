@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
     <%@ page import="java.util.*" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
         <!DOCTYPE html>
         <html>
 
@@ -118,34 +121,34 @@
 
                         <div class="form-cols">
                             <div class="form-group">
-                                <label for="firstName">First Name</label>
+                                <label for="firstName"><fmt:message key="auth.register.first_name"/></label>
                                 <input type="text" name="firstName" id="firstName" placeholder="First Name" required>
                             </div>
                             <div class="form-group">
-                                <label for="lastName">Last Name</label>
+                                <label for="lastName"><fmt:message key="auth.register.last_name"/></label>
                                 <input type="text" name="lastName" id="lastName" placeholder="Last Name" required>
                             </div>
                         </div>
 
                         <div class="form-cols">
                             <div class="form-group">
-                                <label for="username">Username</label>
+                                <label for="username"><fmt:message key="auth.register.username"/></label>
                                 <input type="text" name="username" id="username" placeholder="Username" required>
                             </div>
                             <div class="form-group">
-                                <label for="email">Email</label>
+                                <label for="email"><fmt:message key="auth.register.email"/></label>
                                 <input type="email" name="email" id="email" placeholder="Email" required>
                             </div>
                         </div>
 
                         <div class="form-cols">
                             <div class="form-group">
-                                <label for="password">Password</label>
+                                <label for="password"><fmt:message key="auth.register.password"/></label>
                                 <input type="password" name="password" id="password"
                                     placeholder="Password (min 6 chars)" required>
                             </div>
                             <div class="form-group">
-                                <label for="confirmPassword">Confirm Password</label>
+                                <label for="confirmPassword"><fmt:message key="auth.register.confirm_password"/></label>
                                 <input type="password" name="confirmPassword" id="confirmPassword"
                                     placeholder="Confirm Password" required>
                             </div>
@@ -176,7 +179,7 @@
                         <button type="submit" class="btn-primary" style="width: 100%; margin-top: 24px;">Register
                             Technician</button>
                     </form>
-                    <p class="login-link">Already have an account? <a href="login.jsp">Login here</a></p>
+                    <p class="login-link"><fmt:message key="auth.register.have_account"/> <a href="login.jsp">Login here</a></p>
                 </div>
             </div>
 

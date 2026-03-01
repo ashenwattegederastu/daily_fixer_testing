@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +37,7 @@
             <input type="hidden" name="token" value="${param.token}">
             
             <div class="form-group">
-                <label for="newPassword" class="form-label">New Password</label>
+                <label for="newPassword" class="form-label"><fmt:message key="auth.reset.new_password"/></label>
                 <input
                         type="password"
                         id="newPassword"
@@ -45,7 +48,7 @@
             </div>
 
             <div class="form-group">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <label for="confirmPassword" class="form-label"><fmt:message key="auth.reset.confirm"/></label>
                 <input
                         type="password"
                         id="confirmPassword"

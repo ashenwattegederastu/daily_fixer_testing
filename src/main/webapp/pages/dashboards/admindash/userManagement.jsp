@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -22,27 +25,33 @@
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Admin Panel</div>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="admin.panel"/></div>
     <div style="display: flex; align-items: center; gap: 10px;">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
-        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
     </div>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp">Dashboard</a></li>
         <li><a href="${pageContext.request.contextPath}/admin/users" class="active">User Management</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/flags.jsp">Flags</a></li>
         <li><a href="${pageContext.request.contextPath}/pages/dashboards/admindash/transactions.jsp">Transactions</a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="main-content">
     <div class="dashboard-header">
-        <h1>User Management</h1>
+        <h1><fmt:message key="admin.users.title"/></h1>
         <p>Manage all platform users and their roles.</p>
     </div>
 
@@ -69,15 +78,15 @@
         <table>
             <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th><fmt:message key="admin.users.id"/></th>
+                <th><fmt:message key="admin.users.full_name"/></th>
+                <th><fmt:message key="admin.users.username"/></th>
+                <th><fmt:message key="admin.users.email"/></th>
+                <th><fmt:message key="common.phone"/></th>
+                <th><fmt:message key="common.address"/></th>
+                <th><fmt:message key="admin.users.role"/></th>
+                <th><fmt:message key="admin.users.status"/></th>
+                <th><fmt:message key="common.actions"/></th>
             </tr>
             </thead>
             <tbody>

@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
         <!DOCTYPE html>
         <html lang="en">
@@ -249,7 +252,7 @@
 
                 <div class="diagnostic-container" style="margin-top: 100px;">
                     <div class="page-title">
-                        <h1>Diagnostic Tool</h1>
+                        <h1><fmt:message key="diagnostic.title"/></h1>
                         <p>Find solutions to common problems with our interactive troubleshooting guides</p>
                     </div>
 

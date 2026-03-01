@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
             <% User user=(User) session.getAttribute("currentUser"); if (user==null) {
                 response.sendRedirect(request.getContextPath() + "/login.jsp" ); return; } %>
@@ -221,7 +224,7 @@
 
                     <div class="page-container">
                         <div class="page-header">
-                            <h1>Edit Guide</h1>
+                            <h1><fmt:message key="guide.edit"/></h1>
                         </div>
 
                         <c:if test="${not empty error}">

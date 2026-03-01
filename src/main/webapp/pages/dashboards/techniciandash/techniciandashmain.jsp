@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -71,62 +74,68 @@
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Technician Dashboard</div>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="tech.panel"/></div>
     <div style="display: flex; align-items: center; gap: 10px;">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
-        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
     </div>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp" class="active">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp">Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp">Service Listings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp">Accepted Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp" class="active"><fmt:message key="tech.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp"><fmt:message key="tech.bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp"><fmt:message key="tech.service_listings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp"><fmt:message key="tech.accepted_bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp"><fmt:message key="tech.completed_bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp"><fmt:message key="tech.my_profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>Dashboard</h2>
+    <h2><fmt:message key="tech.dashboard"/></h2>
     
     <div class="stats-container">
         <div class="stat-card">
             <p class="number">12</p>
-            <p>Pending Bookings</p>
+            <p><fmt:message key="tech.pending_bookings"/></p>
         </div>
         <div class="stat-card">
             <p class="number">8</p>
-            <p>Active Services</p>
+            <p><fmt:message key="tech.active_services"/></p>
         </div>
         <div class="stat-card is_new_cell">
             <p class="number">4.8</p>
-            <p>Average Rating</p>
+            <p><fmt:message key="tech.avg_rating"/></p>
         </div>
         <div class="stat-card">
             <p class="number">45</p>
-            <p>Completed Jobs</p>
+            <p><fmt:message key="tech.completed_jobs"/></p>
         </div>
     </div>
 
     <div class="driver-stats">
-        <h3>Technician Performance</h3>
+        <h3><fmt:message key="tech.performance"/></h3>
         <div class="stats-grid">
             <div class="info-box">
-                <p><strong>Total Services:</strong> 45 completed</p>
+                <p><strong><fmt:message key="tech.total_services"/></strong> 45 completed</p>
             </div>
             <div class="info-box">
                 <p><strong>Average Rating:</strong> 4.8/5.0</p>
             </div>
             <div class="info-box">
-                <p><strong>This Month:</strong> 8 services completed</p>
+                <p><strong><fmt:message key="tech.this_month"/></strong> 8 services completed</p>
             </div>
             <div class="info-box">
-                <p><strong>Response Time:</strong> 2.3 hours average</p>
+                <p><strong><fmt:message key="tech.response_time"/></strong> 2.3 hours average</p>
             </div>
         </div>
     </div>

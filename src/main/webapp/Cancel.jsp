@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <%
     User currentUser = (User) session.getAttribute("currentUser");
     boolean isLoggedIn = (currentUser != null);
@@ -650,7 +653,7 @@ nav.public-nav .logo {
                 </svg>
             </div>
 
-            <h1>Payment Cancelled</h1>
+            <h1><fmt:message key="common.cancel"/></h1>
             <p class="subtitle">
                 Your payment was cancelled or could not be completed.<br>
                 Don't worry - no charges have been made to your account.
@@ -672,7 +675,7 @@ nav.public-nav .logo {
                     🔄 Try Again
                 </a>
                 <a href="store_main.jsp" class="btn-secondary">
-                    🛒 Back to Store
+                    <fmt:message key="product.back"/>
                 </a>
             </div>
 

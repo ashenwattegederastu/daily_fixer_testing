@@ -6,6 +6,9 @@
                 <%@ page import="com.dailyfixer.model.User" %>
                 <%@ page import="com.dailyfixer.dao.StoreDAO" %>
                 <%@ page import="com.dailyfixer.dao.ProductVariantDAO" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
                     <% double userLat=0; double userLng=0; boolean hasLocationFilter=false; List<Product> products =
                         (List<Product>) request.getAttribute("products");

@@ -14,6 +14,9 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
 <%@ page import="java.math.BigDecimal" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <%
     User currentUser = (User) session.getAttribute("currentUser");
     boolean isLoggedIn = (currentUser != null);
@@ -826,7 +829,7 @@ footer {
                 </svg>
             </div>
 
-            <h1>Payment Successful!</h1>
+            <h1><fmt:message key="common.confirm"/></h1>
             <p class="subtitle">
                 Thank you for your purchase. Your order has been confirmed and will be processed shortly.
             </p>
@@ -981,10 +984,10 @@ footer {
                     📄 Download Receipt
                 </button>
                 <a href="store_main.jsp" class="btn-primary">
-                    🛒 Continue Shopping
+                    <fmt:message key="cart.continue"/>
                 </a>
                 <a href="<%=request.getContextPath()%>/index.jsp" class="btn-secondary">
-                    🏠 Back to Home
+                    <fmt:message key="nav.home"/>
                 </a>
             </div>
 

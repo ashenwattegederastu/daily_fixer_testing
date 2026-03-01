@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -95,56 +98,62 @@
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">User Panel</div>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="user.panel"/></div>
     <div class="topbar-actions">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
-        <a href="${pageContext.request.contextPath}" class="home-btn">Home</a>
-        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+        <a href="${pageContext.request.contextPath}" class="home-btn"><fmt:message key="common.home"/></a>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
     </div>
 </header>
 
 <aside class="sidebar">
-<%--    <h3>Navigation</h3>--%>
+<%--    <h3><fmt:message key="sidebar.navigation"/></h3>--%>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp" class="active">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp">Notifications</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myBookings.jsp">My Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myPurchases.jsp">My Purchases</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp" class="active"><fmt:message key="user.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp"><fmt:message key="common.notifications"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myBookings.jsp"><fmt:message key="user.my_bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myPurchases.jsp"><fmt:message key="user.my_purchases"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp"><fmt:message key="user.my_profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>Dashboard</h2>
+    <h2><fmt:message key="user.dashboard"/></h2>
     
     <div class="stats-container">
         <div class="stat-card">
             <p class="number">3</p>
-            <p>Active Bookings</p>
+            <p><fmt:message key="user.active_bookings"/></p>
         </div>
         <div class="stat-card">
             <p class="number">5</p>
-            <p>Total Purchases</p>
+            <p><fmt:message key="user.total_purchases"/></p>
         </div>
         <div class="stat-card">
             <p class="number">2</p>
-            <p>Pending Deliveries</p>
+            <p><fmt:message key="user.pending_deliveries"/></p>
         </div>
     </div>
 
     <!-- User Stats -->
     <div class="user-stats">
-        <h3>User Activity</h3>
+        <h3><fmt:message key="user.activity"/></h3>
         <div class="stats-grid">
             <div class="info-box">
-                <p><strong>Total Bookings:</strong> 12</p>
+                <p><strong><fmt:message key="user.total_bookings"/></strong> 12</p>
             </div>
             <div class="info-box">
-                <p><strong>Completed Services:</strong> 8</p>
+                <p><strong><fmt:message key="user.completed_services"/></strong> 8</p>
             </div>
             <div class="info-box">
-                <p><strong>Total Spent:</strong> $450</p>
+                <p><strong><fmt:message key="user.total_spent"/></strong> $450</p>
             </div>
         </div>
     </div>

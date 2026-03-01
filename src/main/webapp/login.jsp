@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,13 +16,13 @@
 
 <div class="login-container">
     <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
     </div>
     <div class="login-card">
         <!-- Added logo/branding section -->
         <div class="login-header">
-            <h1 class="login-title">DailyFixer</h1>
-            <p class="login-subtitle">Welcome back</p>
+            <h1 class="login-title"><fmt:message key="auth.dailyfixer"/></h1>
+            <p class="login-subtitle"><fmt:message key="auth.welcome_back"/></p>
         </div>
 
         <!-- Improved message styling with better visual hierarchy -->
@@ -35,7 +38,7 @@
 
         <form method="post" action="login" class="login-form">
             <div class="form-group">
-                <label for="username" class="form-label">Username</label>
+                <label for="username" class="form-label"><fmt:message key="auth.username"/></label>
                 <input
                         type="text"
                         id="username"
@@ -46,7 +49,7 @@
             </div>
 
             <div class="form-group">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="form-label"><fmt:message key="auth.password"/></label>
                 <input
                         type="password"
                         id="password"
@@ -57,20 +60,20 @@
             </div>
 
             <!-- Improved button styling -->
-            <button type="submit" class="login-btn">Sign In</button>
+            <button type="submit" class="login-btn"><fmt:message key="auth.sign_in"/></button>
         </form>
 
         <!-- Better organized footer links with improved styling -->
         <div class="login-footer">
             <p class="footer-text">
-                Don't have an account?
-                <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="footer-link">Create one</a>
+                <fmt:message key="auth.no_account"/>
+                <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="footer-link"><fmt:message key="auth.create_one"/></a>
             </p>
             <p class="footer-text">
-                <a href="${pageContext.request.contextPath}/forgot_password.jsp" class="footer-link">Forgot your password?</a>
+                <a href="${pageContext.request.contextPath}/forgot_password.jsp" class="footer-link"><fmt:message key="auth.forgot_password"/></a>
             </p>
             <p class="footer-text">
-                <a href="${pageContext.request.contextPath}/index.jsp" class="footer-link-secondary">← Back to Home</a>
+                <a href="${pageContext.request.contextPath}/index.jsp" class="footer-link-secondary"><fmt:message key="auth.back_home"/></a>
             </p>
         </div>
     </div>

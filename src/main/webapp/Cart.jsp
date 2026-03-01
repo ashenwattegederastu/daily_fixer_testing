@@ -2,6 +2,9 @@
     <%@ page import="com.dailyfixer.model.CartItem" %>
     <%@ page import="com.dailyfixer.model.User" %>
         <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
         
         <%
             // Check if user is logged in
@@ -268,12 +271,12 @@
                 <jsp:include page="fragment_cart.jsp" />
 
                 <div class="cart-container">
-                    <h2>Your Cart</h2>
+                    <h2><fmt:message key="cart.title"/></h2>
 
                     <% Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
                             if (cart == null || cart.isEmpty()) {
                             %>
-                            <p class="empty-cart-msg">Your cart is empty.</p>
+                            <p class="empty-cart-msg"><fmt:message key="cart.empty"/></p>
                             <p class="subtotal">Subtotal: Rs 0</p>
                             <% } else { %>
                                 <div class="cart-items">
@@ -355,7 +358,7 @@
                                             </div>
                                             <button class="remove-item" data-product-id="<%=ci.getProductId()%>"
                                                 data-variant-id="<%=ci.getVariantId() != null ? ci.getVariantId() : ""%>"
-                                                data-cart-key="<%=ci.getVariantId() != null ? ci.getVariantId() : ci.getProductId()%>">Remove</button>
+                                                data-cart-key="<%=ci.getVariantId() != null ? ci.getVariantId() : ci.getProductId()%>"><fmt:message key="cart.remove"/></button>
                                         </div>
                                         <% } %>
                                 </div>
@@ -370,7 +373,7 @@
                                     %>
                                     <div class="cart-summary">
                                         <div class="summary-row subtotal-row">
-                                            <span class="summary-label">Subtotal</span>
+                                            <span class="summary-label"><fmt:message key="cart.subtotal"/></span>
                                             <span class="summary-value" id="subtotal">Rs <%= String.format("%.2f",
                                                     subtotal) %></span>
                                         </div>

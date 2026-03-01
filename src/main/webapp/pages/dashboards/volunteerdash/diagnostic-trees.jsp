@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         <%@ page
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
             import="com.dailyfixer.model.User, com.dailyfixer.model.VolunteerStats, com.dailyfixer.dao.VolunteerStatsDAO, com.dailyfixer.util.ReputationUtils"
             %>
 
@@ -235,34 +238,38 @@
                 <body class="dashboard-layout">
 
                     <header class="topbar">
-                        <div class="logo">Daily Fixer</div>
-                        <div class="panel-name">Volunteer Panel</div>
+                        <div class="logo"><fmt:message key="app.name"/></div>
+                        <div class="panel-name"><fmt:message key="volunteer.panel"/></div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
-                                aria-label="Toggle dark mode">🌙 Dark</button>
-                            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+                                aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+                            <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
                         </div>
                     </header>
 
                     <aside class="sidebar">
-                        <h3>Navigation</h3>
+                        <h3><fmt:message key="sidebar.navigation"/></h3>
                         <ul>
                             <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp">Dashboard</a>
+                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp"><fmt:message key="volunteer.dashboard"/></a>
                             </li>
-                            <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp">My Guides</a>
+                            <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"><fmt:message key="volunteer.my_guides"/></a>
                             </li>
-                            <li><a href="${pageContext.request.contextPath}/guides/create">Create Guide</a></li>
-                            <li><a href="${pageContext.request.contextPath}/guides">View All Guides</a></li>
+                            <li><a href="${pageContext.request.contextPath}/guides/create"><fmt:message key="volunteer.create_guide"/></a></li>
+                            <li><a href="${pageContext.request.contextPath}/guides"><fmt:message key="volunteer.view_all_guides"/></a></li>
                             <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp">Guide
-                                    Comments</a></li>
+                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"><fmt:message key="volunteer.guide_comments"/></a></li>
                             <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/diagnostic-trees.jsp"
-                                    class="active">Diagnostic Trees</a></li>
+                                    class="active"><fmt:message key="volunteer.diagnostic_trees"/></a></li>
                             <li><a
-                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp">My
-                                    Profile</a></li>
+                                    href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp"><fmt:message key="volunteer.my_profile"/></a></li>
                         </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
                     </aside>
 
                     <main class="main-content">

@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
             <% User user=(User) session.getAttribute("currentUser"); if (user==null || (!"admin".equals(user.getRole())
                 && !"volunteer".equals(user.getRole()))) { response.sendRedirect(request.getContextPath() + "/login.jsp"
@@ -266,7 +269,7 @@
                             <div class="form-card">
                                 <h2>📝 Basic Information</h2>
                                 <div class="form-group">
-                                    <label for="title">Guide Title *</label>
+                                    <label for="title"><fmt:message key="guide.title_label"/> *</label>
                                     <input type="text" id="title" name="title" required
                                         placeholder="e.g., How to Fix a Leaking Faucet">
                                 </div>
@@ -282,7 +285,7 @@
                                 </div>
                                 <div class="category-row">
                                     <div class="form-group">
-                                        <label for="mainCategory">Main Category *</label>
+                                        <label for="mainCategory"><fmt:message key="guide.main_category"/> *</label>
                                         <select id="mainCategory" name="mainCategory" required
                                             onchange="handleMainCategoryChange()">
                                             <option value="">Loading categories...</option>

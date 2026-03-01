@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.dailyfixer.model.Guide" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
   List<Guide> guides = (List<Guide>) request.getAttribute("guides");
@@ -31,7 +34,7 @@
 </div>
 <% } %>
 <% } else { %>
-<p>No guides found.</p>
+<p><fmt:message key="guide.no_guides"/></p>
 <% } %>
 
 </body>

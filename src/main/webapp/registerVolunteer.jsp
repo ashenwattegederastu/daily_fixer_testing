@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
         <!DOCTYPE html>
         <html>
 
@@ -119,27 +122,27 @@
                     <form action="${pageContext.request.contextPath}/registerVolunteer" method="post" id="registerForm">
                         <div class="form-cols">
                             <div class="form-group">
-                                <label for="firstName">First Name</label>
+                                <label for="firstName"><fmt:message key="auth.register.first_name"/></label>
                                 <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
                             </div>
                             <div class="form-group">
-                                <label for="lastName">Last Name</label>
+                                <label for="lastName"><fmt:message key="auth.register.last_name"/></label>
                                 <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="username">Username</label>
+                            <label for="username"><fmt:message key="auth.register.username"/></label>
                             <input type="text" id="username" name="username" placeholder="Username" required>
                         </div>
 
                         <div class="form-cols">
                             <div class="form-group">
-                                <label for="email">Email</label>
+                                <label for="email"><fmt:message key="auth.register.email"/></label>
                                 <input type="email" id="email" name="email" placeholder="Email" required>
                             </div>
                             <div class="form-group">
-                                <label for="password">Password</label>
+                                <label for="password"><fmt:message key="auth.register.password"/></label>
                                 <input type="password" id="password" name="password" placeholder="Password" required>
                             </div>
                         </div>
@@ -190,7 +193,7 @@
 
                         <button type="submit" class="btn-primary" style="width: 100%;">Register</button>
                     </form>
-                    <p class="login-link">Already have an account? <a
+                    <p class="login-link"><fmt:message key="auth.register.have_account"/> <a
                             href="${pageContext.request.contextPath}/login.jsp">Login</a></p>
                 </div>
             </div>

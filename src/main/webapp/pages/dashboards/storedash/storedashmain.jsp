@@ -16,6 +16,9 @@
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     // Get the current user from session
@@ -599,31 +602,37 @@ a.low-stock-item {
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Store Panel</div>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="store.panel"/></div>
     <div style="display: flex; align-items: center; gap: 10px;">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
-        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
     </div>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/storedashmain.jsp" class="active">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/orders.jsp">Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/upfordelivery.jsp">Up for Delivery</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/completedorders.jsp">Completed Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/ListProductsServlet">Catalogue</a></li>
-        <li><a href="${pageContext.request.contextPath}/ListDiscountsServlet">Discounts</a></li>
-        <li><a href="${pageContext.request.contextPath}/StoreReviewsServlet">Customer Reviews</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/myProfile.jsp">Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/storedashmain.jsp" class="active"><fmt:message key="store.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/orders.jsp"><fmt:message key="store.orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/upfordelivery.jsp"><fmt:message key="store.up_for_delivery"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/completedorders.jsp"><fmt:message key="store.completed_orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/ListProductsServlet"><fmt:message key="store.catalogue"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/ListDiscountsServlet"><fmt:message key="store.discounts"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/StoreReviewsServlet"><fmt:message key="store.customer_reviews"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/myProfile.jsp"><fmt:message key="store.profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>Store Dashboard</h2>
-    <p class="dashboard-subtitle">Welcome back! Here's an overview of your store performance.</p>
+    <h2><fmt:message key="store.dashboard"/></h2>
+    <p class="dashboard-subtitle"><fmt:message key="store.welcome"/></p>
     
     <!-- Key Performance Cards -->
     <div class="cards-grid">
@@ -668,8 +677,8 @@ a.low-stock-item {
                     } 
                 } else { %>
                     <div class="low-stock-empty">
-                        <p style="font-weight: 500; margin-bottom: 4px;">All stocked!</p>
-                        <p style="font-size: 0.9em;">No low stock items to display</p>
+                        <p style="font-weight: 500; margin-bottom: 4px;"><fmt:message key="store.all_stocked"/></p>
+                        <p style="font-size: 0.9em;"><fmt:message key="store.no_low_stock"/></p>
                     </div>
                 <% } %>
             </div>
@@ -705,7 +714,7 @@ a.low-stock-item {
                     <img src="${pageContext.request.contextPath}/assets/images/power-drill.png" alt="No sales">
                     <div class="info">
                         <h4>No sales yet</h4>
-                        <p>Top seller will appear here</p>
+                        <p><fmt:message key="store.top_seller_appears"/></p>
                     </div>
                 </div>
             <% } %>
@@ -716,29 +725,29 @@ a.low-stock-item {
     <div class="stats-grid">
         <div class="stat-card">
             <div class="number"><%= allStoreOrders != null ? allStoreOrders.size() + (completedOrders != null ? completedOrders.size() : 0) : 0 %></div>
-            <p>Total Orders</p>
+            <p><fmt:message key="store.total_orders"/></p>
         </div>
         <div class="stat-card">
             <div class="number"><%= completedOrders != null ? completedOrders.size() : 0 %></div>
-            <p>Completed Orders</p>
+            <p><fmt:message key="store.completed"/></p>
         </div>
         <div class="stat-card">
             <div class="number"><%= pendingOrders != null ? pendingOrders.size() : 0 %></div>
-            <p>Pending Orders</p>
+            <p><fmt:message key="store.pending"/></p>
         </div>
         <div class="stat-card">
             <div class="number"><%= processingOrders != null ? processingOrders.size() : 0 %></div>
-            <p>Processing Orders</p>
+            <p><fmt:message key="store.processing"/></p>
         </div>
         <div class="stat-card">
             <div class="number"><%= outForDeliveryOrders != null ? outForDeliveryOrders.size() : 0 %></div>
-            <p>Up for Delivery</p>
+            <p><fmt:message key="store.delivery"/></p>
         </div>
     </div>
 
     <!-- Charts -->
     <section class="charts-section">
-        <h3>Analytics</h3>
+        <h3><fmt:message key="store.analytics"/></h3>
         <div class="charts-grid">
             <div class="chart-card">
                 <h4>Order Status</h4>

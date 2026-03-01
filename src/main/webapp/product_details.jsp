@@ -8,6 +8,9 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%!
     // Helper method to convert color name to hex code
@@ -75,7 +78,7 @@
     if (product == null) {
 %>
 <p>Product not found</p>
-<a href="store_main.jsp">Back</a>
+<a href="store_main.jsp"><fmt:message key="common.back"/></a>
 <%
         return;
     }

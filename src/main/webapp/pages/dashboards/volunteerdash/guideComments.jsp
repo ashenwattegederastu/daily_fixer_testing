@@ -2,6 +2,9 @@
     <%@ page import="java.util.*,com.dailyfixer.dao.GuideCommentDAO,com.dailyfixer.model.GuideComment" %>
         <%@ page import="java.text.SimpleDateFormat" %>
             <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
                 <% User currentUser=(User) session.getAttribute("currentUser"); if (currentUser==null ||
                     !"volunteer".equalsIgnoreCase(currentUser.getRole())) {
@@ -132,36 +135,40 @@
                     <body>
 
                         <header class="topbar">
-                            <div class="logo">Daily Fixer</div>
-                            <div class="panel-name">Volunteer Panel</div>
+                            <div class="logo"><fmt:message key="app.name"/></div>
+                            <div class="panel-name"><fmt:message key="volunteer.panel"/></div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
                                     aria-label="Toggle dark mode">🌙
                                     Dark</button>
-                                <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+                                <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
                             </div>
                         </header>
 
                         <aside class="sidebar">
-                            <h3>Navigation</h3>
+                            <h3><fmt:message key="sidebar.navigation"/></h3>
                             <ul>
                                 <li><a
-                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp">Dashboard</a>
+                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp"><fmt:message key="volunteer.dashboard"/></a>
                                 </li>
-                                <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp">My
-                                        Guides</a></li>
-                                <li><a href="${pageContext.request.contextPath}/guides/create">Create Guide</a></li>
-                                <li><a href="${pageContext.request.contextPath}/guides">View All Guides</a></li>
+                                <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"><fmt:message key="volunteer.my_guides"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/guides/create"><fmt:message key="volunteer.create_guide"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/guides"><fmt:message key="volunteer.view_all_guides"/></a></li>
                                 <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"
-                                        class="active">Guide Comments</a></li>
+                                        class="active"><fmt:message key="volunteer.guide_comments"/></a></li>
                                 <li><a
-                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp">My
-                                        Profile</a></li>
+                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp"><fmt:message key="volunteer.my_profile"/></a></li>
                             </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
                         </aside>
 
                         <main class="container">
-                            <h2>Guide Comments</h2>
+                            <h2><fmt:message key="volunteer.guide_comments"/></h2>
                             <p style="color: var(--muted-foreground); margin-bottom: 25px;">Track all feedback on your
                                 contributions.</p>
 

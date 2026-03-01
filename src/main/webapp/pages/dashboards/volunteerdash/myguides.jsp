@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.*,com.dailyfixer.dao.GuideDAO,com.dailyfixer.model.Guide" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
   User currentUser = (User) session.getAttribute("currentUser");
@@ -228,25 +231,31 @@ body {
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Volunteer Panel</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="volunteer.panel"/></div>
+    <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myguides.jsp" class="active">My Guides</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp">Guide Comments</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/notifications.jsp">Notifications</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/addGuide.jsp">Add Guide</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp"><fmt:message key="volunteer.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myguides.jsp" class="active"><fmt:message key="volunteer.my_guides"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"><fmt:message key="volunteer.guide_comments"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/notifications.jsp"><fmt:message key="common.notifications"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/addGuide.jsp"><fmt:message key="guide.create"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp"><fmt:message key="volunteer.my_profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>My Guides</h2>
+    <h2><fmt:message key="volunteer.my_guides"/></h2>
     <a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/addGuide.jsp" class="add-guide-btn">+ Add New Guide</a>
 
     <% if (myGuides != null && !myGuides.isEmpty()) { %>

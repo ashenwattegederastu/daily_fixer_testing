@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
   User user = (User) session.getAttribute("currentUser");
@@ -213,25 +216,31 @@ body {
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Driver Panel</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="driver.panel"/></div>
+    <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/driverdashmain.jsp">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/vehicleManagement.jsp">Vehicle Management</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/deliveryrequests.jsp">Delivery Requests</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/acceptedOrders.jsp">Accepted Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/completedOrders.jsp">Completed Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/myProfile.jsp" class="active">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/driverdashmain.jsp"><fmt:message key="driver.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/vehicleManagement.jsp"><fmt:message key="driver.vehicle_management"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/deliveryrequests.jsp"><fmt:message key="driver.delivery_requests"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/acceptedOrders.jsp"><fmt:message key="driver.accepted_orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/completedOrders.jsp"><fmt:message key="driver.completed_orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/myProfile.jsp" class="active"><fmt:message key="driver.my_profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>My Profile</h2>
+    <h2><fmt:message key="driver.my_profile"/></h2>
     
     <div class="profile-card">
         <div class="profile-image">

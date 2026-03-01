@@ -1,5 +1,8 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="com.dailyfixer.model.CartItem" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <head>
     <style>
