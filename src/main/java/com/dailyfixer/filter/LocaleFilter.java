@@ -37,10 +37,15 @@ public class LocaleFilter implements Filter {
 
             // Remove lang parameter from query string
             if (queryString != null) {
-                queryString = queryString.replaceAll("(&?lang=[^&]*)", "").replaceAll("^&", "");
+                queryString = queryString
+                        .replaceAll("lang=[^&]*&?", "")  // remove lang=... and optional trailing &
+                        .replaceAll("&$", "");            // remove any trailing &
+                if (queryString.isEmpty()) {
+                    queryString = null;
+                }
             }
 
-            String redirectURL = requestURI + (queryString != null && !queryString.isEmpty() ? "?" + queryString : "");
+            String redirectURL = requestURI + (queryString != null ? "?" + queryString : "");
             httpResponse.sendRedirect(redirectURL);
             return;
         }

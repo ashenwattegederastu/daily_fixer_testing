@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
             <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
                 <%@ page import="com.dailyfixer.model.User" %>
                     <%@ page import="com.dailyfixer.model.Order" %>

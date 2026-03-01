@@ -48,7 +48,7 @@
                             <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="btn-signup"><fmt:message key="nav.signup"/></a>
                         </c:otherwise>
                     </c:choose>
-                    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+                    <a href="?lang=${empty sessionScope.sessionLocale or sessionScope.sessionLocale.language == 'en' ? 'si' : 'en'}"
                        class="action-btn lang-toggle">
                        <fmt:message key="nav.lang_switch"/>
                     </a>
