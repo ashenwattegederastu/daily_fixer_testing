@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
             <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
                 <%@ page import="com.dailyfixer.model.User" %>
                     <%@ page import="com.dailyfixer.model.Order" %>
@@ -449,38 +451,44 @@
                                             <body>
 
                                                 <header class="topbar">
-                                                    <div class="logo">Daily Fixer</div>
-                                                    <div class="panel-name">User Panel</div>
+                                                    <div class="logo"><fmt:message key="app.name"/></div>
+                                                    <div class="panel-name"><fmt:message key="user.panel"/></div>
                                                     <div class="topbar-actions">
                                                         <a href="${pageContext.request.contextPath}"
-                                                            class="home-btn">Home</a>
+                                                            class="home-btn"><fmt:message key="common.home"/></a>
                                                         <a href="${pageContext.request.contextPath}/logout"
-                                                            class="logout-btn">Log Out</a>
+                                                            class="logout-btn"><fmt:message key="common.logout"/></a>
                                                     </div>
                                                 </header>
 
                                                 <aside class="sidebar">
                                                     <ul>
                                                         <li><a
-                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp">Dashboard</a>
+                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp"><fmt:message key="user.dashboard"/></a>
                                                         </li>
                                                         <li><a
-                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp">Notifications</a>
+                                                                href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp"><fmt:message key="common.notifications"/></a>
                                                         </li>
                                                         <li><a
                                                                 href="${pageContext.request.contextPath}/pages/dashboards/userdash/myBookings.jsp">My
                                                                 Bookings</a></li>
                                                         <li><a href="${pageContext.request.contextPath}/user/orders"
-                                                                class="active">My Purchases</a></li>
+                                                                class="active"><fmt:message key="user.my_purchases"/></a></li>
                                                         <li><a
                                                                 href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp">My
                                                                 Profile</a></li>
                                                     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
                                                 </aside>
 
                                                 <main class="container">
                                                     <div class="page-header">
-                                                        <h2>My Purchases</h2>
+                                                        <h2><fmt:message key="user.purchases.title"/></h2>
                                                         <p>Track your orders and view purchase history</p>
                                                     </div>
 

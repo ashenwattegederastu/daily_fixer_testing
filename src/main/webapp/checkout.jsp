@@ -8,6 +8,9 @@
 <%@ page import="com.dailyfixer.model.ProductVariant" %>
 <%@ page import="com.dailyfixer.model.Discount" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <% 
     // Check if user is logged in
@@ -157,7 +160,7 @@ if (itemsToCheckout == null || itemsToCheckout.isEmpty()) {
     </style>
 </head>
 <body>
-    <h2>Checkout Error</h2>
+    <h2><fmt:message key="checkout.title"/></h2>
     <p class="error-message"><%= errorMessage %></p>
     <a href="store_main.jsp">Back to Store</a>
 </body>
@@ -554,7 +557,7 @@ nav.public-nav .logo {
         <div class="checkout-container">
             <!-- Left: Shipping Details -->
             <div class="shipping">
-                <h2>Shipping Details</h2>
+                <h2><fmt:message key="checkout.shipping"/></h2>
                 <% String error = request.getParameter("error"); 
                    if (error != null) { %>
                     <div style="background-color: #fee; color: #c33; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #fcc;">
@@ -656,7 +659,7 @@ nav.public-nav .logo {
 
             <!-- Right: Order Summary -->
             <div class="order-summary">
-                <h2>Order Summary</h2>
+                <h2><fmt:message key="checkout.order_summary"/></h2>
 
                 <% 
                 double totalDiscount = 0; 
@@ -729,7 +732,7 @@ nav.public-nav .logo {
                 </div>
 
                 <!-- Place Order button -->
-                <button type="submit" class="place-order">Place Order</button>
+                <button type="submit" class="place-order"><fmt:message key="checkout.place_order"/></button>
             </div>
         </div>
     </form>

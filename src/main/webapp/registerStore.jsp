@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
     <%@ page import="java.util.*" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
         <!DOCTYPE html>
         <html>
 
@@ -149,17 +152,17 @@
 
                             <div class="input-row" style="margin-top:12px;">
                                 <div>
-                                    <label>Username</label>
+                                    <label><fmt:message key="auth.register.username"/></label>
                                     <input class="small" type="text" name="username" id="username" required>
                                 </div>
                                 <div>
-                                    <label>Password</label>
+                                    <label><fmt:message key="auth.register.password"/></label>
                                     <input class="small" type="password" name="password" id="password" required>
                                 </div>
                             </div>
 
                             <div style="margin-top:12px;">
-                                <label>Email</label>
+                                <label><fmt:message key="auth.register.email"/></label>
                                 <input class="small" type="email" name="email" id="email" required>
                             </div>
 
@@ -252,7 +255,7 @@
 
                         <hr style="margin-top:20px;">
 
-                        <p>Already have an account? <a href="login.jsp">Log in</a></p>
+                        <p><fmt:message key="auth.register.have_account"/> <a href="login.jsp"><fmt:message key="auth.register.login"/></a></p>
                         <p>Or go back <a href="index.jsp">Home</a></p>
 
                         <p style="font-size:12px;color:#888;margin-top:12px;">By registering you agree to our terms and

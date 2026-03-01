@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
         <!DOCTYPE html>
         <html>
 
@@ -137,8 +140,8 @@
         <body>
 
             <div class="main-content">
-                <h1 class="page-title">Join Daily Fixer</h1>
-                <p class="page-subtitle">Choose your role to get started</p>
+                <h1 class="page-title"><fmt:message key="auth.signup.title"/></h1>
+                <p class="page-subtitle"><fmt:message key="auth.signup.choose_role"/></p>
 
                 <div class="role-cards">
                     <a href="registerUser.jsp" class="role-card">
@@ -146,41 +149,41 @@
                             <img src="${pageContext.request.contextPath}/assets/images/icons/user2_signup.svg"
                                 alt="User" />
                         </div>
-                        <h3>User</h3>
+                        <h3><fmt:message key="auth.signup.user"/></h3>
                     </a>
                     <a href="registerTechnician.jsp" class="role-card">
                         <div class="role-icon">
                             <img src="${pageContext.request.contextPath}/assets/images/icons/tech2_signup.svg"
                                 alt="Technician" />
                         </div>
-                        <h3>Technician</h3>
+                        <h3><fmt:message key="auth.signup.technician"/></h3>
                     </a>
                     <a href="registerVolunteer.jsp" class="role-card">
                         <div class="role-icon">
                             <img src="${pageContext.request.contextPath}/assets/images/icons/writer_signup.svg"
                                 alt="Volunteer" />
                         </div>
-                        <h3>Volunteer</h3>
+                        <h3><fmt:message key="auth.signup.volunteer"/></h3>
                     </a>
                     <a href="registerDriver.jsp" class="role-card">
                         <div class="role-icon">
                             <img src="${pageContext.request.contextPath}/assets/images/icons/driver_signup.svg"
                                 alt="Driver" />
                         </div>
-                        <h3>Driver</h3>
+                        <h3><fmt:message key="auth.signup.driver"/></h3>
                     </a>
                     <a href="registerStore.jsp" class="role-card">
                         <div class="role-icon">
                             <img src="${pageContext.request.contextPath}/assets/images/icons/entrepreneur.png"
                                 alt="Store Owner" />
                         </div>
-                        <h3>Store Owner</h3>
+                        <h3><fmt:message key="auth.signup.store_owner"/></h3>
                     </a>
                 </div>
 
                 <div class="bottom-actions">
                     <a href="${pageContext.request.contextPath}/login.jsp" class="action-link">
-                        Already have an account? <strong>Log In</strong>
+                        <fmt:message key="auth.signup.have_account"/> <strong><fmt:message key="auth.signup.log_in"/></strong>
                     </a>
                     <a href="${pageContext.request.contextPath}/index.jsp" class="action-link">
                         Go Back Home

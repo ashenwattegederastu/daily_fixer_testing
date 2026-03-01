@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
         <!DOCTYPE html>
         <html lang="en">
@@ -196,16 +199,17 @@
 
             <div class="page-container">
                 <div class="page-header">
-                    <h1>Repair Guides</h1>
+                    <h1><fmt:message key="guide.title"/></h1>
                     <p>Learn how to fix things yourself with our community-created repair guides</p>
                 </div>
 
                 <!-- Filters -->
                 <div class="filters-section">
                     <form class="filters-form" action="${pageContext.request.contextPath}/guides" method="get">
+                        <fmt:message key="guide.search" var="searchPlaceholder"/>
                         <div class="filter-group">
                             <label for="keyword">Search</label>
-                            <input type="text" id="keyword" name="keyword" placeholder="Search guides..."
+                            <input type="text" id="keyword" name="keyword" placeholder="${searchPlaceholder}"
                                 value="${keyword}">
                         </div>
                         <div class="filter-group">
@@ -300,7 +304,7 @@
                 // Populate main category dropdown
                 function populateMainCategories() {
                     const mainSelect = document.getElementById('mainCategory');
-                    mainSelect.innerHTML = '<option value="">All Categories</option>';
+                    mainSelect.innerHTML = '<option value=""><fmt:message key="guide.all_categories"/></option>';
 
                     categoriesData.forEach(cat => {
                         const option = document.createElement('option');

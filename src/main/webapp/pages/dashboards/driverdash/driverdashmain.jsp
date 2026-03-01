@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -69,56 +72,62 @@
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Driver Panel</div>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="driver.panel"/></div>
     <div style="display: flex; align-items: center; gap: 10px;">
-        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
-        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
     </div>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/driverdashmain.jsp" class="active">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/vehicleManagement.jsp">Vehicle Management</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/deliveryrequests.jsp">Delivery Requests</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/acceptedOrders.jsp">Accepted Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/completedOrders.jsp">Completed Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/driverdashmain.jsp" class="active"><fmt:message key="driver.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/vehicleManagement.jsp"><fmt:message key="driver.vehicle_management"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/deliveryrequests.jsp"><fmt:message key="driver.delivery_requests"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/acceptedOrders.jsp"><fmt:message key="driver.accepted_orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/completedOrders.jsp"><fmt:message key="driver.completed_orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/myProfile.jsp"><fmt:message key="driver.my_profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>Dashboard</h2>
+    <h2><fmt:message key="driver.dashboard"/></h2>
     
     <div class="stats-container">
         <div class="stat-card">
             <p class="number">5</p>
-            <p>Site Visits Today</p>
+            <p><fmt:message key="driver.site_visits_today"/></p>
         </div>
         <div class="stat-card">
             <p class="number">3</p>
-            <p>Site Visits Month</p>
+            <p><fmt:message key="driver.site_visits_month"/></p>
         </div>
         <div class="stat-card">
             <p class="number">2</p>
-            <p>Current User Count</p>
+            <p><fmt:message key="driver.current_users"/></p>
         </div>
     </div>
 
     <!-- Driver Stats -->
     <div class="driver-stats">
-        <h3>Driver Stats</h3>
+        <h3><fmt:message key="driver.stats"/></h3>
         <div class="stats-grid">
             <div class="info-box">
-                <p><strong>Total Deliveries:</strong> 342</p>
+                <p><strong><fmt:message key="driver.total_deliveries"/></strong> 342</p>
             </div>
             <div class="info-box">
-                <p><strong>Driver Rating:</strong> 4.9/5</p>
+                <p><strong><fmt:message key="driver.driver_rating"/></strong> 4.9/5</p>
             </div>
             <div class="info-box">
-                <p><strong>This Month:</strong> 28 deliveries</p>
+                <p><strong><fmt:message key="driver.this_month"/></strong> 28 deliveries</p>
             </div>
         </div>
     </div>

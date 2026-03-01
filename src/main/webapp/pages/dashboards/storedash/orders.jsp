@@ -6,6 +6,9 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     // Get the currently logged-in user from session
@@ -694,36 +697,42 @@ td .status {
 <body class="dashboard-layout">
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Store Panel</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="store.panel"/></div>
+    <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/storedashmain.jsp">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/orders.jsp" class="active">Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/upfordelivery.jsp">Up for Delivery</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/completedorders.jsp">Completed Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/ListProductsServlet">Catalogue</a></li>
-        <li><a href="${pageContext.request.contextPath}/ListDiscountsServlet">Discounts</a></li>
-        <li><a href="${pageContext.request.contextPath}/StoreReviewsServlet">Customer Reviews</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/myProfile.jsp">Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/storedashmain.jsp"><fmt:message key="store.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/orders.jsp" class="active"><fmt:message key="store.orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/upfordelivery.jsp"><fmt:message key="store.up_for_delivery"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/completedorders.jsp"><fmt:message key="store.completed_orders"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/ListProductsServlet"><fmt:message key="store.catalogue"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/ListDiscountsServlet"><fmt:message key="store.discounts"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/StoreReviewsServlet"><fmt:message key="store.customer_reviews"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/storedash/myProfile.jsp"><fmt:message key="store.profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
-    <h2>Orders</h2>
+    <h2><fmt:message key="store.orders.title"/></h2>
     
     <table>
         <thead>
             <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total</th>
+                <th><fmt:message key="store.orders.id"/></th>
+                <th><fmt:message key="store.orders.customer"/></th>
+                <th><fmt:message key="store.orders.date"/></th>
+                <th><fmt:message key="store.orders.status"/></th>
+                <th><fmt:message key="store.orders.total"/></th>
                 <th>Action</th>
             </tr>
         </thead>

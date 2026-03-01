@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,7 +51,7 @@
     </div>
 
     <div class="form-group">
-      <label for="newPassword">New Password</label>
+      <label for="newPassword"><fmt:message key="auth.reset.new_password"/></label>
       <input type="password" id="newPassword" name="newPassword" minlength="6" required>
     </div>
 
@@ -58,7 +61,7 @@
     </div>
 
     <div class="btn-container">
-      <button type="submit">Reset Password</button>
+      <button type="submit"><fmt:message key="auth.reset.submit"/></button>
       <button type="button" class="cancel" onclick="history.back()">Cancel</button>
     </div>
   </form>

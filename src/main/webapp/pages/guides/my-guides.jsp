@@ -4,6 +4,9 @@
             <%@ page import="com.dailyfixer.dao.GuideDAO" %>
                 <%@ page import="com.dailyfixer.model.Guide" %>
                     <%@ page import="java.util.List" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
                         <% User user=(User) session.getAttribute("currentUser"); if (user==null ||
                             (!"admin".equals(user.getRole()) && !"volunteer".equals(user.getRole()))) {
@@ -134,7 +137,7 @@
                                         </li>
                                         <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"
                                                 class="active">My Guides</a></li>
-                                        <li><a href="${pageContext.request.contextPath}/guides/create">Create Guide</a>
+                                        <li><a href="${pageContext.request.contextPath}/guides/create"><fmt:message key="guide.create"/></a>
                                         </li>
                                         <li><a href="${pageContext.request.contextPath}/guides">View All Guides</a></li>
                                     </ul>
@@ -142,7 +145,7 @@
 
                                 <main class="main-content">
                                     <div class="page-header">
-                                        <h1>My Guides</h1>
+                                        <h1><fmt:message key="guide.my_guides"/></h1>
                                         <a href="${pageContext.request.contextPath}/guides/create" class="btn-primary">+
                                             Create New Guide</a>
                                     </div>

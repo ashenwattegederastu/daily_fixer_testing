@@ -1,20 +1,23 @@
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <footer class="footer">
   <div class="footer-container">
     <div class="footer-logo">
-      <h2>Daily Fixer</h2>
-      <p>Your trusted repair assistant</p>
+      <h2><fmt:message key="footer.logo"/></h2>
+      <p><fmt:message key="footer.tagline"/></p>
     </div>
     <div class="footer-links">
-      <h3>Quick Links</h3>
+      <h3><fmt:message key="footer.quick_links"/></h3>
       <ul>
-        <li><a href="${pageContext.request.contextPath}/index.jsp">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/shared/login.jsp">Log in</a></li>
+        <li><a href="${pageContext.request.contextPath}/index.jsp"><fmt:message key="footer.home"/></a></li>
+        <li><a href="#about"><fmt:message key="footer.about"/></a></li>
+        <li><a href="#services"><fmt:message key="footer.services"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/shared/login.jsp"><fmt:message key="footer.login"/></a></li>
       </ul>
     </div>
     <div class="footer-contact">
-      <h3>Contact</h3>
+      <h3><fmt:message key="footer.contact"/></h3>
       <p>Email: support@dailyfixer.com</p>
       <p>Phone: +94 77 123 4567</p>
       <div class="socials">
@@ -25,6 +28,6 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 Daily Fixer. All rights reserved.</p>
+    <p><fmt:message key="footer.copyright"/></p>
   </div>
 </footer>

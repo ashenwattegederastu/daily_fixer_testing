@@ -4,6 +4,9 @@
             import="com.dailyfixer.model.User,com.dailyfixer.model.VolunteerStats,com.dailyfixer.dao.VolunteerStatsDAO,com.dailyfixer.model.Guide,java.util.List"
             %>
             <%@ page trimDirectiveWhitespaces="true" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
                 <% User user=(User) session.getAttribute("currentUser"); if (user==null ||
                     !"volunteer".equals(user.getRole())) { response.sendRedirect(request.getContextPath() + "/login.jsp"
@@ -218,65 +221,64 @@
                     <body>
 
                         <header class="topbar">
-                            <div class="logo">Daily Fixer</div>
-                            <div class="panel-name">Volunteer Panel</div>
+                            <div class="logo"><fmt:message key="app.name"/></div>
+                            <div class="panel-name"><fmt:message key="volunteer.panel"/></div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()"
-                                    aria-label="Toggle dark mode">🌙 Dark</button>
-                                <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+                                    aria-label="Toggle dark mode"><fmt:message key="theme.dark"/></button>
+                                <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
                             </div>
                         </header>
 
                         <aside class="sidebar">
-                            <h3>Navigation</h3>
+                            <h3><fmt:message key="sidebar.navigation"/></h3>
                             <ul>
                                 <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/volunteerdashmain.jsp"
-                                        class="active">Dashboard</a></li>
-                                <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp">My
-                                        Guides</a></li>
-                                <li><a href="${pageContext.request.contextPath}/guides/create">Create Guide</a></li>
-                                <li><a href="${pageContext.request.contextPath}/guides">View All Guides</a></li>
-                                <li><a
-                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp">Guide
-                                        Comments</a></li>
-                                <li><a
-                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/diagnostic-trees.jsp">Diagnostic
-                                        Trees</a></li>
-                                <li><a
-                                        href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp">My
-                                        Profile</a></li>
+                                        class="active"><fmt:message key="volunteer.dashboard"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"><fmt:message key="volunteer.my_guides"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/guides/create"><fmt:message key="volunteer.create_guide"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/guides"><fmt:message key="volunteer.view_all_guides"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"><fmt:message key="volunteer.guide_comments"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/diagnostic-trees.jsp"><fmt:message key="volunteer.diagnostic_trees"/></a></li>
+                                <li><a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp"><fmt:message key="volunteer.my_profile"/></a></li>
                             </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
                         </aside>
 
                         <main class="container">
-                            <h2>Dashboard</h2>
+                            <h2><fmt:message key="volunteer.dashboard"/></h2>
 
                             <div class="volunteer-stats">
-                                <h3>Overview</h3>
+                                <h3><fmt:message key="volunteer.overview"/></h3>
                                 <div class="stats-grid">
                                     <div class="stat-card">
                                         <p class="number">
                                             <%= stats.getTotalGuides() %>
                                         </p>
-                                        <p class="label">Total Guides</p>
+                                        <p class="label"><fmt:message key="volunteer.total_guides"/></p>
                                     </div>
                                     <div class="stat-card">
                                         <p class="number">
                                             <%= stats.getTotalViews() %>
                                         </p>
-                                        <p class="label">Total Views</p>
+                                        <p class="label"><fmt:message key="volunteer.total_views"/></p>
                                     </div>
                                     <div class="stat-card">
                                         <p class="number">
                                             <%= stats.getTotalLikes() %>
                                         </p>
-                                        <p class="label">Total Likes</p>
+                                        <p class="label"><fmt:message key="volunteer.total_likes"/></p>
                                     </div>
                                     <div class="stat-card">
                                         <p class="number">
                                             <%= stats.getApprovalRating() %>%
                                         </p>
-                                        <p class="label">Approval Rating</p>
+                                        <p class="label"><fmt:message key="volunteer.approval_rating"/></p>
                                     </div>
                                 </div>
                             </div>
@@ -285,32 +287,30 @@
                             <div class="volunteer-stats">
                                 <div
                                     style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
-                                    <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Reputation &
-                                        Badges</h3>
+                                    <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;"><fmt:message key="volunteer.reputation"/></h3>
                                     <a href="${pageContext.request.contextPath}/leaderboard"
-                                        style="font-size: 0.9em; color: var(--primary); text-decoration: none; font-weight: 600;">View
-                                        Leaderboard →</a>
+                                        style="font-size: 0.9em; color: var(--primary); text-decoration: none; font-weight: 600;"><fmt:message key="volunteer.view_leaderboard"/></a>
                                 </div>
                                 <div class="stats-grid">
                                     <div class="stat-card">
                                         <p class="number" style="color: var(--primary);">
                                             <%= stats.getReputationScore() %>
                                         </p>
-                                        <p class="label">Reputation Score</p>
+                                        <p class="label"><fmt:message key="volunteer.reputation_score"/></p>
                                     </div>
                                     <div class="stat-card" style="grid-column: span 2;">
                                         <p class="number" style="font-size: 1.5em; color: var(--accent-foreground);">
                                             <%= com.dailyfixer.util.ReputationUtils.getBadgeForScore(stats.getReputationScore())
                                                 %>
                                         </p>
-                                        <p class="label">Current Tier</p>
+                                        <p class="label"><fmt:message key="volunteer.current_tier"/></p>
                                     </div>
                                 </div>
 
                                 <div style="margin-top: 20px;">
                                     <h4
                                         style="margin-bottom: 15px; color: var(--muted-foreground); text-align: center;">
-                                        Score Breakdown</h4>
+                                        <fmt:message key="volunteer.score_breakdown"/></h4>
                                     <div class="charts-container">
                                         <div class="chart-wrapper">
                                             <h5>📊 Bar Chart View</h5>
@@ -361,7 +361,7 @@
 
                             <!-- Diagnostic Tool Access Requirements -->
                             <div class="volunteer-stats">
-                                <h3>Diagnostic Tool Access</h3>
+                                <h3><fmt:message key="volunteer.diagnostic_access"/></h3>
                                 <div style="color: var(--muted-foreground); font-size: 0.95em; line-height: 1.6;">
                                     <p style="margin-bottom: 15px;">
                                         To gain access to the <strong>Smart Diagnostic Decision Tree</strong>
@@ -392,7 +392,7 @@
                             <div class="section-grid">
                                 <!-- Top Guides -->
                                 <div class="volunteer-stats">
-                                    <h3>Top Rated Guides</h3>
+                                    <h3><fmt:message key="volunteer.top_guides"/></h3>
                                     <% if (topGuides !=null && !topGuides.isEmpty()) { %>
                                         <ul class="top-guides-list">
                                             <% for (Guide g : topGuides) { %>
@@ -414,30 +414,29 @@
                                                 <% } %>
                                         </ul>
                                         <% } else { %>
-                                            <p style="color: var(--muted-foreground); padding: 10px 0;">No guides
-                                                ratings yet.</p>
+                                            <p style="color: var(--muted-foreground); padding: 10px 0;"><fmt:message key="volunteer.no_guides"/></p>
                                             <% } %>
                                 </div>
 
                                 <!-- Quick Actions -->
                                 <div class="volunteer-stats">
-                                    <h3>Quick Actions</h3>
+                                    <h3><fmt:message key="volunteer.quick_actions"/></h3>
                                     <div class="quick-links">
                                         <a href="${pageContext.request.contextPath}/guides/create"
                                             class="quick-link-btn">
-                                            <span>✏️</span> Create Guide
+                                            <span>✏️</span> <fmt:message key="volunteer.create_guide"/>
                                         </a>
                                         <a href="${pageContext.request.contextPath}/pages/guides/my-guides.jsp"
                                             class="quick-link-btn">
-                                            <span>📂</span> My Guides
+                                            <span>📂</span> <fmt:message key="volunteer.my_guides"/>
                                         </a>
                                         <a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/guideComments.jsp"
                                             class="quick-link-btn">
-                                            <span>💬</span> Comments
+                                            <span>💬</span> <fmt:message key="volunteer.comments"/>
                                         </a>
                                         <a href="${pageContext.request.contextPath}/pages/dashboards/volunteerdash/myProfile.jsp"
                                             class="quick-link-btn">
-                                            <span>👤</span> Profile
+                                            <span>👤</span> <fmt:message key="common.profile"/>
                                         </a>
                                     </div>
                                 </div>

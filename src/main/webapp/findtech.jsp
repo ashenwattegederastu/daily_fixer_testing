@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,7 +161,7 @@
 
 <div class="main-content">
   <div class="container">
-    <h1 class="page-title">Find a Technician</h1>
+    <h1 class="page-title"><fmt:message key="findtech.title"/></h1>
     <div class="card-grid">
       <!-- Dummy Card Example -->
       <div class="card">
@@ -167,7 +170,7 @@
           <h3>AC Repair</h3>
           <p class="tech-name">By: John Silva</p>
           <p class="price">Fixed Rate: Rs. 3500</p>
-          <a href="viewservice.jsp?id=1" class="btn">View More</a>
+          <a href="viewservice.jsp?id=1" class="btn"><fmt:message key="findtech.view_profile"/></a>
         </div>
       </div>
 
@@ -177,7 +180,7 @@
           <h3>AC Setup</h3>
           <p class="tech-name">By: John Silva</p>
           <p class="price">Hourly Rate: Rs. 1500/hr</p>
-          <a href="viewservice.jsp?id=2" class="btn">View More</a>
+          <a href="viewservice.jsp?id=2" class="btn"><fmt:message key="findtech.view_profile"/></a>
         </div>
       </div>
 
@@ -187,7 +190,7 @@
           <h3>Fridge Repair</h3>
           <p class="tech-name">By: Ramesh Kumar</p>
           <p class="price">Fixed Rate: Rs. 2800</p>
-          <a href="viewservice.jsp?id=3" class="btn">View More</a>
+          <a href="viewservice.jsp?id=3" class="btn"><fmt:message key="findtech.view_profile"/></a>
         </div>
       </div>
     </div>

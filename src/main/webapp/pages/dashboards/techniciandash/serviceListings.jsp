@@ -3,6 +3,9 @@
 <%@ page import="com.dailyfixer.model.Service" %>
 <%@ page import="com.dailyfixer.dao.ServiceDAO" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
 <%
     User user = (User) session.getAttribute("currentUser");
@@ -203,21 +206,27 @@ img.service-thumb {
 <body>
 
 <header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Technician Dashboard</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    <div class="logo"><fmt:message key="app.name"/></div>
+    <div class="panel-name"><fmt:message key="tech.panel"/></div>
+    <a href="${pageContext.request.contextPath}/logout" class="logout-btn"><fmt:message key="common.logout"/></a>
 </header>
 
 <aside class="sidebar">
-    <h3>Navigation</h3>
+    <h3><fmt:message key="sidebar.navigation"/></h3>
     <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp">Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" class="active">Service Listings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp">Accepted Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp">Completed Bookings</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp">My Profile</a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/techniciandashmain.jsp"><fmt:message key="tech.dashboard"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/bookings.jsp"><fmt:message key="tech.bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/serviceListings.jsp" class="active"><fmt:message key="tech.service_listings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/acceptedBookings.jsp"><fmt:message key="tech.accepted_bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/completedBookings.jsp"><fmt:message key="tech.completed_bookings"/></a></li>
+        <li><a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/myProfile.jsp"><fmt:message key="tech.my_profile"/></a></li>
     </ul>
+<div class="sidebar-actions" style="padding: 15px;">
+    <a href="?lang=${sessionScope.sessionLocale.language == 'si' ? 'en' : 'si'}"
+       class="action-btn lang-toggle" style="display:block; text-align:center; padding:8px; background:var(--primary); color:var(--primary-foreground); border-radius:var(--radius-md); text-decoration:none; font-weight:600;">
+       <fmt:message key="nav.lang_switch"/>
+    </a>
+</div>
 </aside>
 
 <main class="container">
@@ -229,12 +238,12 @@ img.service-thumb {
         <thead>
             <tr>
                 <th>Image</th>
-                <th>Service Name</th>
-                <th>Category</th>
+                <th><fmt:message key="tech.services.service_name"/></th>
+                <th><fmt:message key="tech.services.category"/></th>
                 <th>Pricing Type</th>
                 <th>Charges</th>
                 <th>Available Dates</th>
-                <th>Actions</th>
+                <th><fmt:message key="tech.services.actions"/></th>
             </tr>
         </thead>
         <tbody>

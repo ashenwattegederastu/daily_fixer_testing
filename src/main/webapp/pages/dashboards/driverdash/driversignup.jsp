@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -171,30 +174,30 @@ body {
 <body>
 <div class="login-wrapper">
   <div class="login-card">
-    <h2>Driver Signup</h2>
+    <h2><fmt:message key="register.driver.title"/></h2>
     <form action="${pageContext.request.contextPath}/DriverSignupServlet" method="post" onsubmit="return validateSignup()">
       <div class="input-field">
-        <label for="fname">First Name</label>
+        <label for="fname"><fmt:message key="auth.register.first_name"/></label>
         <input type="text" name="fname" id="fname" required>
       </div>
       <div class="input-field">
-        <label for="lname">Last Name</label>
+        <label for="lname"><fmt:message key="auth.register.last_name"/></label>
         <input type="text" name="lname" id="lname" required>
       </div>
       <div class="input-field">
-        <label for="username">Username</label>
+        <label for="username"><fmt:message key="auth.register.username"/></label>
         <input type="text" name="username" id="username" required>
       </div>
       <div class="input-field">
-        <label for="password">Password</label>
+        <label for="password"><fmt:message key="auth.register.password"/></label>
         <input type="password" name="password" id="password" required>
       </div>
       <div class="input-field">
-        <label for="email">Email</label>
+        <label for="email"><fmt:message key="auth.register.email"/></label>
         <input type="email" name="email" id="email" required>
       </div>
       <div class="input-field">
-        <label for="phone">Phone</label>
+        <label for="phone"><fmt:message key="auth.register.phone"/></label>
         <input type="tel" name="phone" id="phone" required>
       </div>
       <div class="input-field">
@@ -213,7 +216,7 @@ body {
         <label for="license_pic">License Picture URL</label>
         <input type="url" name="license_pic" id="license_pic">
       </div>
-      <button type="submit" class="login-btn">Sign Up</button>
+      <button type="submit" class="login-btn"><fmt:message key="auth.register.submit"/></button>
     </form>
     <a href="../../pages/shared/login.jsp" class="back-link">← Back to Login</a>
     <c:if test="${not empty error}">

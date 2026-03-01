@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -276,7 +279,7 @@
             <label for="location">Your Location</label>
             <input type="text" id="location" placeholder="Enter your address or nearby landmark">
 
-            <button>Book Now</button>
+            <button><fmt:message key="home.hero3_cta"/></button>
         </div>
     </div>
 </div>

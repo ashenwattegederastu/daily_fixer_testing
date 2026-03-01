@@ -4,6 +4,9 @@
             <%@ page import="com.dailyfixer.dao.GuideDAO" %>
                 <%@ page import="com.dailyfixer.model.Guide" %>
                     <%@ page import="java.util.List" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
                         <% User user=(User) session.getAttribute("currentUser"); if (user==null ||
                             !"admin".equals(user.getRole())) { response.sendRedirect(request.getContextPath()
@@ -196,9 +199,9 @@
                                                     <tr>
                                                         <th>Image</th>
                                                         <th>Title</th>
-                                                        <th>Category</th>
+                                                        <th><fmt:message key="guide.category"/></th>
                                                         <th>Views</th>
-                                                        <th>Author</th>
+                                                        <th><fmt:message key="guide.author"/></th>
                                                         <th>Created</th>
                                                         <th>Actions</th>
                                                     </tr>

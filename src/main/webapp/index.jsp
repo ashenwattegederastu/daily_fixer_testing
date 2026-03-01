@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
         <%@ page session="true" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.sessionLocale != null ? sessionScope.sessionLocale : 'en'}" />
+<fmt:setBundle basename="messages" />
 
             <!DOCTYPE html>
             <html lang="en">
@@ -22,17 +25,15 @@
                 <!-- Hero Section 1: Community -->
                 <section class="hero-section active" id="hero1">
                     <div class="hero-content">
-                        <h1>Join a community that helps you fix, learn, and restore what matters.</h1>
-                        <p>Connect with thousands of people who share your passion for fixing and learning.</p>
+                        <h1><fmt:message key="home.hero1"/></h1>
+                        <p><fmt:message key="home.hero1_sub"/></p>
                         <c:choose>
                             <c:when test="${not empty sessionScope.currentUser}">
                                 <a href="${pageContext.request.contextPath}/pages/diagnostic/diagnostic-browse.jsp"
-                                    class="hero-cta">Start
-                                    Diagnosing</a>
+                                    class="hero-cta"><fmt:message key="home.start_diagnosing"/></a>
                             </c:when>
                             <c:otherwise>
-                                <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="hero-cta">Get
-                                    Started</a>
+                                <a href="${pageContext.request.contextPath}/preliminarySignup.jsp" class="hero-cta"><fmt:message key="home.hero1_cta"/></a>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -44,9 +45,9 @@
                 <!-- Hero Section 2: View Guides -->
                 <section class="hero-section" id="hero2">
                     <div class="hero-content">
-                        <h1>Master Repairs with Our Guides</h1>
-                        <p>Access thousands of step-by-step repair guides created by experts and community members.</p>
-                        <a href="${pageContext.request.contextPath}/guides" class="hero-cta">Explore Guides</a>
+                        <h1><fmt:message key="home.hero2"/></h1>
+                        <p><fmt:message key="home.hero2_sub"/></p>
+                        <a href="${pageContext.request.contextPath}/guides" class="hero-cta"><fmt:message key="home.hero2_cta"/></a>
                     </div>
                     <div class="scroll-indicator">
                         <div class="chevron"></div>
@@ -56,22 +57,22 @@
                 <!-- Features Section: View Guides -->
                 <section class="features-section" id="guides">
                     <div class="features-container">
-                        <h2 class="section-title">Why Choose Our Repair Guides?</h2>
+                        <h2 class="section-title"><fmt:message key="home.guides_why"/></h2>
                         <div class="features-grid">
                             <div class="feature-card">
                                 <div class="feature-icon">📚</div>
-                                <h3>Comprehensive Library</h3>
-                                <p>Thousands of detailed guides covering everything from electronics to appliances.</p>
+                                <h3><fmt:message key="home.guides_lib"/></h3>
+                                <p><fmt:message key="home.guides_lib_desc"/></p>
                             </div>
                             <div class="feature-card">
                                 <div class="feature-icon">👥</div>
-                                <h3>Community Driven</h3>
-                                <p>Learn from experts and experienced technicians in our active community.</p>
+                                <h3><fmt:message key="home.guides_community"/></h3>
+                                <p><fmt:message key="home.guides_community_desc"/></p>
                             </div>
                             <div class="feature-card">
                                 <div class="feature-icon">⚡</div>
-                                <h3>Easy to Follow</h3>
-                                <p>Step-by-step instructions with photos and videos for every repair.</p>
+                                <h3><fmt:message key="home.guides_easy"/></h3>
+                                <p><fmt:message key="home.guides_easy_desc"/></p>
                             </div>
                         </div>
                     </div>
@@ -80,9 +81,9 @@
                 <!-- Hero Section 3: Technician Booking -->
                 <section class="hero-section" id="hero3">
                     <div class="hero-content">
-                        <h1>Need Professional Help?</h1>
-                        <p>Book a certified technician for complex repairs. Fast, reliable, and affordable.</p>
-                        <a href="${pageContext.request.contextPath}/findtech.jsp" class="hero-cta">Book Now</a>
+                        <h1><fmt:message key="home.hero3"/></h1>
+                        <p><fmt:message key="home.hero3_sub"/></p>
+                        <a href="${pageContext.request.contextPath}/findtech.jsp" class="hero-cta"><fmt:message key="home.hero3_cta"/></a>
                     </div>
                     <div class="scroll-indicator">
                         <div class="chevron"></div>
@@ -92,22 +93,22 @@
                 <!-- Features Section: Technician Booking -->
                 <section class="features-section" id="technician">
                     <div class="features-container">
-                        <h2 class="section-title">Professional Technician Services</h2>
+                        <h2 class="section-title"><fmt:message key="home.tech_services"/></h2>
                         <div class="features-grid">
                             <div class="feature-card">
                                 <div class="feature-icon">✓</div>
-                                <h3>Certified Professionals</h3>
-                                <p>All technicians are verified and certified in their respective fields.</p>
+                                <h3><fmt:message key="home.certified"/></h3>
+                                <p><fmt:message key="home.certified_desc"/></p>
                             </div>
                             <div class="feature-card">
                                 <div class="feature-icon">⏱️</div>
-                                <h3>Quick Response</h3>
-                                <p>Get a technician at your door within 24 hours in most areas.</p>
+                                <h3><fmt:message key="home.quick_response"/></h3>
+                                <p><fmt:message key="home.quick_response_desc"/></p>
                             </div>
                             <div class="feature-card">
                                 <div class="feature-icon">💰</div>
-                                <h3>Transparent Pricing</h3>
-                                <p>No hidden fees. Get a quote before any work begins.</p>
+                                <h3><fmt:message key="home.transparent"/></h3>
+                                <p><fmt:message key="home.transparent_desc"/></p>
                             </div>
                         </div>
                     </div>
