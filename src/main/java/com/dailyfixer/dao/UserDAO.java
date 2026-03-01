@@ -11,7 +11,7 @@ public class UserDAO {
     public boolean isUsernameTaken(String username) throws Exception {
         String sql = "SELECT user_id FROM users WHERE username = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
@@ -22,7 +22,7 @@ public class UserDAO {
     public boolean isEmailTaken(String email) throws Exception {
         String sql = "SELECT user_id FROM users WHERE email = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
@@ -39,7 +39,7 @@ public class UserDAO {
         int userId = -1;
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
@@ -67,17 +67,32 @@ public class UserDAO {
         return userId;
     }
 
-    public boolean updateUserInfo(int userId, String firstName, String lastName, String phoneNumber, String city) {
-        String sql = "UPDATE users SET first_name=?, last_name=?, phone_number=?, city=? WHERE user_id=?";
+    public boolean updateUserInfo(int userId, String firstName, String lastName, String phoneNumber, String city,
+            String bio) {
+        String sql = "UPDATE users SET first_name=?, last_name=?, phone_number=?, city=?, bio=? WHERE user_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, firstName);
             ps.setString(2, lastName);
             ps.setString(3, phoneNumber);
             ps.setString(4, city);
-            ps.setInt(5, userId);
+            ps.setString(5, bio);
+            ps.setInt(6, userId);
 
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateProfilePicture(int userId, String picturePath) {
+        String sql = "UPDATE users SET profile_picture_path=? WHERE user_id=?";
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, picturePath);
+            ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,7 +103,7 @@ public class UserDAO {
     public boolean updatePassword(int userId, String newHashedPassword) {
         String sql = "UPDATE users SET password = ? WHERE user_id = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, newHashedPassword);
             ps.setInt(2, userId);
             return ps.executeUpdate() > 0;
@@ -105,7 +120,7 @@ public class UserDAO {
         String sql = "UPDATE users SET password = ? WHERE user_id = ?";
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, hashedPassword);
             ps.setInt(2, userId);
@@ -121,11 +136,10 @@ public class UserDAO {
         }
     }
 
-
     public User getUserById(int userId) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -138,6 +152,8 @@ public class UserDAO {
                     u.setPassword(rs.getString("password"));
                     u.setPhoneNumber(rs.getString("phone_number"));
                     u.setCity(rs.getString("city"));
+                    u.setBio(rs.getString("bio"));
+                    u.setProfilePicturePath(rs.getString("profile_picture_path"));
                     u.setRole(rs.getString("role"));
                     return u;
                 }
@@ -152,7 +168,7 @@ public class UserDAO {
         String sql = "SELECT user_id, username, email, password FROM users WHERE email = ?";
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, email);
 
@@ -170,13 +186,10 @@ public class UserDAO {
         return null; // email not found
     }
 
-
-
-
     public User findByUsernameAndPassword(String username, String hashedPassword) throws Exception {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND status = 'active'";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
             ps.setString(2, hashedPassword);
             try (ResultSet rs = ps.executeQuery()) {
@@ -189,6 +202,8 @@ public class UserDAO {
                     u.setEmail(rs.getString("email"));
                     u.setPhoneNumber(rs.getString("phone_number"));
                     u.setCity(rs.getString("city"));
+                    u.setBio(rs.getString("bio"));
+                    u.setProfilePicturePath(rs.getString("profile_picture_path"));
                     u.setRole(rs.getString("role"));
                     return u;
                 }

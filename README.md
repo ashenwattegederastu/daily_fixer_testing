@@ -204,7 +204,7 @@ private static final String USER = "your_username";
 private static final String PASS = "your_password";
 ```
 
-3. Run the schema from `src/main/resources/schema.sql`
+3. Run the schema from `src/main/resources/`
 
 ### Configuration
 

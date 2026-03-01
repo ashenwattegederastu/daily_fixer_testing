@@ -111,6 +111,37 @@ public class ImageUploadUtil {
         return relativePath;
     }
 
+    private static final String PROFILE_UPLOAD_DIR = "assets/images/uploads/profiles";
+
+    /**
+     * Saves a user profile picture.
+     *
+     * @param filePart   The uploaded file part
+     * @param userId     The user ID
+     * @param webAppPath The absolute path to the webapp directory
+     * @return The relative path to the saved file (for storing in DB)
+     */
+    public static String saveProfilePicture(Part filePart, int userId, String webAppPath) throws IOException {
+        if (filePart == null || filePart.getSize() == 0) {
+            return null;
+        }
+
+        String fileName = "profile_" + userId + "_" + System.currentTimeMillis() + getExtension(filePart);
+        String relativePath = PROFILE_UPLOAD_DIR + "/" + fileName;
+
+        Path uploadPath = Paths.get(webAppPath, PROFILE_UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = Paths.get(webAppPath, relativePath);
+        try (InputStream input = filePart.getInputStream()) {
+            Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return relativePath;
+    }
+
     /**
      * Deletes an image file.
      * 

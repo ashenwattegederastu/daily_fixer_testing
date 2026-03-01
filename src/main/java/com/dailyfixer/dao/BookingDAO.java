@@ -241,4 +241,19 @@ public class BookingDAO {
 
         return booking;
     }
+
+    public int countCompletedBookingsByTechnician(int technicianId) {
+        String sql = "SELECT COUNT(*) FROM bookings WHERE technician_id = ? AND status = 'FULLY_COMPLETED'";
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, technicianId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next())
+                    return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

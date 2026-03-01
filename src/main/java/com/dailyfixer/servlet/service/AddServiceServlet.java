@@ -1,7 +1,9 @@
 package com.dailyfixer.servlet.service;
 
+import com.dailyfixer.dao.ServiceCategoryDAO;
 import com.dailyfixer.dao.ServiceDAO;
 import com.dailyfixer.model.Service;
+import com.dailyfixer.model.ServiceCategory;
 import com.dailyfixer.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -10,17 +12,46 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @WebServlet("/AddServiceServlet")
 @MultipartConfig(maxFileSize = 16177215) // 16 MB
 public class AddServiceServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         try {
             HttpSession session = request.getSession();
             User currentUser = (User) session.getAttribute("currentUser");
 
             if (currentUser == null || !"technician".equalsIgnoreCase(currentUser.getRole())) {
-                response.sendRedirect("login.jsp");
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                return;
+            }
+
+            // Load categories for the dropdown
+            ServiceCategoryDAO categoryDAO = new ServiceCategoryDAO();
+            List<ServiceCategory> categories = categoryDAO.getAllCategories();
+            request.setAttribute("categories", categories);
+
+            request.getRequestDispatcher("/pages/dashboards/techniciandash/addService.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading form: " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            HttpSession session = request.getSession();
+            User currentUser = (User) session.getAttribute("currentUser");
+
+            if (currentUser == null || !"technician".equalsIgnoreCase(currentUser.getRole())) {
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
                 return;
             }
 
@@ -33,6 +64,25 @@ public class AddServiceServlet extends HttpServlet {
             String inspectionChargeStr = request.getParameter("inspectionCharge");
             String transportChargeStr = request.getParameter("transportCharge");
             String availableDates = request.getParameter("availableDates");
+
+            // Handle "Add New Category" selection
+            if ("__new__".equals(category)) {
+                String newCategoryName = request.getParameter("newCategoryName");
+                if (newCategoryName == null || newCategoryName.trim().isEmpty()) {
+                    throw new ServletException("New category name is required.");
+                }
+                category = newCategoryName.trim();
+
+                // Insert into service_categories if it doesn't already exist
+                ServiceCategoryDAO categoryDAO = new ServiceCategoryDAO();
+                ServiceCategory existing = categoryDAO.getCategoryByName(category);
+                if (existing == null) {
+                    ServiceCategory newCat = new ServiceCategory();
+                    newCat.setName(category);
+                    newCat.setDescription("");
+                    categoryDAO.addCategory(newCat);
+                }
+            }
 
             if (serviceName == null || serviceName.trim().isEmpty() ||
                     category == null || category.trim().isEmpty() ||
@@ -50,8 +100,10 @@ public class AddServiceServlet extends HttpServlet {
             // Convert numbers safely
             s.setFixedRate((fixedRateStr == null || fixedRateStr.isEmpty()) ? 0 : Double.parseDouble(fixedRateStr));
             s.setHourlyRate((hourlyRateStr == null || hourlyRateStr.isEmpty()) ? 0 : Double.parseDouble(hourlyRateStr));
-            s.setInspectionCharge((inspectionChargeStr == null || inspectionChargeStr.isEmpty()) ? 0 : Double.parseDouble(inspectionChargeStr));
-            s.setTransportCharge((transportChargeStr == null || transportChargeStr.isEmpty()) ? 0 : Double.parseDouble(transportChargeStr));
+            s.setInspectionCharge((inspectionChargeStr == null || inspectionChargeStr.isEmpty()) ? 0
+                    : Double.parseDouble(inspectionChargeStr));
+            s.setTransportCharge((transportChargeStr == null || transportChargeStr.isEmpty()) ? 0
+                    : Double.parseDouble(transportChargeStr));
 
             // Handle image upload
             Part imagePart = request.getPart("serviceImage");

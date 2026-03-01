@@ -50,6 +50,33 @@
                         font-size: 2.5em;
                         font-weight: bold;
                         margin-right: 24px;
+                        overflow: hidden;
+                    }
+
+                    .profile-avatar img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+
+                    .about-section {
+                        background: var(--muted);
+                        padding: 24px;
+                        border-radius: var(--radius-md);
+                        border-left: 4px solid var(--primary);
+                        grid-column: 1 / -1;
+                    }
+
+                    .about-section h4 {
+                        margin-bottom: 12px;
+                        color: var(--foreground);
+                        font-size: 1.1em;
+                    }
+
+                    .about-section p {
+                        color: var(--foreground);
+                        line-height: 1.6;
+                        white-space: pre-wrap;
                     }
 
                     .profile-info h3 {
@@ -126,9 +153,16 @@
                     <div class="profile-container">
                         <div class="profile-header">
                             <div class="profile-avatar">
-                                <%= user.getFirstName() !=null && user.getFirstName().length()> 0 ?
-                                    user.getFirstName().substring(0, 1).toUpperCase() : user.getUsername().substring(0,
-                                    1).toUpperCase() %>
+                                <% if (user.getProfilePicturePath() !=null && !user.getProfilePicturePath().isEmpty()) {
+                                    %>
+                                    <img src="<%= request.getContextPath() + "/" + user.getProfilePicturePath() %>"
+                                    alt="Profile Picture">
+                                    <% } else { %>
+                                        <%= user.getFirstName() !=null && user.getFirstName().length()> 0 ?
+                                            user.getFirstName().substring(0, 1).toUpperCase() :
+                                            user.getUsername().substring(0,
+                                            1).toUpperCase() %>
+                                            <% } %>
                             </div>
                             <div class="profile-info">
                                 <h3>
@@ -169,22 +203,33 @@
                             <div class="detail-section">
                                 <h4>Professional Stats</h4>
                                 <div class="detail-item">
-                                    <span class="detail-label">Total Services:</span>
-                                    <span class="detail-value">45 completed</span>
+                                    <span class="detail-label">Completed Bookings:</span>
+                                    <span class="detail-value">
+                                        <%= request.getAttribute("completedBookings") !=null ?
+                                            request.getAttribute("completedBookings") : 0 %>
+                                    </span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-label">Average Rating:</span>
-                                    <span class="detail-value">4.8 / 5.0 &#9733;</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Response Time:</span>
-                                    <span class="detail-value">2.3 hours</span>
+                                    <span class="detail-value">N/A</span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-label">Active Listings:</span>
-                                    <span class="detail-value">8 active</span>
+                                    <span class="detail-value">
+                                        <%= request.getAttribute("activeListings") !=null ?
+                                            request.getAttribute("activeListings") : 0 %>
+                                    </span>
                                 </div>
                             </div>
+
+                            <% if (user.getBio() !=null && !user.getBio().isEmpty()) { %>
+                                <div class="about-section">
+                                    <h4>About Me</h4>
+                                    <p>
+                                        <%= user.getBio() %>
+                                    </p>
+                                </div>
+                                <% } %>
                         </div>
 
                         <div style="margin-top: 30px; display: flex; justify-content: flex-end;">

@@ -13,7 +13,7 @@ public class ServiceDAO {
     public void addService(Service s) throws Exception {
         String sql = "INSERT INTO services (technician_id, service_name, description, category, pricing_type, fixed_rate, hourly_rate, inspection_charge, transport_charge, available_dates, service_image, image_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, s.getTechnicianId());
             ps.setString(2, s.getServiceName());
@@ -34,7 +34,7 @@ public class ServiceDAO {
     public Service getServiceById(int serviceId) throws Exception {
         String sql = "SELECT * FROM services WHERE service_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, serviceId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -62,7 +62,7 @@ public class ServiceDAO {
     public void updateService(Service service) throws Exception {
         String sql = "UPDATE services SET service_name=?, description=?, category=?, pricing_type=?, fixed_rate=?, hourly_rate=?, inspection_charge=?, transport_charge=?, available_dates=?, service_image=?, image_type=? WHERE service_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, service.getServiceName());
             ps.setString(2, service.getDescription());
             ps.setString(3, service.getCategory());
@@ -79,13 +79,12 @@ public class ServiceDAO {
         }
     }
 
-
     // Retrieve all services by technician
     public List<Service> getServicesByTechnician(int technicianId) throws Exception {
         List<Service> list = new ArrayList<>();
         String sql = "SELECT * FROM services WHERE technician_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, technicianId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -112,7 +111,7 @@ public class ServiceDAO {
     public Service getServiceImage(int serviceId) throws Exception {
         String sql = "SELECT service_image, image_type FROM services WHERE service_id=?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, serviceId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -129,7 +128,7 @@ public class ServiceDAO {
     public void deleteService(int serviceId) throws Exception {
         String sql = "DELETE FROM services WHERE service_id = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, serviceId);
             ps.executeUpdate();
         }
@@ -139,11 +138,11 @@ public class ServiceDAO {
     public List<Service> getAllServices() throws Exception {
         List<Service> list = new ArrayList<>();
         String sql = "SELECT s.*, u.first_name, u.last_name, u.city FROM services s " +
-                     "JOIN users u ON s.technician_id = u.user_id " +
-                     "ORDER BY s.created_at DESC";
+                "JOIN users u ON s.technician_id = u.user_id " +
+                "ORDER BY s.created_at DESC";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Service s = new Service();
                 s.setServiceId(rs.getInt("service_id"));
@@ -162,6 +161,21 @@ public class ServiceDAO {
             }
         }
         return list;
+    }
+
+    public int countServicesByTechnician(int technicianId) {
+        String sql = "SELECT COUNT(*) FROM services WHERE technician_id = ?";
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, technicianId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next())
+                    return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 }

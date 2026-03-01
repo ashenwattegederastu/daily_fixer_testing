@@ -52,8 +52,8 @@
                                         <p>Manage the services you offer to customers.</p>
                                     </div>
 
-                                    <a href="${pageContext.request.contextPath}/pages/dashboards/techniciandash/addService.jsp"
-                                        class="btn-primary" style="display: flex; align-items: center; gap: 8px;">
+                                    <a href="${pageContext.request.contextPath}/AddServiceServlet" class="btn-primary"
+                                        style="display: flex; align-items: center; gap: 8px;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                             viewBox="0 0 256 256">
                                             <path fill="currentColor"
@@ -100,10 +100,12 @@
                                                     <td style="font-size: 0.9em; color: var(--muted-foreground);">
                                                         Inspection: <span
                                                             style="font-weight: 600; color: var(--foreground);">Rs.
-                                                            <%=s.getInspectionCharge()%></span><br>
+                                                            <%=s.getInspectionCharge()%>
+                                                        </span><br>
                                                         Transport: <span
                                                             style="font-weight: 600; color: var(--foreground);">Rs.
-                                                            <%=s.getTransportCharge()%></span>
+                                                            <%=s.getTransportCharge()%>
+                                                        </span>
                                                     </td>
                                                     <td>
                                                         <%=s.getAvailableDates()%>

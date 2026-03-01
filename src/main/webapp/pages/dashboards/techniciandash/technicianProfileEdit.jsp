@@ -4,8 +4,7 @@
 
             <% User user=(User) session.getAttribute("currentUser"); if (user==null || user.getRole()==null ||
                 !"technician".equalsIgnoreCase(user.getRole())) { response.sendRedirect(request.getContextPath()
-                + "/login.jsp" ); return; } String profilePath=request.getContextPath()
-                + "/pages/dashboards/techniciandash/technicianProfile.jsp" ; %>
+                + "/login.jsp" ); return; } String profilePath=request.getContextPath() + "/technician/profile" ; %>
 
                 <!DOCTYPE html>
                 <html lang="en">
@@ -43,9 +42,30 @@
                             <h2 style="margin-bottom: 24px; color: var(--foreground); font-size: 1.8rem;">Edit Account
                                 Info</h2>
 
-                            <form action="${pageContext.request.contextPath}/UpdateProfileServlet" method="post">
+                            <form action="${pageContext.request.contextPath}/UpdateProfileServlet" method="post"
+                                enctype="multipart/form-data">
                                 <input type="hidden" name="userId" value="${sessionScope.currentUser.userId}">
                                 <input type="hidden" name="returnUrl" value="${pageContext.request.requestURI}">
+
+                                <!-- Profile Picture Upload -->
+                                <div class="form-group" style="margin-bottom: 24px;">
+                                    <label>Profile Picture</label>
+                                    <div style="display: flex; align-items: center; gap: 16px; margin-top: 8px;">
+                                        <div
+                                            style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 2em; font-weight: bold;">
+                                            <% if (user.getProfilePicturePath() !=null &&
+                                                !user.getProfilePicturePath().isEmpty()) { %>
+                                                <img src="<%= request.getContextPath() + " /" +
+                                                    user.getProfilePicturePath() %>" alt="Profile"
+                                                style="width:100%;height:100%;object-fit:cover;">
+                                                <% } else { %>
+                                                    <%= user.getFirstName() !=null && user.getFirstName().length()> 0 ?
+                                                        user.getFirstName().substring(0,1).toUpperCase() : "?" %>
+                                                        <% } %>
+                                        </div>
+                                        <input type="file" name="profilePicture" accept="image/*" style="flex: 1;">
+                                    </div>
+                                </div>
 
                                 <div class="form-group"
                                     style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -82,6 +102,14 @@
                                             </c:forEach>
                                         </select>
                                     </div>
+                                </div>
+
+                                <!-- About Me / Bio -->
+                                <div class="form-group" style="margin-top: 16px;">
+                                    <label>About Me</label>
+                                    <textarea name="bio" rows="4"
+                                        placeholder="Tell customers about yourself, your experience, and your specialties..."
+                                        style="width: 100%; resize: vertical;"><%= user.getBio() != null ? user.getBio() : "" %></textarea>
                                 </div>
 
                                 <div class="form-actions"
