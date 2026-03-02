@@ -1,168 +1,48 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.dailyfixer.model.User, com.dailyfixer.model.DeliveryAssignment, com.dailyfixer.dao.DeliveryAssignmentDAO, java.util.List, java.util.ArrayList" %>
+
+<%
+    User user = (User) session.getAttribute("currentUser");
+    if (user == null || !"driver".equals(user.getRole())) {
+        response.sendRedirect(request.getContextPath() + "/pages/shared/login.jsp");
+        return;
+    }
+
+    List<DeliveryAssignment> pendingAssignments = new ArrayList<>();
+    String loadError = null;
+    try {
+        DeliveryAssignmentDAO assignmentDAO = new DeliveryAssignmentDAO();
+        List<DeliveryAssignment> all = assignmentDAO.getAssignmentsByDriver(user.getUserId());
+        for (DeliveryAssignment da : all) {
+            if ("ASSIGNED".equals(da.getStatus())) pendingAssignments.add(da);
+        }
+    } catch (Exception e) {
+        loadError = e.getMessage();
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delivery Requests | Daily Fixer</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
 <style>
-:root {
-    --panel-color: #dcdaff;
-    --accent: #8b95ff;
-    --text-dark: #000000;
-    --text-secondary: #333333;
-    --shadow-sm: 0 4px 12px rgba(0,0,0,0.12);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.18);
-    --shadow-lg: 0 12px 36px rgba(0,0,0,0.22);
-}
-
-/* Reset */
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: var(--text-dark);
-    display: flex;
-    min-height: 100vh;
-}
-
-/* Top Navbar */
-.topbar {
-    position: fixed;
-    top:0; left:0; right:0;
-    height:76px;
-    background-color: var(--panel-color);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    z-index: 200;
-    box-shadow: var(--shadow-md);
-}
-.topbar .logo { font-size: 1.5em; font-weight: 700; color: var(--accent); }
-.topbar .panel-name { font-weight: 600; flex:1; text-align:center; color: var(--text-dark); }
-.topbar .logout-btn {
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, var(--accent), #7ba3d4);
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-sm);
-    text-decoration: none;
-}
-.topbar .logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    opacity: 0.9;
-}
-
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background-color: var(--panel-color);
-    height: 100vh;
-    position: fixed;
-    top:0;
-    left:0;
-    padding-top: 96px;
-    box-shadow: var(--shadow-md);
-    overflow-y: auto;
-    z-index: 100;
-}
-.sidebar h3 { padding: 0 20px 12px; font-size: 0.85em; color: var(--text-dark); text-transform: uppercase; }
-.sidebar ul { list-style:none; }
-.sidebar a {
-    display:block;
-    padding:12px 20px;
-    text-decoration:none;
-    color: var(--text-dark);
-    font-weight:500;
-    border-left:3px solid transparent;
-    border-radius:0 8px 8px 0;
-    margin-bottom:4px;
-    transition: all 0.2s;
-}
-.sidebar a:hover, .sidebar a.active {
-    background-color: #f0f0ff;
-    border-left-color: var(--accent);
-}
-
-/* Main Content */
-.container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
-    padding:30px;
-}
-.container h2 {
-    font-size:1.6em;
-    margin-bottom:20px;
-    color: #000000;
-}
-
-/* Delivery Cards */
-.card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(0,0,0,0.1);
-    padding: 25px;
-    margin-bottom: 20px;
-    transition: all 0.2s;
-}
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-.card h3 {
-    font-size: 1.3em;
-    margin-bottom: 20px;
-    color: var(--accent);
-    border-bottom: 2px solid var(--panel-color);
-    padding-bottom: 10px;
-}
-
-/* Details Grid */
-.details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-.details-grid p {
-    margin: 8px 0;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-.details-grid strong {
-    color: var(--text-dark);
-    font-weight: 600;
-}
-
-/* Accept Button */
-.accept-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.2s;
-    width: 100%;
-}
-.accept-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    opacity: 0.9;
-}
+.container { flex:1; margin-left:240px; margin-top:83px; padding:30px; background-color: var(--background); }
+.container h2 { font-size:1.6em; margin-bottom:20px; color: var(--foreground); }
+.section-card { background: var(--card); padding:25px; border-radius:var(--radius-lg); box-shadow:var(--shadow-lg); border:1px solid var(--border); margin-bottom:30px; }
+.section-card h3 { font-size:1.2em; margin-bottom:15px; color:var(--foreground); border-bottom:2px solid var(--border); padding-bottom:10px; }
+.assignment-table { width:100%; border-collapse:collapse; }
+.assignment-table th, .assignment-table td { padding:12px 15px; text-align:left; border-bottom:1px solid var(--border); font-size:0.9em; }
+.assignment-table th { background:var(--muted); font-weight:600; color:var(--foreground); }
+.assignment-table tr:hover { background:var(--muted); }
+.badge { padding:4px 10px; border-radius:12px; font-size:0.8em; font-weight:600; }
+.badge-assigned { background:#fff3cd; color:#856404; }
+.btn-accept { padding:6px 14px; background:var(--primary); color:#fff; border:none; border-radius:var(--radius-md); cursor:pointer; font-size:0.85em; font-weight:600; }
+.btn-accept:hover { opacity:0.9; }
+.empty-msg { text-align:center; padding:40px; color:var(--muted-foreground); font-size:1em; }
+.error-alert { background:#fee2e2; border:1px solid #fca5a5; color:#b91c1c; padding:12px 16px; border-radius:var(--radius-md); margin-bottom:20px; }
 </style>
 </head>
 <body>
@@ -170,7 +50,10 @@ body {
 <header class="topbar">
     <div class="logo">Daily Fixer</div>
     <div class="panel-name">Driver Panel</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙 Dark</button>
+        <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
+    </div>
 </header>
 
 <aside class="sidebar">
@@ -187,37 +70,74 @@ body {
 
 <main class="container">
     <h2>Delivery Requests</h2>
-    
-    <div class="card">
-        <h3>Order 001</h3>
-        <div class="details-grid">
-            <p><strong>Customer:</strong> Kamal Silva</p>
-            <p><strong>Phone:</strong> +94 70 234 5678</p>
-            <p><strong>Pickup:</strong> MyStore, Pettah</p>
-            <p><strong>Store Contact:</strong> 011 234 7567</p>
-            <p><strong>Dropoff:</strong> 123 Main Street, Colombo</p>
-        </div>
-        <button class="accept-btn" onclick="acceptDelivery('Order 001')">Accept Delivery</button>
-    </div>
 
-    <div class="card">
-        <h3>Order 002</h3>
-        <div class="details-grid">
-            <p><strong>Customer:</strong> Amal Bandara</p>
-            <p><strong>Phone:</strong> +94 77 987 3218</p>
-            <p><strong>Pickup:</strong> Handy, Dehiwala</p>
-            <p><strong>Store Contact:</strong> 011 786 5467</p>
-            <p><strong>Dropoff:</strong> 45, Lili Road, Colombo</p>
-        </div>
-        <button class="accept-btn" onclick="acceptDelivery('Order 002')">Accept Delivery</button>
+    <% if (loadError != null) { %>
+    <div class="error-alert">Error loading assignments: <%= loadError %></div>
+    <% } %>
+
+    <div class="section-card">
+        <h3>Pending Requests (<%= pendingAssignments.size() %>)</h3>
+        <% if (pendingAssignments.isEmpty()) { %>
+            <p class="empty-msg">No pending delivery requests at the moment.</p>
+        <% } else { %>
+        <table class="assignment-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Store</th>
+                    <th>Customer</th>
+                    <th>Delivery Address</th>
+                    <th>City</th>
+                    <th>Vehicle Type</th>
+                    <th>Assigned At</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (DeliveryAssignment da : pendingAssignments) { %>
+                <tr>
+                    <td><%= da.getOrderId() %></td>
+                    <td><%= da.getStoreName() != null ? da.getStoreName() : "N/A" %></td>
+                    <td><%= da.getCustomerName() != null ? da.getCustomerName() : "N/A" %></td>
+                    <td><%= da.getDeliveryAddress() != null ? da.getDeliveryAddress() : "N/A" %></td>
+                    <td><%= da.getDeliveryCity() != null ? da.getDeliveryCity() : "N/A" %></td>
+                    <td><%= da.getVehicleType() != null ? da.getVehicleType() : "Any" %></td>
+                    <td><%= da.getAssignedAt() != null ? da.getAssignedAt().toString().substring(0, 16) : "N/A" %></td>
+                    <td><span class="badge badge-assigned"><%= da.getStatus() %></span></td>
+                    <td>
+                        <button class="btn-accept" onclick="acceptDelivery(<%= da.getAssignmentId() %>, this)">Accept</button>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <% } %>
     </div>
 </main>
 
+<script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
 <script>
-    function acceptDelivery(orderId) {
-        alert(orderId + " has been accepted!");
-    }
+function acceptDelivery(assignmentId, btn) {
+    if (!confirm('Accept this delivery?')) return;
+    btn.disabled = true;
+    fetch('${pageContext.request.contextPath}/deliveryAssignment', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'action=pickup&assignmentId=' + assignmentId
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            btn.closest('tr').remove();
+            alert('Delivery accepted and marked as Picked Up!');
+        } else {
+            btn.disabled = false;
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(() => { btn.disabled = false; alert('Network error'); });
+}
 </script>
-
 </body>
 </html>

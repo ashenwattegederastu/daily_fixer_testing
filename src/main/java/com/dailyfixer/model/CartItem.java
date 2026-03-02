@@ -14,6 +14,8 @@ public class CartItem {
     private double discountAmount; // Discount amount applied
     private String discountName; // Name of the discount applied
     private String discountType; // "PERCENTAGE" or "FIXED"
+    private int storeId;
+    private String storeName;
 
     public CartItem(int productId, String name, double price, int quantity, String imageBase64) {
         this.productId = productId;
@@ -92,7 +94,13 @@ public class CartItem {
     
     public String getDiscountType() { return discountType; }
     public void setDiscountType(String discountType) { this.discountType = discountType; }
-    
+
+    public int getStoreId() { return storeId; }
+    public void setStoreId(int storeId) { this.storeId = storeId; }
+
+    public String getStoreName() { return storeName; }
+    public void setStoreName(String storeName) { this.storeName = storeName; }
+
     // Helper method to calculate total discount for this item
     public double getTotalDiscount() {
         return discountAmount * quantity;

@@ -94,7 +94,10 @@ public class TestDBConnection {
                     "price DECIMAL(10,2), " +
                     "image BLOB, " +
                     "store_username VARCHAR(50), " +
-                    "description TEXT" +
+                    "description TEXT, " +
+                    "is_active BOOLEAN NOT NULL DEFAULT TRUE, " +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
             // Discounts table
@@ -259,6 +262,8 @@ public class TestDBConnection {
             stmt.execute("CREATE TABLE IF NOT EXISTS orders (" +
                     "order_id VARCHAR(100) PRIMARY KEY, " +
                     "customer_name VARCHAR(200), " +
+                    "first_name VARCHAR(100), " +
+                    "last_name VARCHAR(100), " +
                     "email VARCHAR(100), " +
                     "phone VARCHAR(20), " +
                     "address TEXT, " +
@@ -268,6 +273,7 @@ public class TestDBConnection {
                     "status VARCHAR(50) DEFAULT 'PENDING', " +
                     "payhere_payment_id VARCHAR(100), " +
                     "store_username VARCHAR(50), " +
+                    "store_id INT, " +
                     "product_name VARCHAR(255), " +
                     "buyer_id INT, " +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
@@ -287,6 +293,30 @@ public class TestDBConnection {
                     "total_price DECIMAL(10,2) NOT NULL, " +
                     "status VARCHAR(50) DEFAULT 'PENDING', " +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ")");
+
+            // Drivers table
+            stmt.execute("CREATE TABLE IF NOT EXISTS drivers (" +
+                    "driver_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "user_id INT NOT NULL UNIQUE, " +
+                    "license_number VARCHAR(50), " +
+                    "service_area VARCHAR(255), " +
+                    "is_available BOOLEAN DEFAULT TRUE, " +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ")");
+
+            // Delivery assignments table
+            stmt.execute("CREATE TABLE IF NOT EXISTS delivery_assignments (" +
+                    "assignment_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "order_id VARCHAR(100) NOT NULL, " +
+                    "driver_id INT NOT NULL, " +
+                    "store_id INT NOT NULL, " +
+                    "vehicle_type VARCHAR(50), " +
+                    "status VARCHAR(50) DEFAULT 'ASSIGNED', " +
+                    "notes TEXT, " +
+                    "assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "picked_up_at TIMESTAMP NULL, " +
+                    "delivered_at TIMESTAMP NULL" +
                     ")");
         }
     }
@@ -320,6 +350,8 @@ public class TestDBConnection {
             stmt.execute("TRUNCATE TABLE diagnostic_ratings");
             stmt.execute("TRUNCATE TABLE order_items");
             stmt.execute("TRUNCATE TABLE orders");
+            stmt.execute("TRUNCATE TABLE delivery_assignments");
+            stmt.execute("TRUNCATE TABLE drivers");
             stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
         }
     }
