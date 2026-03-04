@@ -3,11 +3,13 @@ package com.dailyfixer.servlet.payment;
 import com.dailyfixer.dao.OrderDAO;
 import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.StoreDAO;
+import com.dailyfixer.dao.StoreOrderDAO;
 import com.dailyfixer.model.CartItem;
 import com.dailyfixer.model.Order;
 import com.dailyfixer.model.OrderItem;
 import com.dailyfixer.model.Product;
 import com.dailyfixer.model.Store;
+import com.dailyfixer.model.StoreOrder;
 import com.dailyfixer.model.User;
 
 import jakarta.servlet.ServletException;
@@ -39,6 +41,7 @@ public class RedirectToPaymentServlet extends HttpServlet {
     private OrderDAO orderDAO;
     private ProductDAO productDAO;
     private StoreDAO storeDAO;
+    private StoreOrderDAO storeOrderDAO;
 
     @Override
     public void init() throws ServletException {
@@ -46,6 +49,7 @@ public class RedirectToPaymentServlet extends HttpServlet {
         orderDAO = new OrderDAO();
         productDAO = new ProductDAO();
         storeDAO = new StoreDAO();
+        storeOrderDAO = new StoreOrderDAO();
         System.out.println("RedirectToPaymentServlet initialized");
     }
 
@@ -220,13 +224,6 @@ public class RedirectToPaymentServlet extends HttpServlet {
                 System.out.println("  Products: " + storeProductName);
                 System.out.println("  Store Total: " + storeTotal);
 
-                // Create Order object for this store
-                Order storeOrder = new Order(storeOrderId, firstName, lastName, email,
-                        phone, address, city, storeProductName, storeTotal);
-                storeOrder.setStatus("PENDING");
-                storeOrder.setStoreUsername(storeUsername); // Set store username
-                storeOrder.setBuyerId(currentUser.getUserId()); // Link order to logged-in buyer
-
                 // Get store_id from store_username
                 Store store = storeDAO.getStoreByUsername(storeUsername);
                 if (store == null) {
@@ -234,6 +231,14 @@ public class RedirectToPaymentServlet extends HttpServlet {
                     continue;
                 }
                 int storeId = store.getStoreId();
+
+                // Create Order object for this store
+                Order storeOrder = new Order(storeOrderId, firstName, lastName, email,
+                        phone, address, city, storeProductName, storeTotal);
+                storeOrder.setStatus("PENDING");
+                storeOrder.setStoreUsername(storeUsername); // Set store username
+                storeOrder.setStoreId(storeId); // Set store ID (FK)
+                storeOrder.setBuyerId(currentUser.getUserId()); // Link order to logged-in buyer
 
                 // Save order to database
                 try {
@@ -284,6 +289,18 @@ public class RedirectToPaymentServlet extends HttpServlet {
                         } else {
                             System.err.println("Failed to create order item for: " + itemProductName);
                         }
+                    }
+
+                    // Create store_orders entry (§1.5 fix)
+                    StoreOrder storeOrderEntry = new StoreOrder(
+                            storeOrderId, storeId, storeTotal,
+                            BigDecimal.ZERO, storeTotal); // commission=0 for now
+                    storeOrderEntry.setStatus("PENDING");
+                    boolean soSaved = storeOrderDAO.createStoreOrder(storeOrderEntry);
+                    if (soSaved) {
+                        System.out.println("Store order entry created for store: " + storeUsername);
+                    } else {
+                        System.err.println("Failed to create store order entry for store: " + storeUsername);
                     }
                 } catch (Exception dbEx) {
                     System.err.println("Database exception for store " + storeUsername + ": " + dbEx.getMessage());

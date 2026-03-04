@@ -9,7 +9,7 @@ import com.dailyfixer.util.DBConnection;
 public class ProductDAO {
 
     public void addProduct(Product p) throws Exception {
-        String sql = "INSERT INTO products (name, type, quantity, quantity_unit, price, image, store_username, description) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
+        String sql = "INSERT INTO products (name, type, quantity, quantity_unit, price, image, store_username, description, store_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, p.getName());
@@ -20,6 +20,11 @@ public class ProductDAO {
             ps.setBytes(6, p.getImage());
             ps.setString(7, p.getStoreUsername());
             ps.setString(8, p.getDescription());
+            if (p.getStoreId() > 0) {
+                ps.setInt(9, p.getStoreId());
+            } else {
+                ps.setNull(9, java.sql.Types.INTEGER);
+            }
             ps.executeUpdate();
 
             // Get generated product ID
@@ -54,6 +59,7 @@ public class ProductDAO {
                 p.setImage(rs.getBytes("image"));
                 p.setDescription(rs.getString("description"));
                 p.setStoreUsername(rs.getString("store_username"));
+                p.setStoreId(rs.getInt("store_id"));
                 list.add(p);
             }
         }
@@ -87,6 +93,7 @@ public class ProductDAO {
                 p.setImage(rs.getBytes("image"));
                 p.setDescription(rs.getString("description"));
                 p.setStoreUsername(rs.getString("store_username"));
+                p.setStoreId(rs.getInt("store_id"));
 
                 // Populate variation data
                 int variantCount = rs.getInt("variant_count");
@@ -122,7 +129,8 @@ public class ProductDAO {
                 p.setPrice(rs.getDouble("price"));
                 p.setImage(rs.getBytes("image"));
                 p.setDescription(rs.getString("description"));
-                p.setStoreUsername(rs.getString("store_username")); // Get store username
+                p.setStoreUsername(rs.getString("store_username"));
+                p.setStoreId(rs.getInt("store_id"));
             }
         }
         return p;

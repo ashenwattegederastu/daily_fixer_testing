@@ -21,6 +21,7 @@ public class Order {
     private String status;
     private String payherePaymentId;
     private String storeUsername; // Store username to filter orders by store
+    private Integer storeId; // Store ID (FK to stores table)
     private Integer buyerId; // User ID of the buyer (null for guest checkout)
     private Timestamp createdAt;
     private Timestamp updatedAt;
@@ -166,6 +167,14 @@ public class Order {
 
     public void setStoreUsername(String storeUsername) {
         this.storeUsername = storeUsername;
+    }
+
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
     }
 
     public Integer getBuyerId() {

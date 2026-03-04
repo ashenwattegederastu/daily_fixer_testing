@@ -1,59 +1,151 @@
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-    <header class="topbar">
-        <div class="logo">Daily Fixer</div>
-        <div class="panel-name">User Panel</div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙
-                Dark</button>
-            <a href="${pageContext.request.contextPath}/index.jsp" class="btn-secondary">Home</a>
-            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
-        </div>
-    </header>
-    <aside class="sidebar">
-        <h3>Navigation</h3>
-        <ul>
-            <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp"
-                    id="nav-user-dashboard">Dashboard</a></li>
-            <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp"
-                    id="nav-user-notifications">Notifications</a></li>
-            <li>
-                <div
-                    style="padding: 10px 15px; color: var(--muted-foreground); font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.05em;">
-                    Bookings</div>
-                <ul style="margin-left: 10px; list-style: none; padding: 0;">
-                    <li><a href="${pageContext.request.contextPath}/user/bookings/active"
-                            id="nav-user-bookings-active">Active Bookings</a></li>
-                    <li><a href="${pageContext.request.contextPath}/user/bookings/completed"
-                            id="nav-user-bookings-completed">Completed Bookings</a></li>
-                    <li><a href="${pageContext.request.contextPath}/user/bookings/cancelled"
-                            id="nav-user-bookings-cancelled">Cancelled Bookings</a></li>
-                </ul>
-            </li>
-            <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myPurchases.jsp"
-                    id="nav-user-purchases">My Purchases</a></li>
-            <li><a href="${pageContext.request.contextPath}/chats" id="nav-user-chats">Chats</a></li>
-            <li><a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp"
-                    id="nav-user-profile">My Profile</a></li>
-        </ul>
-    </aside>
+    <%@ page import="com.dailyfixer.model.User" %>
 
-    <script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
+        <% User currentUser=(User) session.getAttribute("currentUser"); String firstName=currentUser !=null &&
+            currentUser.getFirstName() !=null ? currentUser.getFirstName() : "User" ; String lastName=currentUser !=null
+            && currentUser.getLastName() !=null ? currentUser.getLastName() : "" ; String username=currentUser !=null &&
+            currentUser.getUsername() !=null ? currentUser.getUsername() : "user" ; String
+            avatarLetter=firstName.length()> 0 ? firstName.substring(0, 1).toUpperCase() : "U";
+            %>
+            <link rel="stylesheet" type="text/css"
+                href="${pageContext.request.contextPath}/assets/icons/regular/style.css" />
+            <link rel="stylesheet" type="text/css"
+                href="${pageContext.request.contextPath}/assets/icons/fill/style.css" />
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/assets/css/sidebar.css" />
 
-    <script>
-        // Highlight active navigation item based on current URL
-        document.addEventListener('DOMContentLoaded', function () {
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.sidebar ul li a');
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="logo"
+                        style="text-decoration: none;">Daily Fixer</a>
+                    <div class="panel-name">User Panel</div>
+                </div>
 
-            navLinks.forEach(link => {
-                const linkPath = new URL(link.href).pathname;
-                if (currentPath.includes(linkPath) || currentPath === linkPath) {
-                    link.classList.add('active');
-                }
-            });
+                <div class="sidebar-nav">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/userdashmain.jsp"
+                                id="nav-user-dashboard">
+                                <i class="ph ph-squares-four"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/notifications.jsp"
+                                id="nav-user-notifications">
+                                <i class="ph ph-bell"></i>
+                                Notifications
+                            </a>
+                        </li>
 
-            if (currentPath.includes('/chats')) {
-                document.getElementById('nav-user-chats')?.classList.add('active');
-            }
-        });
-    </script>
+                        <li class="nav-section-title"
+                            style="padding: 12px 20px 4px; color: var(--muted-foreground); font-weight: 600; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px;">
+                            Bookings
+                        </li>
+
+                        <li>
+                            <a href="${pageContext.request.contextPath}/user/bookings/active"
+                                id="nav-user-bookings-active">
+                                <i class="ph ph-calendar-check"></i>
+                                Active Bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/user/bookings/completed"
+                                id="nav-user-bookings-completed">
+                                <i class="ph ph-check-circle"></i>
+                                Completed Bookings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/user/bookings/cancelled"
+                                id="nav-user-bookings-cancelled">
+                                <i class="ph ph-x-circle"></i>
+                                Cancelled Bookings
+                            </a>
+                        </li>
+
+                        <li class="nav-section-title"
+                            style="padding: 12px 20px 4px; color: var(--muted-foreground); font-weight: 600; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px;">
+                            More
+                        </li>
+
+                        <li>
+                            <a href="${pageContext.request.contextPath}/user/orders" id="nav-user-purchases">
+                                <i class="ph ph-shopping-bag"></i>
+                                My Purchases
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/chats" id="nav-user-chats">
+                                <i class="ph ph-chats-circle"></i>
+                                Chats
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/pages/dashboards/userdash/myProfile.jsp"
+                                id="nav-user-profile">
+                                <i class="ph ph-user"></i>
+                                My Profile
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-footer">
+                    <div class="user-profile-widget">
+                        <div class="user-avatar">
+                            <%= avatarLetter %>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">
+                                <%= firstName %>
+                                    <%= lastName %>
+                            </div>
+                            <div class="user-handle">@<%= username %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-actions">
+                        <button id="theme-toggle-btn" class="action-btn theme-toggle" onclick="toggleTheme()"
+                            aria-label="Toggle dark mode">
+                            🌙 Theme Setup
+                        </button>
+                        <a href="${pageContext.request.contextPath}/logout" class="action-btn logout-btn">
+                            <i class="ph ph-sign-out"></i>
+                            Log Out
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+            <script src="${pageContext.request.contextPath}/assets/js/dark-mode.js"></script>
+
+            <script>
+                // Highlight active navigation item based on current URL
+                document.addEventListener('DOMContentLoaded', function () {
+                    const currentPath = window.location.pathname;
+                    const navLinks = document.querySelectorAll('.sidebar-nav ul li a');
+
+                    navLinks.forEach(link => {
+                        const linkPath = new URL(link.href).pathname;
+                        if (currentPath.includes(linkPath) || currentPath === linkPath) {
+                            link.classList.add('active');
+                        }
+                    });
+
+                    // Special handling for servlet paths
+                    if (currentPath.includes('/chats')) {
+                        document.getElementById('nav-user-chats')?.classList.add('active');
+                    } else if (currentPath.includes('/user/bookings/active')) {
+                        document.getElementById('nav-user-bookings-active')?.classList.add('active');
+                    } else if (currentPath.includes('/user/bookings/completed')) {
+                        document.getElementById('nav-user-bookings-completed')?.classList.add('active');
+                    } else if (currentPath.includes('/user/bookings/cancelled')) {
+                        document.getElementById('nav-user-bookings-cancelled')?.classList.add('active');
+                    } else if (currentPath.includes('/user/orders')) {
+                        document.getElementById('nav-user-purchases')?.classList.add('active');
+                    }
+                });
+            </script>
