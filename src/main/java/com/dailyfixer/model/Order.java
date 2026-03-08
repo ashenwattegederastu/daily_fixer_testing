@@ -23,6 +23,9 @@ public class Order {
     private String storeUsername; // Store username to filter orders by store
     private Integer storeId; // Store ID (FK to stores table)
     private Integer buyerId; // User ID of the buyer (null for guest checkout)
+    private BigDecimal deliveryFee;
+    private Double deliveryLatitude;
+    private Double deliveryLongitude;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
@@ -183,6 +186,30 @@ public class Order {
 
     public void setBuyerId(Integer buyerId) {
         this.buyerId = buyerId;
+    }
+
+    public BigDecimal getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public void setDeliveryFee(BigDecimal deliveryFee) {
+        this.deliveryFee = deliveryFee;
+    }
+
+    public Double getDeliveryLatitude() {
+        return deliveryLatitude;
+    }
+
+    public void setDeliveryLatitude(Double deliveryLatitude) {
+        this.deliveryLatitude = deliveryLatitude;
+    }
+
+    public Double getDeliveryLongitude() {
+        return deliveryLongitude;
+    }
+
+    public void setDeliveryLongitude(Double deliveryLongitude) {
+        this.deliveryLongitude = deliveryLongitude;
     }
 
     // Get full customer name

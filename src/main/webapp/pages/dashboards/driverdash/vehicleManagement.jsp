@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.dailyfixer.model.Vehicle" %>
 <%@ page import="com.dailyfixer.dao.VehicleDAO" %>
+<%@ page import="com.dailyfixer.dao.DeliveryRateDAO" %>
 <%@ page import="com.dailyfixer.model.User" %>
 
 <%
@@ -14,6 +15,9 @@
 
     VehicleDAO dao = new VehicleDAO();
     List<Vehicle> vehicles = dao.getVehiclesByDriver(user.getUserId());
+
+    DeliveryRateDAO deliveryRateDAO = new DeliveryRateDAO();
+    List<String> vehicleCategories = deliveryRateDAO.getActiveVehicleTypes();
 %>
 
 <!DOCTYPE html>
@@ -271,7 +275,7 @@ body {
             form.style.display = form.style.display === 'block' ? 'none' : 'block';
         }
 
-        function openEditForm(vehicleId, type, brand, model, plate, fare1, fareNext) {
+        function openEditForm(vehicleId, type, brand, model, plate, category) {
             const form = document.getElementById('addVehicleForm');
             form.style.display = 'block';
             form.action = '${pageContext.request.contextPath}/EditVehicleServlet';
@@ -280,8 +284,7 @@ body {
             document.getElementById('brand').value = brand;
             document.getElementById('model').value = model;
             document.getElementById('plateNumber').value = plate;
-            document.getElementById('fareFirstKm').value = fare1;
-            document.getElementById('fareNextKm').value = fareNext;
+            document.getElementById('vehicleCategory').value = category;
         }
     </script>
 </head>
@@ -313,13 +316,17 @@ body {
     <form id="addVehicleForm" action="${pageContext.request.contextPath}/AddVehicleServlet" method="post" enctype="multipart/form-data" class="vehicle-form">
         <h3>Add / Edit Vehicle</h3>
         <input type="hidden" id="vehicleId" name="id">
-        <input type="text" id="vehicleType" name="vehicleType" placeholder="Vehicle Type" required>
+        <input type="text" id="vehicleType" name="vehicleType" placeholder="Vehicle Make / Description (e.g. Honda CB125)" required>
         <input type="text" id="brand" name="brand" placeholder="Brand" required>
         <input type="text" id="model" name="model" placeholder="Model" required>
         <input type="text" id="plateNumber" name="plateNumber" placeholder="Plate Number" required>
         <input type="file" name="picture" accept="image/*">
-        <input type="number" step="0.01" id="fareFirstKm" name="fareFirstKm" placeholder="Fare for 1st KM" required>
-        <input type="number" step="0.01" id="fareNextKm" name="fareNextKm" placeholder="Fare for next KMs" required>
+        <select id="vehicleCategory" name="vehicleCategory" required style="display:block;margin:12px 0;width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;">
+            <option value="">-- Select Vehicle Category --</option>
+            <% for (String cat : vehicleCategories) { %>
+            <option value="<%= cat %>"><%= cat %></option>
+            <% } %>
+        </select>
         <button type="submit">Submit</button>
     </form>
 
@@ -332,11 +339,10 @@ body {
             <p><strong>Brand:</strong> <%= vehicle.getBrand() %></p>
             <p><strong>Model:</strong> <%= vehicle.getModel() %></p>
             <p><strong>Plate:</strong> <%= vehicle.getPlateNumber() %></p>
-            <p><strong>Fare 1st KM:</strong> <%= vehicle.getFareFirstKm() %></p>
-            <p><strong>Fare Next KMs:</strong> <%= vehicle.getFareNextKm() %></p>
+            <p><strong>Category:</strong> <%= vehicle.getVehicleCategory() %></p>
             <div class="actions">
                 <a href="javascript:void(0);" class="edit-btn"
-                   onclick="openEditForm('<%= vehicle.getId() %>', '<%= vehicle.getVehicleType() %>', '<%= vehicle.getBrand() %>', '<%= vehicle.getModel() %>', '<%= vehicle.getPlateNumber() %>', '<%= vehicle.getFareFirstKm() %>', '<%= vehicle.getFareNextKm() %>')">Edit</a>
+                   onclick="openEditForm('<%= vehicle.getId() %>', '<%= vehicle.getVehicleType() %>', '<%= vehicle.getBrand() %>', '<%= vehicle.getModel() %>', '<%= vehicle.getPlateNumber() %>', '<%= vehicle.getVehicleCategory() %>')">Edit</a>
                 <a href="${pageContext.request.contextPath}/DeleteVehicleServlet?id=<%= vehicle.getId() %>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this vehicle?');">Delete</a>
             </div>
         </div>

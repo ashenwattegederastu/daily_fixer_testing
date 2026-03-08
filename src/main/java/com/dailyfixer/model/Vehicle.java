@@ -3,15 +3,13 @@ package com.dailyfixer.model;
 public class Vehicle {
     private int id;
     private int driverId;
-    private String vehicleType;
+    private String vehicleType;     // make/description (e.g. "Honda CB125")
     private String brand;
     private String model;
     private String plateNumber;
     private byte[] picture;
-    private double fareFirstKm;
-    private double fareNextKm;
+    private String vehicleCategory; // admin-defined category from delivery_rates (e.g. "Bike", "Three-wheel", "Lorry")
 
-    // ✅ Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -33,9 +31,6 @@ public class Vehicle {
     public byte[] getPicture() { return picture; }
     public void setPicture(byte[] picture) { this.picture = picture; }
 
-    public double getFareFirstKm() { return fareFirstKm; }
-    public void setFareFirstKm(double fareFirstKm) { this.fareFirstKm = fareFirstKm; }
-
-    public double getFareNextKm() { return fareNextKm; }
-    public void setFareNextKm(double fareNextKm) { this.fareNextKm = fareNextKm; }
+    public String getVehicleCategory() { return vehicleCategory; }
+    public void setVehicleCategory(String vehicleCategory) { this.vehicleCategory = vehicleCategory; }
 }

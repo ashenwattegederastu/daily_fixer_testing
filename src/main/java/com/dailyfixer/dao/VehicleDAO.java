@@ -33,7 +33,7 @@ public class VehicleDAO {
 
     // Update a vehicle
     public boolean updateVehicle(Vehicle v) {
-        String sql = "UPDATE vehicles SET vehicle_type=?, brand=?, model=?, plate_number=?, picture=?, fare_first_km=?, fare_next_km=? WHERE id=?";
+        String sql = "UPDATE vehicles SET vehicle_type=?, brand=?, model=?, plate_number=?, picture=?, vehicle_category=? WHERE id=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -42,9 +42,8 @@ public class VehicleDAO {
             stmt.setString(3, v.getModel());
             stmt.setString(4, v.getPlateNumber());
             stmt.setBytes(5, v.getPicture());
-            stmt.setDouble(6, v.getFareFirstKm());
-            stmt.setDouble(7, v.getFareNextKm());
-            stmt.setInt(8, v.getId());
+            stmt.setString(6, v.getVehicleCategory());
+            stmt.setInt(7, v.getId());
 
             return stmt.executeUpdate() > 0;
 
@@ -92,7 +91,7 @@ public class VehicleDAO {
 
     // Add a new vehicle
     public boolean addVehicle(Vehicle v) {
-        String sql = "INSERT INTO vehicles(driver_id, vehicle_type, brand, model, plate_number, picture, fare_first_km, fare_next_km) VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO vehicles(driver_id, vehicle_type, brand, model, plate_number, picture, vehicle_category) VALUES(?,?,?,?,?,?,?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -102,8 +101,7 @@ public class VehicleDAO {
             stmt.setString(4, v.getModel());
             stmt.setString(5, v.getPlateNumber());
             stmt.setBytes(6, v.getPicture());
-            stmt.setDouble(7, v.getFareFirstKm());
-            stmt.setDouble(8, v.getFareNextKm());
+            stmt.setString(7, v.getVehicleCategory());
 
             return stmt.executeUpdate() > 0;
 
@@ -123,8 +121,7 @@ public class VehicleDAO {
         v.setModel(rs.getString("model"));
         v.setPlateNumber(rs.getString("plate_number"));
         v.setPicture(rs.getBytes("picture"));
-        v.setFareFirstKm(rs.getDouble("fare_first_km"));
-        v.setFareNextKm(rs.getDouble("fare_next_km"));
+        v.setVehicleCategory(rs.getString("vehicle_category"));
         return v;
     }
 }

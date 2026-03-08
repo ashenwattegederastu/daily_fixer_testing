@@ -35,11 +35,7 @@ public class AddVehicleServlet extends HttpServlet {
             String brand = getValue(request.getPart("brand"));
             String model = getValue(request.getPart("model"));
             String plateNumber = getValue(request.getPart("plateNumber"));
-            String fareFirstStr = getValue(request.getPart("fareFirstKm"));
-            String fareNextStr = getValue(request.getPart("fareNextKm"));
-
-            double fareFirstKm = fareFirstStr != null ? Double.parseDouble(fareFirstStr) : 0;
-            double fareNextKm = fareNextStr != null ? Double.parseDouble(fareNextStr) : 0;
+            String vehicleCategory = getValue(request.getPart("vehicleCategory"));
 
             // Read picture
             Part picturePart = request.getPart("picture");
@@ -57,8 +53,7 @@ public class AddVehicleServlet extends HttpServlet {
             vehicle.setModel(model);
             vehicle.setPlateNumber(plateNumber);
             vehicle.setPicture(picture);
-            vehicle.setFareFirstKm(fareFirstKm);
-            vehicle.setFareNextKm(fareNextKm);
+            vehicle.setVehicleCategory(vehicleCategory);
 
             boolean added = vehicleDAO.addVehicle(vehicle);
             if (added) {

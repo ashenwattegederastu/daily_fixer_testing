@@ -123,6 +123,8 @@ if (itemsToCheckout == null || itemsToCheckout.isEmpty()) {
                 discountName,
                 discountType
             );
+            item.setStoreUsername(product.getStoreUsername());
+            item.setStoreId(product.getStoreId());
             String cartKey = variantId != null ? "V-" + variantId : "P-" + productId;
             itemsToCheckout.put(cartKey, item);
         }
@@ -726,8 +728,9 @@ nav.public-nav .logo {
                             <% if (totalDiscount > 0) { %>-<% } %>Rs <%=String.format("%.2f", totalDiscount)%>
                         </span>
                     </div>
-                    <div>Shipping <span>Rs 0.00</span></div>
-                    <div class="total">Total <span>Rs <%=String.format("%.2f", total - totalDiscount)%></span></div>
+                    <div id="delivery-fee-row">Delivery <span id="delivery-total">Rs 0.00</span></div>
+                    <div id="delivery-breakdown" style="display:none; font-size:0.82em; color:#666; flex-direction:column; gap:2px; padding:0; margin-top:-6px;"></div>
+                    <div class="total">Total <span id="grand-total">Rs <%=String.format("%.2f", total - totalDiscount)%></span></div>
                 </div>
 
                 <!-- Place Order button -->
@@ -807,6 +810,8 @@ nav.public-nav .logo {
             }
         }
 
+        const itemsSubtotal = <%=total - totalDiscount%>;
+
         function setCheckoutLocation(lat, lng) {
             selectedLat = lat;
             selectedLng = lng;
@@ -819,6 +824,59 @@ nav.public-nav .logo {
             const pos = new google.maps.LatLng(lat, lng);
             checkoutMarker.setPosition(pos);
             checkoutMarker.setVisible(true);
+
+            fetchDeliveryFees(lat, lng);
+        }
+
+        function fetchDeliveryFees(lat, lng) {
+            const deliveryTotal = document.getElementById('delivery-total');
+            const breakdown = document.getElementById('delivery-breakdown');
+            if (deliveryTotal) deliveryTotal.textContent = 'Calculating...';
+
+            fetch('<%=request.getContextPath()%>/calculateDeliveryFee?customerLat=' + lat + '&customerLng=' + lng)
+                .then(r => {
+                    if (!r.ok) {
+                        console.error('Delivery fee endpoint returned', r.status, r.statusText);
+                        throw new Error('HTTP ' + r.status);
+                    }
+                    return r.json();
+                })
+                .then(data => {
+                    // Handle error object returned by servlet
+                    if (data && data.error) {
+                        console.error('Delivery fee error:', data.error);
+                        if (deliveryTotal) deliveryTotal.textContent = 'Rs 0.00';
+                        return;
+                    }
+                    const stores = Array.isArray(data) ? data : [];
+                    let total = 0;
+                    breakdown.innerHTML = '';
+
+                    if (stores.length > 1) {
+                        stores.forEach(s => {
+                            total += s.deliveryFee;
+                            const row = document.createElement('div');
+                            row.style.cssText = 'display:flex;justify-content:space-between;padding:2px 0;';
+                            row.innerHTML = '<span style="padding-left:10px;">↳ ' + (s.storeName || s.storeUsername) + ' (' + s.distanceKm.toFixed(1) + ' km)</span>'
+                                          + '<span>Rs ' + s.deliveryFee.toFixed(2) + '</span>';
+                            breakdown.appendChild(row);
+                        });
+                        breakdown.style.display = 'flex';
+                    } else if (stores.length === 1) {
+                        total = stores[0].deliveryFee;
+                        breakdown.style.display = 'none';
+                    } else {
+                        console.warn('No stores found in cart for delivery fee calculation.');
+                    }
+
+                    if (deliveryTotal) deliveryTotal.textContent = 'Rs ' + total.toFixed(2);
+                    const grandTotal = document.getElementById('grand-total');
+                    if (grandTotal) grandTotal.textContent = 'Rs ' + (itemsSubtotal + total).toFixed(2);
+                })
+                .catch(err => {
+                    console.error('fetchDeliveryFees failed:', err);
+                    if (deliveryTotal) deliveryTotal.textContent = 'Rs 0.00';
+                });
         }
 
         function reverseGeocodeCheckout(latLng) {

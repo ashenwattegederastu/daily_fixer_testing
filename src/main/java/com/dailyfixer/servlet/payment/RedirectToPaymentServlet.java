@@ -1,16 +1,19 @@
 package com.dailyfixer.servlet.payment;
 
+import com.dailyfixer.dao.DeliveryRateDAO;
 import com.dailyfixer.dao.OrderDAO;
 import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.StoreDAO;
 import com.dailyfixer.dao.StoreOrderDAO;
 import com.dailyfixer.model.CartItem;
+import com.dailyfixer.model.DeliveryRate;
 import com.dailyfixer.model.Order;
 import com.dailyfixer.model.OrderItem;
 import com.dailyfixer.model.Product;
 import com.dailyfixer.model.Store;
 import com.dailyfixer.model.StoreOrder;
 import com.dailyfixer.model.User;
+import com.dailyfixer.util.DeliveryFeeCalculator;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -42,6 +45,7 @@ public class RedirectToPaymentServlet extends HttpServlet {
     private ProductDAO productDAO;
     private StoreDAO storeDAO;
     private StoreOrderDAO storeOrderDAO;
+    private DeliveryRateDAO deliveryRateDAO;
 
     @Override
     public void init() throws ServletException {
@@ -50,6 +54,7 @@ public class RedirectToPaymentServlet extends HttpServlet {
         productDAO = new ProductDAO();
         storeDAO = new StoreDAO();
         storeOrderDAO = new StoreOrderDAO();
+        deliveryRateDAO = new DeliveryRateDAO();
         System.out.println("RedirectToPaymentServlet initialized");
     }
 
@@ -82,6 +87,21 @@ public class RedirectToPaymentServlet extends HttpServlet {
             String district = request.getParameter("district");
             String latitude = request.getParameter("latitude");
             String longitude = request.getParameter("longitude");
+
+            // Parse customer delivery coordinates
+            double customerLat = 0;
+            double customerLng = 0;
+            try {
+                if (latitude != null && !latitude.isBlank()) customerLat = Double.parseDouble(latitude);
+                if (longitude != null && !longitude.isBlank()) customerLng = Double.parseDouble(longitude);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid delivery coordinates: " + latitude + ", " + longitude);
+            }
+
+            // Load delivery rates once for this request
+            List<DeliveryRate> activeRates = deliveryRateDAO.getActiveRates();
+            BigDecimal weightedRate    = DeliveryFeeCalculator.calculateWeightedRate(activeRates);
+            BigDecimal weightedBaseFee = DeliveryFeeCalculator.calculateWeightedBaseFee(activeRates);
 
             // Get cart items from session
             @SuppressWarnings("unchecked")
@@ -234,13 +254,28 @@ public class RedirectToPaymentServlet extends HttpServlet {
                 }
                 int storeId = store.getStoreId();
 
-                // Create Order object for this store
+                // Calculate delivery fee for this store leg
+                BigDecimal deliveryFee = BigDecimal.ZERO;
+                if (customerLat != 0 && customerLng != 0 && store.getLatitude() != 0 && store.getLongitude() != 0) {
+                    double distKm = DeliveryFeeCalculator.haversineDistance(
+                            store.getLatitude(), store.getLongitude(), customerLat, customerLng);
+                    deliveryFee = DeliveryFeeCalculator.calculateDeliveryFee(distKm, weightedBaseFee, weightedRate);
+                    System.out.println("  Delivery distance: " + String.format("%.2f", distKm) + " km, fee: " + deliveryFee);
+                } else {
+                    System.err.println("  Warning: missing coordinates for store '" + storeUsername + "' or customer — delivery fee = 0");
+                }
+
+                // Create Order object for this store (amount = items total + delivery fee)
+                BigDecimal orderTotal = storeTotal.add(deliveryFee);
                 Order storeOrder = new Order(storeOrderId, firstName, lastName, email,
-                        phone, address, city, storeProductName, storeTotal);
+                        phone, address, city, storeProductName, orderTotal);
                 storeOrder.setStatus("PENDING");
-                storeOrder.setStoreUsername(storeUsername); // Set store username
-                storeOrder.setStoreId(storeId); // Set store ID (FK)
-                storeOrder.setBuyerId(currentUser.getUserId()); // Link order to logged-in buyer
+                storeOrder.setStoreUsername(storeUsername);
+                storeOrder.setStoreId(storeId);
+                storeOrder.setBuyerId(currentUser.getUserId());
+                storeOrder.setDeliveryFee(deliveryFee);
+                if (customerLat != 0) storeOrder.setDeliveryLatitude(customerLat);
+                if (customerLng != 0) storeOrder.setDeliveryLongitude(customerLng);
 
                 // Save order to database
                 try {
@@ -293,10 +328,11 @@ public class RedirectToPaymentServlet extends HttpServlet {
                         }
                     }
 
-                    // Create store_orders entry (§1.5 fix)
+                    // Create store_orders entry
                     StoreOrder storeOrderEntry = new StoreOrder(
                             storeOrderId, storeId, storeTotal,
                             BigDecimal.ZERO, storeTotal); // commission=0 for now
+                    storeOrderEntry.setDeliveryFee(deliveryFee);
                     storeOrderEntry.setStatus("PENDING");
                     boolean soSaved = storeOrderDAO.createStoreOrder(storeOrderEntry);
                     if (soSaved) {

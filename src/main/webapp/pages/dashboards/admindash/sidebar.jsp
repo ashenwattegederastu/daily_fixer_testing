@@ -67,6 +67,13 @@
                                 Volunteer Requests
                             </a>
                         </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/admin/deliveryRates"
+                                id="nav-delivery-rates">
+                                <i class="ph ph-truck"></i>
+                                Delivery Rates
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -124,6 +131,8 @@
                         document.getElementById('nav-volunteer-requests')?.classList.add('active');
                     } else if (currentPath.includes('/admindashmain.jsp')) {
                         document.getElementById('nav-dashboard')?.classList.add('active');
+                    } else if (currentPath.includes('/deliveryRates')) {
+                        document.getElementById('nav-delivery-rates')?.classList.add('active');
                     }
                 });
 

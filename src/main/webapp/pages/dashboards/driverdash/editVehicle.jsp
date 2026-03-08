@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.util.List" %>
 <%@ page import="com.dailyfixer.model.Vehicle" %>
 <%@ page import="com.dailyfixer.dao.VehicleDAO" %>
+<%@ page import="com.dailyfixer.dao.DeliveryRateDAO" %>
 <%@ page import="com.dailyfixer.model.User" %>
 <%
   // Get logged-in user
@@ -25,6 +27,9 @@
     response.sendRedirect(request.getContextPath() + "/pages/dashboards/driverdash/vehicleManagement.jsp");
     return;
   }
+
+  DeliveryRateDAO deliveryRateDAO = new DeliveryRateDAO();
+  List<String> vehicleCategories = deliveryRateDAO.getActiveVehicleTypes();
 %>
 
 <!DOCTYPE html>
@@ -242,11 +247,13 @@ body {
         <label for="picture">New Image (optional):</label>
         <input type="file" name="picture" accept="image/*">
 
-        <label for="fareFirstKm">Fare for 1st KM:</label>
-        <input type="number" step="0.01" name="fareFirstKm" value="<%= vehicle.getFareFirstKm() %>" placeholder="Fare for 1st KM" required>
-
-        <label for="fareNextKm">Fare for next KMs:</label>
-        <input type="number" step="0.01" name="fareNextKm" value="<%= vehicle.getFareNextKm() %>" placeholder="Fare for next KMs" required>
+        <label for="vehicleCategory">Vehicle Category:</label>
+        <select name="vehicleCategory" required style="display:block;margin:8px 0;width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;">
+            <option value="">-- Select Category --</option>
+            <% for (String cat : vehicleCategories) { %>
+            <option value="<%= cat %>" <%= cat.equals(vehicle.getVehicleCategory()) ? "selected" : "" %>><%= cat %></option>
+            <% } %>
+        </select>
 
         <button type="submit">Update Vehicle</button>
     </form>

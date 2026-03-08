@@ -42,11 +42,7 @@ public class EditVehicleServlet extends HttpServlet {
             String brand = request.getParameter("brand");
             String model = request.getParameter("model");
             String plateNumber = request.getParameter("plateNumber");
-            String fareFirstKmStr = request.getParameter("fareFirstKm");
-            String fareNextKmStr = request.getParameter("fareNextKm");
-
-            double fareFirstKm = fareFirstKmStr != null && !fareFirstKmStr.isEmpty() ? Double.parseDouble(fareFirstKmStr) : 0;
-            double fareNextKm = fareNextKmStr != null && !fareNextKmStr.isEmpty() ? Double.parseDouble(fareNextKmStr) : 0;
+            String vehicleCategory = request.getParameter("vehicleCategory");
 
             Part picturePart = request.getPart("picture"); // may be null or empty
 
@@ -63,8 +59,7 @@ public class EditVehicleServlet extends HttpServlet {
             vehicle.setBrand(brand);
             vehicle.setModel(model);
             vehicle.setPlateNumber(plateNumber);
-            vehicle.setFareFirstKm(fareFirstKm);
-            vehicle.setFareNextKm(fareNextKm);
+            vehicle.setVehicleCategory(vehicleCategory);
 
             // Only update picture if a new file was uploaded
             if (picturePart != null && picturePart.getSize() > 0) {

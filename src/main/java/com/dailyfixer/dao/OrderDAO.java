@@ -18,7 +18,9 @@ public class OrderDAO {
     // SQL Statements
     private static final String INSERT_ORDER = "INSERT INTO orders (order_id, customer_name, first_name, last_name, email, phone, address, city, "
             +
-            "total_amount, currency, status, store_username, store_id, product_name, buyer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "total_amount, delivery_fee, currency, status, store_username, store_id, product_name, buyer_id, delivery_latitude, delivery_longitude) "
+            +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String SELECT_ORDER_BY_ID = "SELECT * FROM orders WHERE order_id = ?";
 
@@ -97,19 +99,31 @@ public class OrderDAO {
             stmt.setString(7, order.getAddress());
             stmt.setString(8, order.getCity());
             stmt.setBigDecimal(9, order.getAmount()); // total_amount
-            stmt.setString(10, order.getCurrency());
-            stmt.setString(11, order.getStatus());
-            stmt.setString(12, order.getStoreUsername());
+            java.math.BigDecimal deliveryFee = order.getDeliveryFee() != null ? order.getDeliveryFee() : java.math.BigDecimal.ZERO;
+            stmt.setBigDecimal(10, deliveryFee); // delivery_fee
+            stmt.setString(11, order.getCurrency());
+            stmt.setString(12, order.getStatus());
+            stmt.setString(13, order.getStoreUsername());
             if (order.getStoreId() != null) {
-                stmt.setInt(13, order.getStoreId()); // store_id
+                stmt.setInt(14, order.getStoreId()); // store_id
             } else {
-                stmt.setNull(13, Types.INTEGER);
+                stmt.setNull(14, Types.INTEGER);
             }
-            stmt.setString(14, order.getProductName());
+            stmt.setString(15, order.getProductName());
             if (order.getBuyerId() != null) {
-                stmt.setInt(15, order.getBuyerId());
+                stmt.setInt(16, order.getBuyerId());
             } else {
-                stmt.setNull(15, Types.INTEGER);
+                stmt.setNull(16, Types.INTEGER);
+            }
+            if (order.getDeliveryLatitude() != null) {
+                stmt.setDouble(17, order.getDeliveryLatitude());
+            } else {
+                stmt.setNull(17, Types.DECIMAL);
+            }
+            if (order.getDeliveryLongitude() != null) {
+                stmt.setDouble(18, order.getDeliveryLongitude());
+            } else {
+                stmt.setNull(18, Types.DECIMAL);
             }
 
             int rowsAffected = stmt.executeUpdate();
@@ -448,6 +462,7 @@ public class OrderDAO {
         String productName = rs.getString("product_name");
         order.setProductName(productName != null ? productName : "");
         order.setAmount(rs.getBigDecimal("total_amount"));
+        order.setDeliveryFee(rs.getBigDecimal("delivery_fee"));
         order.setCurrency(rs.getString("currency"));
         order.setStatus(rs.getString("status"));
         order.setPayherePaymentId(rs.getString("payhere_payment_id"));
@@ -458,6 +473,10 @@ public class OrderDAO {
         order.setUpdatedAt(rs.getTimestamp("updated_at"));
         int buyerId = rs.getInt("buyer_id");
         order.setBuyerId(rs.wasNull() ? null : buyerId);
+        double dlat = rs.getDouble("delivery_latitude");
+        if (!rs.wasNull()) order.setDeliveryLatitude(dlat);
+        double dlng = rs.getDouble("delivery_longitude");
+        if (!rs.wasNull()) order.setDeliveryLongitude(dlng);
         return order;
     }
 

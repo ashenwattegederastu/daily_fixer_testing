@@ -12,6 +12,7 @@ public class StoreOrder {
     private String orderId;
     private int storeId;
     private BigDecimal storeTotal;
+    private BigDecimal deliveryFee;
     private BigDecimal commission;
     private BigDecimal payableAmount;
     private String status;
@@ -64,6 +65,14 @@ public class StoreOrder {
 
     public void setStoreTotal(BigDecimal storeTotal) {
         this.storeTotal = storeTotal;
+    }
+
+    public BigDecimal getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public void setDeliveryFee(BigDecimal deliveryFee) {
+        this.deliveryFee = deliveryFee;
     }
 
     public BigDecimal getCommission() {

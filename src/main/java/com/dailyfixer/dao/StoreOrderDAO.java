@@ -13,9 +13,9 @@ import java.util.List;
  */
 public class StoreOrderDAO {
 
-    private static final String INSERT_STORE_ORDER = "INSERT INTO store_orders (order_id, store_id, store_total, commission, payable_amount, status) "
+    private static final String INSERT_STORE_ORDER = "INSERT INTO store_orders (order_id, store_id, store_total, delivery_fee, commission, payable_amount, status) "
             +
-            "VALUES (?, ?, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     private static final String SELECT_BY_ORDER_ID = "SELECT * FROM store_orders WHERE order_id = ? ORDER BY store_order_id";
 
@@ -34,9 +34,11 @@ public class StoreOrderDAO {
             stmt.setString(1, storeOrder.getOrderId());
             stmt.setInt(2, storeOrder.getStoreId());
             stmt.setBigDecimal(3, storeOrder.getStoreTotal());
-            stmt.setBigDecimal(4, storeOrder.getCommission());
-            stmt.setBigDecimal(5, storeOrder.getPayableAmount());
-            stmt.setString(6, storeOrder.getStatus() != null ? storeOrder.getStatus() : "PENDING");
+            java.math.BigDecimal dFee = storeOrder.getDeliveryFee() != null ? storeOrder.getDeliveryFee() : java.math.BigDecimal.ZERO;
+            stmt.setBigDecimal(4, dFee);
+            stmt.setBigDecimal(5, storeOrder.getCommission());
+            stmt.setBigDecimal(6, storeOrder.getPayableAmount());
+            stmt.setString(7, storeOrder.getStatus() != null ? storeOrder.getStatus() : "PENDING");
 
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Store order created for order: " + storeOrder.getOrderId()
@@ -107,6 +109,7 @@ public class StoreOrderDAO {
         so.setOrderId(rs.getString("order_id"));
         so.setStoreId(rs.getInt("store_id"));
         so.setStoreTotal(rs.getBigDecimal("store_total"));
+        so.setDeliveryFee(rs.getBigDecimal("delivery_fee"));
         so.setCommission(rs.getBigDecimal("commission"));
         so.setPayableAmount(rs.getBigDecimal("payable_amount"));
         so.setStatus(rs.getString("status"));
