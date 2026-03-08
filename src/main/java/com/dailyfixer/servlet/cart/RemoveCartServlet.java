@@ -31,21 +31,26 @@ public class RemoveCartServlet extends HttpServlet {
             int productId = Integer.parseInt(productIdStr);
 
             HttpSession session = request.getSession();
-            Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+            @SuppressWarnings("unchecked")
+            Map<String, CartItem> cart = (Map<String, CartItem>) session.getAttribute("cart");
 
             if (cart == null || cart.isEmpty()) {
                 out.print("{\"cartCount\":0}");
                 return;
             }
 
-            // Determine the cart key: use cartKey parameter if provided, otherwise use variantId if exists, else productId
-            Integer cartKey;
+            // Resolve String cart key — prefer explicit cartKey param, then derive from variant/product
+            String cartKey;
             if (cartKeyStr != null && !cartKeyStr.isBlank()) {
-                cartKey = Integer.parseInt(cartKeyStr);
+                cartKey = cartKeyStr.startsWith("V-") || cartKeyStr.startsWith("P-")
+                        ? cartKeyStr
+                        : (variantIdStr != null && !variantIdStr.isBlank()
+                                ? "V-" + variantIdStr
+                                : "P-" + productId);
             } else if (variantIdStr != null && !variantIdStr.isBlank()) {
-                cartKey = Integer.parseInt(variantIdStr);
+                cartKey = "V-" + variantIdStr;
             } else {
-                cartKey = productId;
+                cartKey = "P-" + productId;
             }
 
             if (cart.containsKey(cartKey)) {

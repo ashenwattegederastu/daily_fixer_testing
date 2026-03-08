@@ -1,12 +1,14 @@
 package com.dailyfixer.servlet.cart;
 
+import com.dailyfixer.dao.DiscountDAO;
 import com.dailyfixer.dao.ProductDAO;
 import com.dailyfixer.dao.ProductVariantDAO;
-import com.dailyfixer.dao.DiscountDAO;
+import com.dailyfixer.dao.StoreDAO;
 import com.dailyfixer.model.CartItem;
+import com.dailyfixer.model.Discount;
 import com.dailyfixer.model.Product;
 import com.dailyfixer.model.ProductVariant;
-import com.dailyfixer.model.Discount;
+import com.dailyfixer.model.Store;
 import com.dailyfixer.model.User;
 
 import jakarta.servlet.ServletException;
@@ -36,13 +38,19 @@ public class CartServlet extends HttpServlet {
             return;
         }
 
-        Map<Integer, CartItem> cart;
+        Map<String, CartItem> cart;
         Object obj = session.getAttribute("cart");
 
         if (obj instanceof Map<?, ?>) {
-            @SuppressWarnings("unchecked")
-            Map<Integer, CartItem> tempCart = (Map<Integer, CartItem>) obj;
-            cart = tempCart;
+            Map<?, ?> rawMap = (Map<?, ?>) obj;
+            if (!rawMap.isEmpty() && !(rawMap.keySet().iterator().next() instanceof String)) {
+                // Old integer-keyed cart from before the fix — discard it
+                cart = new HashMap<>();
+            } else {
+                @SuppressWarnings("unchecked")
+                Map<String, CartItem> tempCart = (Map<String, CartItem>) rawMap;
+                cart = tempCart;
+            }
         } else {
             cart = new HashMap<>();
         }
@@ -107,9 +115,19 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            // Use variantId as part of cart key if variant exists
-            // This allows same product with different variants to be separate cart items
-            int cartKey = variantId != null ? variantId : productId;
+            // Use prefixed string keys to prevent variant/product ID collision
+            String cartKey = variantId != null ? "V-" + variantId : "P-" + productId;
+
+            // Resolve store info — use store_id from product, fall back to StoreDAO lookup
+            int storeId = product.getStoreId();
+            String storeUsername = product.getStoreUsername();
+            if (storeId <= 0 && storeUsername != null && !storeUsername.isBlank()) {
+                StoreDAO storeDAO = new StoreDAO();
+                Store store = storeDAO.getStoreByUsername(storeUsername);
+                if (store != null) {
+                    storeId = store.getStoreId();
+                }
+            }
 
             // Check for active discount
             double originalPrice = price;
@@ -163,6 +181,8 @@ public class CartServlet extends HttpServlet {
                         discountName,
                         discountType
                 );
+                item.setStoreId(storeId);
+                item.setStoreUsername(storeUsername);
                 cart.put(cartKey, item);
             } else {
                 int newQty = item.getQuantity() + quantity;

@@ -36,7 +36,7 @@
 
 <%
     // Get cart from session
-    Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+    @SuppressWarnings("unchecked") Map<String, CartItem> cart = (Map<String, CartItem>) session.getAttribute("cart");
     if(cart == null){
         cart = new java.util.HashMap<>();
         session.setAttribute("cart", cart);

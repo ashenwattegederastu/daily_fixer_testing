@@ -270,7 +270,7 @@
                 <div class="cart-container">
                     <h2>Your Cart</h2>
 
-                    <% Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+                    <% @SuppressWarnings("unchecked") Map<String, CartItem> cart = (Map<String, CartItem>) session.getAttribute("cart");
                             if (cart == null || cart.isEmpty()) {
                             %>
                             <p class="empty-cart-msg">Your cart is empty.</p>
@@ -279,7 +279,7 @@
                                 <div class="cart-items">
                                     <% for (CartItem ci : cart.values()) { %>
                                         <div class="cart-item" data-id="<%=ci.getProductId()%>"
-                                            data-cart-key="<%=ci.getVariantId() != null ? ci.getVariantId() : ci.getProductId()%>">
+                                            data-cart-key="<%=ci.getVariantId() != null ? "V-" + ci.getVariantId() : "P-" + ci.getProductId()%>">
                                             <img src="data:image/jpeg;base64,<%=ci.getImageBase64()%>"
                                                 alt="<%=ci.getName()%>">
                                             <div class="item-details">
@@ -320,7 +320,7 @@
                                                             <span class="quantity-controls"
                                                                 data-product-id="<%=ci.getProductId()%>"
                                                                 data-variant-id="<%=ci.getVariantId() != null ? ci.getVariantId() : ""%>"
-                                                                data-cart-key="<%=ci.getVariantId() != null ? ci.getVariantId() : ci.getProductId()%>">
+                                                                data-cart-key="<%=ci.getVariantId() != null ? "V-" + ci.getVariantId() : "P-" + ci.getProductId()%>">
                                                                 <button type="button"
                                                                     class="qty-btn qty-decrease">-</button>
                                                                 <span class="qty-value">
@@ -355,7 +355,7 @@
                                             </div>
                                             <button class="remove-item" data-product-id="<%=ci.getProductId()%>"
                                                 data-variant-id="<%=ci.getVariantId() != null ? ci.getVariantId() : ""%>"
-                                                data-cart-key="<%=ci.getVariantId() != null ? ci.getVariantId() : ci.getProductId()%>">Remove</button>
+                                                data-cart-key="<%=ci.getVariantId() != null ? "V-" + ci.getVariantId() : "P-" + ci.getProductId()%>">Remove</button>
                                         </div>
                                         <% } %>
                                 </div>

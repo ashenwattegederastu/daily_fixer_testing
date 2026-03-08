@@ -1,6 +1,10 @@
 package com.dailyfixer.servlet.order;
 
 import com.dailyfixer.dao.OrderDAO;
+import com.dailyfixer.dao.StoreDAO;
+import com.dailyfixer.model.Order;
+import com.dailyfixer.model.Store;
+import com.dailyfixer.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,6 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * UpdateOrderStatusServlet - Handles AJAX requests to update order status.
@@ -38,23 +46,28 @@ public class UpdateOrderStatusServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            String orderId = request.getParameter("orderId");
-            String status = request.getParameter("status");
+            // --- 1. Require login ---
+            User currentUser = (User) request.getSession().getAttribute("currentUser");
+            if (currentUser == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print("{\"success\":false,\"message\":\"Authentication required\"}");
+                return;
+            }
 
-            // Validate parameters
+            String orderId = request.getParameter("orderId");
+            String status  = request.getParameter("status");
+
             if (orderId == null || orderId.trim().isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print("{\"success\":false,\"message\":\"Order ID is required\"}");
                 return;
             }
-
             if (status == null || status.trim().isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print("{\"success\":false,\"message\":\"Status is required\"}");
                 return;
             }
 
-            // Validate status value
             String statusUpper = status.trim().toUpperCase();
             if (!isValidStatus(statusUpper)) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -62,11 +75,52 @@ public class UpdateOrderStatusServlet extends HttpServlet {
                 return;
             }
 
-            // Update order status in database
-            boolean updated = orderDAO.updateStatus(orderId, statusUpper);
+            // --- 2. Load the order ---
+            Order order = orderDAO.findOrderById(orderId.trim());
+            if (order == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print("{\"success\":false,\"message\":\"Order not found\"}");
+                return;
+            }
 
+            boolean isAdmin = "admin".equals(currentUser.getRole());
+
+            if (!isAdmin) {
+                // --- 3. Ownership check: caller must be the store that owns the order ---
+                if (!"store".equals(currentUser.getRole())) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    out.print("{\"success\":false,\"message\":\"Not authorised to update orders\"}");
+                    return;
+                }
+
+                boolean ownsOrder = currentUser.getUsername().equals(order.getStoreUsername());
+                if (!ownsOrder && order.getStoreId() != null) {
+                    StoreDAO storeDAO = new StoreDAO();
+                    Store callerStore = storeDAO.getStoreByUsername(currentUser.getUsername());
+                    ownsOrder = callerStore != null && callerStore.getStoreId() == order.getStoreId();
+                }
+
+                if (!ownsOrder) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    out.print("{\"success\":false,\"message\":\"Not authorised to update this order\"}");
+                    return;
+                }
+
+                // --- 4. Status transition validation (store users only) ---
+                String currentStatus = order.getStatus() != null ? order.getStatus().toUpperCase() : "PENDING";
+                if (!isValidTransition(currentStatus, statusUpper)) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print("{\"success\":false,\"message\":\"Cannot transition order from "
+                            + currentStatus + " to " + statusUpper + "\"}");
+                    return;
+                }
+            }
+
+            // --- 5. Apply the update ---
+            boolean updated = orderDAO.updateStatus(orderId.trim(), statusUpper);
             if (updated) {
-                System.out.println("Order status updated: " + orderId + " -> " + statusUpper);
+                System.out.println("Order status updated: " + orderId + " -> " + statusUpper
+                        + " by " + currentUser.getUsername());
                 out.print("{\"success\":true,\"message\":\"Status updated successfully\"}");
             } else {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -77,20 +131,30 @@ public class UpdateOrderStatusServlet extends HttpServlet {
             System.err.println("Error updating order status: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"success\":false,\"message\":\"Server error: " + e.getMessage() + "\"}");
+            out.print("{\"success\":false,\"message\":\"Server error\"}");
         } finally {
             out.close();
         }
     }
 
-    /**
-     * Validate if the status is one of the allowed values.
-     */
+    /** Allowed status values. */
     private boolean isValidStatus(String status) {
-        return "PENDING".equals(status) ||
-               "PROCESSING".equals(status) ||
-               "OUT_FOR_DELIVERY".equals(status) ||
-               "DELIVERED".equals(status) ||
-               "PAID".equals(status); // Allow PAID for backward compatibility
+        return "PENDING".equals(status) || "PAID".equals(status) ||
+               "PROCESSING".equals(status) || "OUT_FOR_DELIVERY".equals(status) ||
+               "DELIVERED".equals(status) || "CANCELLED".equals(status);
+    }
+
+    /**
+     * Enforce forward-only status transitions for store users.
+     * Admins bypass this check entirely.
+     */
+    private boolean isValidTransition(String current, String next) {
+        Map<String, List<String>> allowed = new HashMap<>();
+        allowed.put("PENDING",           Arrays.asList("PAID", "CANCELLED"));
+        allowed.put("PAID",              Arrays.asList("PROCESSING", "CANCELLED"));
+        allowed.put("PROCESSING",        Arrays.asList("OUT_FOR_DELIVERY", "CANCELLED"));
+        allowed.put("OUT_FOR_DELIVERY",  Arrays.asList("DELIVERED"));
+        List<String> targets = allowed.get(current);
+        return targets != null && targets.contains(next);
     }
 }

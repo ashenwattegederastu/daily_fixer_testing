@@ -160,16 +160,18 @@ public class ProductDAO {
      * @return true if successful, false otherwise
      */
     public boolean reduceProductQuantity(int productId, int quantityToReduce) {
-        String sql = "UPDATE products SET quantity = GREATEST(0, quantity - ?) WHERE product_id = ?";
+        String sql = "UPDATE products SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ?";
         try (Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, quantityToReduce);
             ps.setInt(2, productId);
+            ps.setInt(3, quantityToReduce);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Reduced stock for product ID " + productId + " by " + quantityToReduce);
                 return true;
             }
+            System.err.println("Insufficient stock for product ID " + productId + " (requested: " + quantityToReduce + ")");
             return false;
         } catch (Exception e) {
             System.err.println("Error reducing product quantity: " + e.getMessage());

@@ -85,7 +85,7 @@ public class RedirectToPaymentServlet extends HttpServlet {
 
             // Get cart items from session
             @SuppressWarnings("unchecked")
-            Map<Integer, CartItem> itemsToCheckout = (Map<Integer, CartItem>) session.getAttribute("itemsToCheckout");
+            Map<String, CartItem> itemsToCheckout = (Map<String, CartItem>) session.getAttribute("itemsToCheckout");
 
             // Store form data in session for repopulation on error
             session.setAttribute("checkout_name", name);
@@ -134,22 +134,24 @@ public class RedirectToPaymentServlet extends HttpServlet {
             Map<String, String> storeProductNames = new HashMap<>();
 
             for (CartItem item : itemsToCheckout.values()) {
-                // Get product to find store_username
-                String storeUsername = null;
-                try {
-                    Product product = productDAO.getProductById(item.getProductId());
-                    if (product != null && product.getStoreUsername() != null
-                            && !product.getStoreUsername().isEmpty()) {
-                        storeUsername = product.getStoreUsername();
-                    } else {
-                        System.err
-                                .println("Warning: Could not find store_username for product: " + item.getProductId());
-                        continue; // Skip items without valid store_username
+                // Use store_username already stored in CartItem; fall back to DB lookup if missing
+                String storeUsername = item.getStoreUsername();
+                if (storeUsername == null || storeUsername.isEmpty()) {
+                    try {
+                        Product product = productDAO.getProductById(item.getProductId());
+                        if (product != null && product.getStoreUsername() != null
+                                && !product.getStoreUsername().isEmpty()) {
+                            storeUsername = product.getStoreUsername();
+                        } else {
+                            System.err.println(
+                                    "Warning: Could not find store_username for product: " + item.getProductId());
+                            continue; // Skip items without valid store_username
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error getting product info for productId: " + item.getProductId() + " - "
+                                + e.getMessage());
+                        continue;
                     }
-                } catch (Exception e) {
-                    System.err.println("Error getting product info for productId: " + item.getProductId() + " - "
-                            + e.getMessage());
-                    continue;
                 }
 
                 // Group items by store

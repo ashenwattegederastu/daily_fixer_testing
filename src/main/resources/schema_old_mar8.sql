@@ -511,7 +511,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE,
   CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE SET NULL,
   CONSTRAINT `order_items_ibfk_4` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`variant_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -525,8 +525,6 @@ CREATE TABLE `orders` (
   `id` int NOT NULL AUTO_INCREMENT,
   `order_id` varchar(50) NOT NULL,
   `customer_name` varchar(200) DEFAULT NULL,
-  `first_name` varchar(100) DEFAULT NULL,
-  `last_name` varchar(100) DEFAULT NULL,
   `email` varchar(150) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `address` text,
@@ -536,7 +534,6 @@ CREATE TABLE `orders` (
   `currency` varchar(10) DEFAULT 'LKR',
   `status` varchar(20) DEFAULT 'PENDING',
   `store_username` varchar(100) DEFAULT NULL,
-  `store_id` int DEFAULT NULL,
   `payhere_payment_id` varchar(50) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -545,10 +542,8 @@ CREATE TABLE `orders` (
   `refund_number` varchar(50) DEFAULT NULL,
   `refunded_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `order_id` (`order_id`),
-  KEY `fk_orders_store` (`store_id`),
-  CONSTRAINT `fk_orders_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `order_id` (`order_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -633,10 +628,7 @@ CREATE TABLE `products` (
   `image` longblob,
   `description` text,
   `store_username` varchar(50) NOT NULL,
-  `store_id` int DEFAULT NULL,
-  PRIMARY KEY (`product_id`),
-  KEY `fk_products_store` (`store_id`),
-  CONSTRAINT `fk_products_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE
+  PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -705,7 +697,7 @@ CREATE TABLE `store_orders` (
   KEY `fk_store_orders_store` (`store_id`),
   CONSTRAINT `fk_store_orders_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_store_orders_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -918,4 +910,4 @@ CREATE TABLE `volunteers` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-08 12:37:10
+-- Dump completed on 2026-03-01 20:46:03
