@@ -1,11 +1,22 @@
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
     <%@ page import="com.dailyfixer.model.User" %>
+    <%@ page import="com.dailyfixer.dao.ChatDAO" %>
 
         <% User currentUser=(User) session.getAttribute("currentUser"); String firstName=currentUser !=null &&
             currentUser.getFirstName() !=null ? currentUser.getFirstName() : "Technician" ; String lastName=currentUser
             !=null && currentUser.getLastName() !=null ? currentUser.getLastName() : "" ; String username=currentUser
             !=null && currentUser.getUsername() !=null ? currentUser.getUsername() : "tech" ; String
             avatarLetter=firstName.length()> 0 ? firstName.substring(0, 1).toUpperCase() : "T";
+            
+            int unreadChatsCount = 0;
+            if (currentUser != null) {
+                try {
+                    ChatDAO chatDAO = new ChatDAO();
+                    unreadChatsCount = chatDAO.getTotalUnreadCountForUser(currentUser.getUserId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             %>
             <link rel="stylesheet" type="text/css"
                 href="${pageContext.request.contextPath}/assets/icons/regular/style.css" />
@@ -63,8 +74,17 @@
                         </li>
                         <li>
                             <a href="${pageContext.request.contextPath}/chats" id="nav-chats">
-                                <i class="ph ph-chats-circle"></i>
-                                Chats
+                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                    <div>
+                                        <i class="ph ph-chats-circle"></i>
+                                        Chats
+                                    </div>
+                                    <% if (unreadChatsCount > 0) { %>
+                                        <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--destructive, #ef4444); color: white; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.25rem; height: 1.25rem; padding: 0 0.4rem; line-height: 1;">
+                                            <%= unreadChatsCount %>
+                                        </span>
+                                    <% } %>
+                                </div>
                             </a>
                         </li>
                         <li>

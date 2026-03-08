@@ -12,13 +12,13 @@ public class ChatDAO {
     public void createChat(Chat chat) throws Exception {
         String sql = "INSERT INTO chats (booking_id, user_id, technician_id) VALUES (?, ?, ?)";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
+                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setInt(1, chat.getBookingId());
             ps.setInt(2, chat.getUserId());
             ps.setInt(3, chat.getTechnicianId());
             ps.executeUpdate();
-            
+
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     chat.setChatId(rs.getInt(1));
@@ -29,15 +29,15 @@ public class ChatDAO {
 
     public Chat getChatByBookingId(int bookingId) throws Exception {
         String sql = "SELECT c.*, u1.first_name as user_first_name, u1.last_name as user_last_name, " +
-                     "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name " +
-                     "FROM chats c " +
-                     "JOIN users u1 ON c.user_id = u1.user_id " +
-                     "JOIN users u2 ON c.technician_id = u2.user_id " +
-                     "JOIN bookings b ON c.booking_id = b.booking_id " +
-                     "JOIN services s ON b.service_id = s.service_id " +
-                     "WHERE c.booking_id = ?";
+                "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name " +
+                "FROM chats c " +
+                "JOIN users u1 ON c.user_id = u1.user_id " +
+                "JOIN users u2 ON c.technician_id = u2.user_id " +
+                "JOIN bookings b ON c.booking_id = b.booking_id " +
+                "JOIN services s ON b.service_id = s.service_id " +
+                "WHERE c.booking_id = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, bookingId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -50,15 +50,15 @@ public class ChatDAO {
 
     public Chat getChatById(int chatId) throws Exception {
         String sql = "SELECT c.*, u1.first_name as user_first_name, u1.last_name as user_last_name, " +
-                     "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name " +
-                     "FROM chats c " +
-                     "JOIN users u1 ON c.user_id = u1.user_id " +
-                     "JOIN users u2 ON c.technician_id = u2.user_id " +
-                     "JOIN bookings b ON c.booking_id = b.booking_id " +
-                     "JOIN services s ON b.service_id = s.service_id " +
-                     "WHERE c.chat_id = ?";
+                "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name " +
+                "FROM chats c " +
+                "JOIN users u1 ON c.user_id = u1.user_id " +
+                "JOIN users u2 ON c.technician_id = u2.user_id " +
+                "JOIN bookings b ON c.booking_id = b.booking_id " +
+                "JOIN services s ON b.service_id = s.service_id " +
+                "WHERE c.chat_id = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, chatId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -72,19 +72,22 @@ public class ChatDAO {
     public List<Chat> getChatsByUserId(int userId) throws Exception {
         List<Chat> list = new ArrayList<>();
         String sql = "SELECT c.*, u1.first_name as user_first_name, u1.last_name as user_last_name, " +
-                     "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name, " +
-                     "(SELECT COUNT(*) FROM chat_messages cm WHERE cm.chat_id = c.chat_id AND cm.sender_id != ? AND cm.is_read = 0) as unread_count, " +
-                     "(SELECT message FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message, " +
-                     "(SELECT created_at FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message_time " +
-                     "FROM chats c " +
-                     "JOIN users u1 ON c.user_id = u1.user_id " +
-                     "JOIN users u2 ON c.technician_id = u2.user_id " +
-                     "JOIN bookings b ON c.booking_id = b.booking_id " +
-                     "JOIN services s ON b.service_id = s.service_id " +
-                     "WHERE c.user_id = ? " +
-                     "ORDER BY last_message_time DESC";
+                "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name, " +
+                "(SELECT COUNT(*) FROM chat_messages cm WHERE cm.chat_id = c.chat_id AND cm.sender_id != ? AND cm.is_read = 0) as unread_count, "
+                +
+                "(SELECT message FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message, "
+                +
+                "(SELECT created_at FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message_time "
+                +
+                "FROM chats c " +
+                "JOIN users u1 ON c.user_id = u1.user_id " +
+                "JOIN users u2 ON c.technician_id = u2.user_id " +
+                "JOIN bookings b ON c.booking_id = b.booking_id " +
+                "JOIN services s ON b.service_id = s.service_id " +
+                "WHERE c.user_id = ? " +
+                "ORDER BY last_message_time DESC";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.setInt(2, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -103,19 +106,22 @@ public class ChatDAO {
     public List<Chat> getChatsByTechnicianId(int technicianId) throws Exception {
         List<Chat> list = new ArrayList<>();
         String sql = "SELECT c.*, u1.first_name as user_first_name, u1.last_name as user_last_name, " +
-                     "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name, " +
-                     "(SELECT COUNT(*) FROM chat_messages cm WHERE cm.chat_id = c.chat_id AND cm.sender_id != ? AND cm.is_read = 0) as unread_count, " +
-                     "(SELECT message FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message, " +
-                     "(SELECT created_at FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message_time " +
-                     "FROM chats c " +
-                     "JOIN users u1 ON c.user_id = u1.user_id " +
-                     "JOIN users u2 ON c.technician_id = u2.user_id " +
-                     "JOIN bookings b ON c.booking_id = b.booking_id " +
-                     "JOIN services s ON b.service_id = s.service_id " +
-                     "WHERE c.technician_id = ? " +
-                     "ORDER BY last_message_time DESC";
+                "u2.first_name as tech_first_name, u2.last_name as tech_last_name, s.service_name, " +
+                "(SELECT COUNT(*) FROM chat_messages cm WHERE cm.chat_id = c.chat_id AND cm.sender_id != ? AND cm.is_read = 0) as unread_count, "
+                +
+                "(SELECT message FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message, "
+                +
+                "(SELECT created_at FROM chat_messages cm WHERE cm.chat_id = c.chat_id ORDER BY cm.created_at DESC LIMIT 1) as last_message_time "
+                +
+                "FROM chats c " +
+                "JOIN users u1 ON c.user_id = u1.user_id " +
+                "JOIN users u2 ON c.technician_id = u2.user_id " +
+                "JOIN bookings b ON c.booking_id = b.booking_id " +
+                "JOIN services s ON b.service_id = s.service_id " +
+                "WHERE c.technician_id = ? " +
+                "ORDER BY last_message_time DESC";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, technicianId);
             ps.setInt(2, technicianId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -131,6 +137,26 @@ public class ChatDAO {
         return list;
     }
 
+    public int getTotalUnreadCountForUser(int userId) throws Exception {
+        String sql = "SELECT COUNT(cm.message_id) as total_unread " +
+                "FROM chat_messages cm " +
+                "JOIN chats c ON cm.chat_id = c.chat_id " +
+                "WHERE (c.user_id = ? OR c.technician_id = ?) " +
+                "AND cm.sender_id != ? AND cm.is_read = 0";
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            ps.setInt(3, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total_unread");
+                }
+            }
+        }
+        return 0;
+    }
+
     private Chat extractChatFromResultSet(ResultSet rs) throws SQLException {
         Chat chat = new Chat();
         chat.setChatId(rs.getInt("chat_id"));
@@ -138,12 +164,12 @@ public class ChatDAO {
         chat.setUserId(rs.getInt("user_id"));
         chat.setTechnicianId(rs.getInt("technician_id"));
         chat.setCreatedAt(rs.getTimestamp("created_at"));
-        
+
         // Set display names
         chat.setUserName(rs.getString("user_first_name") + " " + rs.getString("user_last_name"));
         chat.setTechnicianName(rs.getString("tech_first_name") + " " + rs.getString("tech_last_name"));
         chat.setServiceName(rs.getString("service_name"));
-        
+
         return chat;
     }
 }
