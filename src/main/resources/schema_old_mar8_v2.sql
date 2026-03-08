@@ -181,61 +181,6 @@ CREATE TABLE `chats` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `delivery_assignments`
---
-
-DROP TABLE IF EXISTS `delivery_assignments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `delivery_assignments` (
-  `assignment_id` int NOT NULL AUTO_INCREMENT,
-  `order_id` varchar(50) NOT NULL,
-  `store_id` int NOT NULL,
-  `driver_id` int DEFAULT NULL,
-  `required_vehicle_type` varchar(50) NOT NULL,
-  `delivery_fee_earned` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `pickup_address` varchar(255) DEFAULT NULL,
-  `delivery_address` text,
-  `delivery_lat` decimal(10,7) DEFAULT NULL,
-  `delivery_lng` decimal(11,7) DEFAULT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'PENDING',
-  `assigned_at` timestamp NULL DEFAULT NULL,
-  `completed_at` timestamp NULL DEFAULT NULL,
-  `driver_payout_id` int DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`assignment_id`),
-  UNIQUE KEY `uq_da_order` (`order_id`),
-  KEY `idx_da_status` (`status`),
-  KEY `idx_da_driver` (`driver_id`),
-  KEY `idx_da_store` (`store_id`),
-  CONSTRAINT `fk_da_driver` FOREIGN KEY (`driver_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL,
-  CONSTRAINT `fk_da_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_da_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `delivery_rates`
---
-
-DROP TABLE IF EXISTS `delivery_rates`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `delivery_rates` (
-  `rate_id` int NOT NULL AUTO_INCREMENT,
-  `vehicle_type` varchar(50) NOT NULL,
-  `cost_per_km` decimal(10,2) NOT NULL,
-  `base_fee` decimal(10,2) NOT NULL DEFAULT '100.00',
-  `distribution_weight` decimal(5,2) NOT NULL DEFAULT '33.33' COMMENT 'Percentage weight used in weighted-average customer price (weights should sum to 100)',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`rate_id`),
-  UNIQUE KEY `uq_vehicle_type` (`vehicle_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `diagnostic_categories`
 --
 
@@ -566,7 +511,7 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE,
   CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE SET NULL,
   CONSTRAINT `order_items_ibfk_4` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`variant_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -588,7 +533,6 @@ CREATE TABLE `orders` (
   `city` varchar(100) DEFAULT NULL,
   `product_name` varchar(500) DEFAULT NULL,
   `total_amount` decimal(10,2) NOT NULL,
-  `delivery_fee` decimal(10,2) NOT NULL DEFAULT '0.00',
   `currency` varchar(10) DEFAULT 'LKR',
   `status` varchar(20) DEFAULT 'PENDING',
   `store_username` varchar(100) DEFAULT NULL,
@@ -600,13 +544,11 @@ CREATE TABLE `orders` (
   `refund_reason` varchar(500) DEFAULT NULL,
   `refund_number` varchar(50) DEFAULT NULL,
   `refunded_at` timestamp NULL DEFAULT NULL,
-  `delivery_latitude` decimal(10,7) DEFAULT NULL,
-  `delivery_longitude` decimal(11,7) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_id` (`order_id`),
   KEY `fk_orders_store` (`store_id`),
   CONSTRAINT `fk_orders_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -671,7 +613,7 @@ CREATE TABLE `product_variants` (
   PRIMARY KEY (`variant_id`),
   KEY `product_id` (`product_id`),
   CONSTRAINT `product_variants_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -695,7 +637,7 @@ CREATE TABLE `products` (
   PRIMARY KEY (`product_id`),
   KEY `fk_products_store` (`store_id`),
   CONSTRAINT `fk_products_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -754,7 +696,6 @@ CREATE TABLE `store_orders` (
   `order_id` varchar(50) NOT NULL,
   `store_id` int NOT NULL,
   `store_total` decimal(10,2) NOT NULL,
-  `delivery_fee` decimal(10,2) NOT NULL DEFAULT '0.00',
   `commission` decimal(10,2) DEFAULT '0.00',
   `payable_amount` decimal(10,2) NOT NULL,
   `status` enum('PENDING','PAID','CANCELLED','REFUNDED') DEFAULT 'PENDING',
@@ -764,7 +705,7 @@ CREATE TABLE `store_orders` (
   KEY `fk_store_orders_store` (`store_id`),
   CONSTRAINT `fk_store_orders_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_store_orders_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`store_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -787,7 +728,7 @@ CREATE TABLE `stores` (
   PRIMARY KEY (`store_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `stores_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -834,8 +775,6 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `phone_number` varchar(20) DEFAULT NULL,
   `city` varchar(50) DEFAULT NULL,
-  `latitude` decimal(10,7) DEFAULT NULL,
-  `longitude` decimal(11,7) DEFAULT NULL,
   `bio` text,
   `profile_picture_path` varchar(255) DEFAULT NULL,
   `role` enum('user','volunteer','technician','driver','store','admin') DEFAULT 'user',
@@ -845,7 +784,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -862,8 +801,9 @@ CREATE TABLE `vehicles` (
   `brand` varchar(50) NOT NULL,
   `model` varchar(50) NOT NULL,
   `plate_number` varchar(20) NOT NULL,
-  `vehicle_category` varchar(50) NOT NULL DEFAULT 'Bike',
   `picture` longblob,
+  `fare_first_km` decimal(10,2) DEFAULT NULL,
+  `fare_next_km` decimal(10,2) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `driver_id` (`driver_id`),
@@ -978,4 +918,4 @@ CREATE TABLE `volunteers` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-08 19:38:24
+-- Dump completed on 2026-03-08 12:37:10

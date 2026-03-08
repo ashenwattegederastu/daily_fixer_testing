@@ -38,190 +38,90 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edit Vehicle | Daily Fixer</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/framework.css">
 <style>
-:root {
-    --panel-color: #dcdaff;
-    --accent: #8b95ff;
-    --text-dark: #000000;
-    --text-secondary: #333333;
-    --shadow-sm: 0 4px 12px rgba(0,0,0,0.12);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.18);
-    --shadow-lg: 0 12px 36px rgba(0,0,0,0.22);
-}
-
-/* Reset */
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: var(--text-dark);
-    display: flex;
-    min-height: 100vh;
-}
-
-/* Top Navbar */
-.topbar {
-    position: fixed;
-    top:0; left:0; right:0;
-    height:76px;
-    background-color: var(--panel-color);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    z-index: 200;
-    box-shadow: var(--shadow-md);
-}
-.topbar .logo { font-size: 1.5em; font-weight: 700; color: var(--accent); }
-.topbar .panel-name { font-weight: 600; flex:1; text-align:center; color: var(--text-dark); }
-.topbar .logout-btn {
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, var(--accent), #7ba3d4);
-    border: none;
-    color: #fff;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-sm);
-    text-decoration: none;
-}
-.topbar .logout-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    opacity: 0.9;
-}
-
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background-color: var(--panel-color);
-    height: 100vh;
-    position: fixed;
-    top:0;
-    left:0;
-    padding-top: 96px;
-    box-shadow: var(--shadow-md);
-    overflow-y: auto;
-    z-index: 100;
-}
-.sidebar h3 { padding: 0 20px 12px; font-size: 0.85em; color: var(--text-dark); text-transform: uppercase; }
-.sidebar ul { list-style:none; }
-.sidebar a {
-    display:block;
-    padding:12px 20px;
-    text-decoration:none;
-    color: var(--text-dark);
-    font-weight:500;
-    border-left:3px solid transparent;
-    border-radius:0 8px 8px 0;
-    margin-bottom:4px;
-    transition: all 0.2s;
-}
-.sidebar a:hover, .sidebar a.active {
-    background-color: #f0f0ff;
-    border-left-color: var(--accent);
-}
-
-/* Main Content */
 .container {
-    flex:1;
-    margin-left:240px;
-    margin-top:83px;
-    padding:30px;
+    flex: 1;
+    margin-left: 240px;
+    margin-top: 83px;
+    padding: 30px;
+    background-color: var(--background);
 }
 .container h2 {
-    font-size:1.6em;
-    margin-bottom:20px;
-    color: #000000;
+    font-size: 1.6em;
+    margin-bottom: 20px;
+    color: var(--foreground);
 }
 
-/* Vehicle Form */
-.vehicle-form { 
-    max-width: 500px; 
-    margin: 20px auto; 
-    background: #fff;
-    border: 1px solid rgba(0,0,0,0.1); 
-    padding: 30px; 
-    border-radius: 12px;
+.vehicle-form {
+    max-width: 500px;
+    margin: 20px auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 30px;
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
 }
 .vehicle-form h3 {
     margin-bottom: 25px;
-    color: var(--text-dark);
+    color: var(--foreground);
     font-size: 1.3em;
     text-align: center;
-    border-bottom: 2px solid var(--panel-color);
+    border-bottom: 2px solid var(--border);
     padding-bottom: 15px;
 }
 .vehicle-form label {
     display: block;
     margin: 15px 0 5px;
-    color: var(--text-dark);
+    color: var(--foreground);
     font-weight: 600;
     font-size: 0.9rem;
 }
-.vehicle-form input, .vehicle-form button { 
-    display: block; 
-    margin: 8px 0; 
-    width: 100%; 
-    padding: 12px; 
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-family: 'Inter', sans-serif;
+.vehicle-form input, .vehicle-form select, .vehicle-form button {
+    display: block;
+    margin: 8px 0;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: inherit;
     font-size: 0.9rem;
+    background: var(--background);
+    color: var(--foreground);
 }
-.vehicle-form input:focus {
+.vehicle-form input:focus, .vehicle-form select:focus {
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(139, 149, 255, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 .vehicle-form button {
-    background: linear-gradient(135deg, var(--accent), #7ba3d4);
-    color: white;
+    background: var(--primary);
+    color: var(--primary-foreground);
     border: none;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.2s;
     margin-top: 20px;
+    transition: all 0.2s;
 }
 .vehicle-form button:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
     opacity: 0.9;
 }
-.current-image { 
-    width: 100%; 
-    height: 200px; 
-    object-fit: cover; 
-    border-radius: 8px; 
+.current-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
     margin-bottom: 15px;
-    border: 2px solid var(--panel-color);
+    border: 2px solid var(--border);
 }
 </style>
 </head>
 <body>
 
-<header class="topbar">
-    <div class="logo">Daily Fixer</div>
-    <div class="panel-name">Driver Panel</div>
-    <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Log Out</a>
-</header>
-
-<aside class="sidebar">
-    <h3>Navigation</h3>
-    <ul>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/driverdashmain.jsp">Dashboard</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/vehicleManagement.jsp" class="active">Vehicle Management</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/deliveryrequests.jsp">Delivery Requests</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/acceptedOrders.jsp">Accepted Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/completedOrders.jsp">Completed Orders</a></li>
-        <li><a href="${pageContext.request.contextPath}/pages/dashboards/driverdash/myProfile.jsp">My Profile</a></li>
-    </ul>
-</aside>
+<%@ include file="sidebar.jsp" %>
 
 <main class="container">
     <h2>Edit Vehicle</h2>
@@ -248,7 +148,7 @@ body {
         <input type="file" name="picture" accept="image/*">
 
         <label for="vehicleCategory">Vehicle Category:</label>
-        <select name="vehicleCategory" required style="display:block;margin:8px 0;width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;">
+        <select name="vehicleCategory" required>
             <option value="">-- Select Category --</option>
             <% for (String cat : vehicleCategories) { %>
             <option value="<%= cat %>" <%= cat.equals(vehicle.getVehicleCategory()) ? "selected" : "" %>><%= cat %></option>

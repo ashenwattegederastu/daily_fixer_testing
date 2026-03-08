@@ -1,8 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.dailyfixer.model.User" %>
+<%@ page import="com.dailyfixer.model.Store" %>
+<%@ page import="com.dailyfixer.model.DeliveryAssignment" %>
+<%@ page import="com.dailyfixer.dao.StoreDAO" %>
+<%@ page import="com.dailyfixer.dao.DeliveryAssignmentDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 
 <%
-    // Correctly get the user from session
     User user = (User) session.getAttribute("currentUser");
 
     if (user == null || user.getRole() == null) {
@@ -15,6 +21,26 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
+
+    // Get store for this user
+    StoreDAO storeDAO = new StoreDAO();
+    Store currentStore = storeDAO.getStoreByUsername(user.getUsername());
+    int storeId = currentStore != null ? currentStore.getStoreId() : 0;
+
+    // Load delivery assignments for this store
+    DeliveryAssignmentDAO assignmentDAO = new DeliveryAssignmentDAO();
+    List<DeliveryAssignment> allAssignments = storeId > 0 ? assignmentDAO.getByStore(storeId) : new ArrayList<>();
+
+    // Filter to only active (PENDING / ACCEPTED) assignments
+    List<DeliveryAssignment> assignments = new ArrayList<>();
+    for (DeliveryAssignment a : allAssignments) {
+        String s = a.getStatus() != null ? a.getStatus().trim().toUpperCase() : "";
+        if ("PENDING".equals(s) || "ACCEPTED".equals(s)) {
+            assignments.add(a);
+        }
+    }
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 %>
 
 
@@ -62,85 +88,54 @@
             <tr>
                 <th>Order ID</th>
                 <th>Customer</th>
-                <th>Date</th>
+                <th>Dispatched</th>
                 <th>Vehicle Type</th>
                 <th>Driver</th>
+                <th>Delivery Fee</th>
                 <th>Status</th>
-                <th>Total</th>
-                <th>Action</th>
+                <th>Delivery Address</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>001</td>
-                <td>Kamal Silva</td>
-                <td>2025-07-20</td>
-                <td><span class="vehicle-badge vehicle-bike">Bike</span></td>
-                <td>Rajesh Kumar</td>
-                <td><span class="status out-delivery"></span>Out for Delivery</td>
-                <td>LKR 1,100</td>
-                <td>
-                    <button class="btn view-btn">View Details</button>
-                    <button class="btn track-btn">Track Order</button>
-                    <button class="btn update-btn">Update Status</button>
-                </td>
-            </tr>
-            <tr>
-                <td>003</td>
-                <td>Nimal Perera</td>
-                <td>2025-07-19</td>
-                <td><span class="vehicle-badge vehicle-van">Van</span></td>
-                <td>Suresh Fernando</td>
-                <td><span class="status out-delivery"></span>Out for Delivery</td>
-                <td>LKR 2,500</td>
-                <td>
-                    <button class="btn view-btn">View Details</button>
-                    <button class="btn track-btn">Track Order</button>
-                    <button class="btn update-btn">Update Status</button>
-                </td>
-            </tr>
-            <tr>
-                <td>004</td>
-                <td>Priya Jayawardena</td>
-                <td>2025-07-21</td>
-                <td><span class="vehicle-badge vehicle-threewheel">Three Wheel</span></td>
-                <td>Anil Perera</td>
-                <td><span class="status out-delivery"></span>Out for Delivery</td>
-                <td>LKR 850</td>
-                <td>
-                    <button class="btn view-btn">View Details</button>
-                    <button class="btn track-btn">Track Order</button>
-                    <button class="btn update-btn">Update Status</button>
-                </td>
-            </tr>
-            <tr>
-                <td>005</td>
-                <td>Dinesh Wickramasinghe</td>
-                <td>2025-07-21</td>
-                <td><span class="vehicle-badge vehicle-lorry">Lorry</span></td>
-                <td>Chaminda Silva</td>
-                <td><span class="status out-delivery"></span>Out for Delivery</td>
-                <td>LKR 4,200</td>
-                <td>
-                    <button class="btn view-btn">View Details</button>
-                    <button class="btn track-btn">Track Order</button>
-                    <button class="btn update-btn">Update Status</button>
-                </td>
-            </tr>
-            <tr>
-                <td>006</td>
-                <td>Sanduni Rathnayake</td>
-                <td>2025-07-22</td>
-                <td><span class="vehicle-badge vehicle-bike">Bike</span></td>
-                <td>Nuwan Bandara</td>
-                <td><span class="status out-delivery"></span>Out for Delivery</td>
-                <td>LKR 1,800</td>
-                <td>
-                    <button class="btn view-btn">View Details</button>
-                    <button class="btn track-btn">Track Order</button>
-                    <button class="btn update-btn">Update Status</button>
-                </td>
-            </tr>
+            <% if (assignments.isEmpty()) { %>
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 30px; color: var(--muted-foreground);">
+                        No orders currently awaiting or in delivery.
+                    </td>
+                </tr>
+            <% } else {
+                for (DeliveryAssignment a : assignments) {
+                    String statusVal = a.getStatus() != null ? a.getStatus().trim().toUpperCase() : "PENDING";
+                    String displayStatus;
+                    String statusClass;
+                    if ("ACCEPTED".equals(statusVal)) {
+                        displayStatus = "Driver Assigned";
+                        statusClass = "processing";
+                    } else {
+                        displayStatus = "Awaiting Driver";
+                        statusClass = "pending";
+                    }
+                    String driverName = a.getDriverName() != null && !a.getDriverName().isBlank()
+                                        ? a.getDriverName() : "—";
+                    String customerName = a.getCustomerName() != null && !a.getCustomerName().isBlank()
+                                          ? a.getCustomerName() : "—";
+                    String createdDate = a.getCreatedAt() != null ? dateFormat.format(a.getCreatedAt()) : "—";
+                    String deliveryAddr = a.getDeliveryAddress() != null && !a.getDeliveryAddress().isBlank()
+                                          ? a.getDeliveryAddress() : "—";
+                    String feeStr = a.getDeliveryFeeEarned() != null
+                                    ? String.format("LKR %.2f", a.getDeliveryFeeEarned()) : "LKR 0.00";
+            %>
+                <tr>
+                    <td><%= a.getOrderId() %></td>
+                    <td><%= customerName %></td>
+                    <td><%= createdDate %></td>
+                    <td><%= a.getRequiredVehicleType() %></td>
+                    <td><%= driverName %></td>
+                    <td><%= feeStr %></td>
+                    <td><span class="status <%= statusClass %>"></span> <%= displayStatus %></td>
+                    <td style="max-width: 200px; word-break: break-word;"><%= deliveryAddr %></td>
+                </tr>
+            <% } } %>
         </tbody>
     </table>
 </main>

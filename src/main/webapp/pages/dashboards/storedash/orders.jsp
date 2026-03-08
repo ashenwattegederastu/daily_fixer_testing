@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.dailyfixer.model.User" %>
 <%@ page import="com.dailyfixer.dao.OrderDAO" %>
+<%@ page import="com.dailyfixer.dao.DeliveryRateDAO" %>
 <%@ page import="com.dailyfixer.model.Order" %>
 <%@ page import="com.dailyfixer.model.OrderItem" %>
 <%@ page import="java.util.List" %>
@@ -24,32 +25,28 @@
         return;
     }
 
-    // Fetch paid orders from database for this store only (excluding DELIVERED orders)
+    // Fetch paid orders from database for this store only (excluding DELIVERED and STORE_ACCEPTED)
     OrderDAO orderDAO = new OrderDAO();
     String storeUsername = user.getUsername(); // Get logged-in store's username
-    
+
     // Get orders filtered by store
     List<Order> allOrders = orderDAO.getOrdersByStatusAndStore("PAID", storeUsername);
-    
-    // Filter out DELIVERED orders (they should be in completedorders.jsp)
+
+    // Filter out DELIVERED and STORE_ACCEPTED orders
     List<Order> orders = new ArrayList<>();
     if (allOrders != null) {
         for (Order order : allOrders) {
             String status = order.getStatus() != null ? order.getStatus().trim().toUpperCase() : "";
-            if (!"DELIVERED".equals(status)) {
+            if (!"DELIVERED".equals(status) && !"STORE_ACCEPTED".equals(status)) {
                 orders.add(order);
             }
         }
     }
-    
-    // Debug logging
-    System.out.println("Orders.jsp: Fetched " + (orders != null ? orders.size() : 0) + " orders with status PAID for store: " + storeUsername);
-    if (orders != null && !orders.isEmpty()) {
-        for (Order o : orders) {
-            System.out.println("  - Order ID: " + o.getOrderId() + ", Status: " + o.getStatus() + ", Customer: " + o.getFirstName() + ", Products: " + o.getProductName());
-        }
-    }
-    
+
+    // Load active vehicle types for the dispatch modal
+    DeliveryRateDAO deliveryRateDAO = new DeliveryRateDAO();
+    List<String> vehicleTypes = deliveryRateDAO.getActiveVehicleTypes();
+
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 %>
 
@@ -389,6 +386,9 @@
                     } else if ("DELIVERED".equals(dbStatus)) {
                         displayStatus = "Delivered";
                         statusClass = "delivered";
+                    } else if ("STORE_ACCEPTED".equals(dbStatus)) {
+                        displayStatus = "Dispatched";
+                        statusClass = "processing";
                     } else if ("PAID".equals(dbStatus)) {
                         // If status is PAID, show as Pending (initial state for store)
                         displayStatus = "Pending";
@@ -525,11 +525,13 @@
         <h3>Select Delivery Vehicle</h3>
         <p>Choose the type of vehicle needed for delivery:</p>
         
-        <div class="vehicle-options">
-            <button class="vehicle-btn" onclick="selectVehicle('bike')">Bike</button>
-            <button class="vehicle-btn" onclick="selectVehicle('threewheel')">Three Wheel</button>
-            <button class="vehicle-btn" onclick="selectVehicle('van')">Van</button>
-            <button class="vehicle-btn" onclick="selectVehicle('lorry')">Lorry</button>
+        <div class="vehicle-options" id="vehicleOptions">
+            <% if (vehicleTypes != null && !vehicleTypes.isEmpty()) {
+                for (String vt : vehicleTypes) { %>
+            <button class="vehicle-btn" onclick="selectVehicle('<%= vt.replace("'", "\\'") %>', this)"><%= vt %></button>
+            <% } } else { %>
+            <p style="color: var(--muted-foreground); font-size: 0.9em;">No vehicle types configured. Please ask admin to add delivery rates.</p>
+            <% } %>
         </div>
         
         <div class="modal-buttons">
@@ -742,29 +744,58 @@ function showVehicleModal(orderId) {
 function closeVehicleModal() {
     document.getElementById('vehicleModal').style.display = 'none';
     selectedVehicle = '';
-    // Reset vehicle button selections
-    document.querySelectorAll('.vehicle-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
+    document.querySelectorAll('.vehicle-btn').forEach(btn => btn.classList.remove('selected'));
+    const confirmBtn = document.querySelector('.confirm-btn');
+    if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm'; }
 }
 
-function selectVehicle(vehicle) {
+function selectVehicle(vehicle, btn) {
     selectedVehicle = vehicle;
     // Reset all buttons
-    document.querySelectorAll('.vehicle-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    // Select clicked button
-    event.target.classList.add('selected');
+    document.querySelectorAll('.vehicle-btn').forEach(b => b.classList.remove('selected'));
+    // Highlight selected
+    if (btn) btn.classList.add('selected');
 }
 
 function confirmDelivery() {
-    if (selectedVehicle) {
-        alert(`Order ${selectedOrderId} is ready for delivery using ${selectedVehicle}. Driver will be notified.`);
-        closeVehicleModal();
-    } else {
+    if (!selectedVehicle) {
         alert('Please select a delivery vehicle type.');
+        return;
     }
+
+    const confirmBtn = document.querySelector('.confirm-btn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Dispatching...';
+
+    const contextPath = '<%= request.getContextPath() %>';
+    fetch(contextPath + '/store/dispatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'orderId=' + encodeURIComponent(selectedOrderId) +
+              '&vehicleType=' + encodeURIComponent(selectedVehicle)
+    })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(data => {
+        if (data.success) {
+            closeVehicleModal();
+            // Remove the dispatched row from the table
+            document.querySelectorAll('tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 0 && cells[0].textContent.trim() === selectedOrderId) {
+                    row.remove();
+                }
+            });
+        } else {
+            alert('Failed to dispatch: ' + (data.message || 'Unknown error'));
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Confirm';
+        }
+    })
+    .catch(err => {
+        alert('Error dispatching order: ' + err.message);
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm';
+    });
 }
 
 // Close modal on outside click

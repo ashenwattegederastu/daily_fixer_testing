@@ -13,6 +13,8 @@ public class User {
     private String profilePicturePath;
     private String role = "user";
     private String status;
+    private Double latitude;   // home base lat (drivers) — null if not set
+    private Double longitude;  // home base lng (drivers) — null if not set
 
     public int getUserId() {
         return userId;
@@ -109,4 +111,10 @@ public class User {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 }

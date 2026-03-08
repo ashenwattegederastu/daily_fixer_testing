@@ -136,6 +136,20 @@ public class UserDAO {
         }
     }
 
+    public boolean updateHomeLocation(int userId, double latitude, double longitude) {
+        String sql = "UPDATE users SET latitude = ?, longitude = ? WHERE user_id = ?";
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDouble(1, latitude);
+            ps.setDouble(2, longitude);
+            ps.setInt(3, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public User getUserById(int userId) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
         try (Connection con = DBConnection.getConnection();
@@ -155,6 +169,10 @@ public class UserDAO {
                     u.setBio(rs.getString("bio"));
                     u.setProfilePicturePath(rs.getString("profile_picture_path"));
                     u.setRole(rs.getString("role"));
+                    double lat = rs.getDouble("latitude");
+                    if (!rs.wasNull()) u.setLatitude(lat);
+                    double lng = rs.getDouble("longitude");
+                    if (!rs.wasNull()) u.setLongitude(lng);
                     return u;
                 }
             }
@@ -205,6 +223,10 @@ public class UserDAO {
                     u.setBio(rs.getString("bio"));
                     u.setProfilePicturePath(rs.getString("profile_picture_path"));
                     u.setRole(rs.getString("role"));
+                    double lat = rs.getDouble("latitude");
+                    if (!rs.wasNull()) u.setLatitude(lat);
+                    double lng = rs.getDouble("longitude");
+                    if (!rs.wasNull()) u.setLongitude(lng);
                     return u;
                 }
             }
