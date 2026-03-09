@@ -28,6 +28,9 @@ public class Order {
     private Double deliveryLongitude;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private String refundReason;
+    private String refundNumber;
+    private Timestamp refundedAt;
 
     // Default constructor
     public Order() {
@@ -163,6 +166,15 @@ public class Order {
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public String getRefundReason() { return refundReason; }
+    public void setRefundReason(String refundReason) { this.refundReason = refundReason; }
+
+    public String getRefundNumber() { return refundNumber; }
+    public void setRefundNumber(String refundNumber) { this.refundNumber = refundNumber; }
+
+    public Timestamp getRefundedAt() { return refundedAt; }
+    public void setRefundedAt(Timestamp refundedAt) { this.refundedAt = refundedAt; }
 
     public String getStoreUsername() {
         return storeUsername;

@@ -222,6 +222,16 @@
             color: var(--destructive);
         }
 
+        .status-refund_pending {
+            background: color-mix(in srgb, #f59e0b 15%, transparent);
+            color: #b45309;
+        }
+
+        .status-refunded {
+            background: color-mix(in srgb, #6366f1 15%, transparent);
+            color: #4f46e5;
+        }
+
         /* Reuse framework's empty-state and btn-primary */
         .empty-state {
             background: var(--card);
@@ -322,7 +332,20 @@
                             </div>
                             <c:set var="statusClass"
                                    value="status-${fn:toLowerCase(order.status)}"/>
-                            <span class="status-badge ${statusClass}">${order.status}</span>
+                            <c:choose>
+                                <c:when test="${order.status == 'REFUND_PENDING'}">
+                                    <span class="status-badge ${statusClass}">Refund Pending</span>
+                                </c:when>
+                                <c:when test="${order.status == 'REFUNDED'}">
+                                    <span class="status-badge ${statusClass}">Refunded</span>
+                                </c:when>
+                                <c:when test="${order.status == 'OUT_FOR_DELIVERY'}">
+                                    <span class="status-badge ${statusClass}">Out for Delivery</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="status-badge ${statusClass}">${order.status}</span>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </c:forEach>

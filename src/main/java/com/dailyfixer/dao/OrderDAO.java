@@ -28,6 +28,17 @@ public class OrderDAO {
 
     private static final String UPDATE_STATUS_ONLY = "UPDATE orders SET status = ? WHERE order_id = ?";
 
+    private static final String MARK_REFUNDED =
+        "UPDATE orders " +
+        "SET status = 'REFUNDED', refund_number = ?, refunded_at = NOW(), updated_at = NOW() " +
+        "WHERE order_id = ? AND status = 'REFUND_PENDING'";
+
+    private static final String MARK_REFUND_PENDING =
+        "UPDATE orders " +
+        "SET status = 'REFUND_PENDING', refund_reason = ?, updated_at = NOW() " +
+        "WHERE order_id = ? " +
+        "  AND status NOT IN ('REFUND_PENDING', 'REFUNDED', 'CANCELLED')";
+
     private static final String SELECT_ORDERS_BY_STATUS = "SELECT * FROM orders WHERE UPPER(TRIM(status)) = UPPER(TRIM(?)) ORDER BY created_at DESC";
 
     private static final String SELECT_ORDERS_BY_STORE = "SELECT * FROM orders WHERE UPPER(TRIM(status)) = UPPER(TRIM(?)) AND (store_id = ? OR store_username = ?) ORDER BY created_at DESC";
@@ -477,6 +488,9 @@ public class OrderDAO {
         if (!rs.wasNull()) order.setDeliveryLatitude(dlat);
         double dlng = rs.getDouble("delivery_longitude");
         if (!rs.wasNull()) order.setDeliveryLongitude(dlng);
+        order.setRefundReason(rs.getString("refund_reason"));
+        order.setRefundNumber(rs.getString("refund_number"));
+        order.setRefundedAt(rs.getTimestamp("refunded_at"));
         return order;
     }
 
@@ -608,6 +622,57 @@ public class OrderDAO {
         item.setStatus(rs.getString("status"));
         item.setCreatedAt(rs.getTimestamp("created_at"));
         return item;
+    }
+
+    /**
+     * Marks a REFUND_PENDING order as REFUNDED and records the refund reference number.
+     *
+     * @param orderId      The order ID
+     * @param refundNumber The refund reference/transaction number from PayHere or bank
+     * @return true if updated, false if order was not in REFUND_PENDING state
+     */
+    public boolean markRefunded(String orderId, String refundNumber) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(MARK_REFUNDED);
+            stmt.setString(1, refundNumber);
+            stmt.setString(2, orderId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("OrderDAO.markRefunded: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeResources(stmt, conn);
+        }
+    }
+
+    /**
+     * Marks an order as REFUND_PENDING and records the reason.
+     * Idempotent — skips orders already in REFUND_PENDING, REFUNDED, or CANCELLED state.
+     *
+     * @param orderId The order ID
+     * @param reason  Human-readable reason (stored in refund_reason column)
+     * @return true if the row was updated, false if already in a terminal state or not found
+     */
+    public boolean markRefundPending(String orderId, String reason) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(MARK_REFUND_PENDING);
+            stmt.setString(1, reason);
+            stmt.setString(2, orderId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("OrderDAO.markRefundPending: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeResources(stmt, conn);
+        }
     }
 
     /**

@@ -74,6 +74,13 @@
                                 Delivery Rates
                             </a>
                         </li>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/admin/refunds"
+                                id="nav-refunds">
+                                <i class="ph ph-arrows-counter-clockwise"></i>
+                                Refund Management
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -133,6 +140,8 @@
                         document.getElementById('nav-dashboard')?.classList.add('active');
                     } else if (currentPath.includes('/deliveryRates')) {
                         document.getElementById('nav-delivery-rates')?.classList.add('active');
+                    } else if (currentPath.includes('/admin/refunds')) {
+                        document.getElementById('nav-refunds')?.classList.add('active');
                     }
                 });
 

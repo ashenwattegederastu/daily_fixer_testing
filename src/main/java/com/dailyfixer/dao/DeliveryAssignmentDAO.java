@@ -10,12 +10,10 @@ import java.util.List;
 
 /**
  * DAO for delivery_assignments table.
- *
  * Race-condition safety for acceptAssignment():
  *   UPDATE delivery_assignments
  *     SET status='ACCEPTED', driver_id=?, assigned_at=NOW()
  *   WHERE assignment_id=? AND status='PENDING'
- *
  * MySQL InnoDB serialises concurrent UPDATEs on the same row via row-level locking.
  * The first writer gets rowsAffected=1 (SUCCESS); every subsequent writer gets 0
  * (ALREADY_TAKEN) because the WHERE status='PENDING' predicate no longer matches.
@@ -150,7 +148,6 @@ public class DeliveryAssignmentDAO {
     /**
      * Returns PENDING assignments within radiusKm of (driverLat, driverLng)
      * whose required_vehicle_type is one of vehicleTypes.
-     *
      * The haversine distance check runs in Java after a DB fetch filtered only
      * by vehicle type and PENDING status, keeping the SQL simple and portable.
      */
@@ -207,7 +204,6 @@ public class DeliveryAssignmentDAO {
 
     /**
      * Atomically claims a PENDING assignment for the given driver.
-     *
      * Uses a single UPDATE with WHERE status='PENDING' as the guard.
      * MySQL's row-level locking ensures at most one concurrent caller
      * receives rowsAffected=1 for the same assignment_id.
@@ -316,6 +312,86 @@ public class DeliveryAssignmentDAO {
             }
         } catch (Exception e) {
             System.err.println("DeliveryAssignmentDAO.getByStore: " + e.getMessage());
+        }
+        return list;
+    }
+
+    // ── Timeout / sad-path query ──────────────────────────────────────────────
+
+    /**
+     * Holds everything the timeout job needs to process one stale assignment.
+     * Loaded via a JOIN across delivery_assignments, stores, users, and orders.
+     */
+    public static class StaleAssignment {
+        public final int    assignmentId;
+        public final String orderId;
+        public final String storeName;
+        public final String storeOwnerEmail;
+        public final String buyerEmail;
+        public final String buyerName;
+        public final String payherePaymentId;
+        public final java.math.BigDecimal totalAmount;
+        public final String currency;
+
+        public StaleAssignment(int assignmentId, String orderId, String storeName,
+                               String storeOwnerEmail, String buyerEmail, String buyerName,
+                               String payherePaymentId, java.math.BigDecimal totalAmount,
+                               String currency) {
+            this.assignmentId    = assignmentId;
+            this.orderId         = orderId;
+            this.storeName       = storeName;
+            this.storeOwnerEmail = storeOwnerEmail;
+            this.buyerEmail      = buyerEmail;
+            this.buyerName       = buyerName;
+            this.payherePaymentId = payherePaymentId;
+            this.totalAmount     = totalAmount;
+            this.currency        = currency;
+        }
+    }
+
+    private static final String SELECT_STALE =
+        "SELECT da.assignment_id, da.order_id, " +
+        "       s.store_name, " +
+        "       u.email AS store_owner_email, " +
+        "       o.email AS buyer_email, " +
+        "       CONCAT(o.first_name, ' ', o.last_name) AS buyer_name, " +
+        "       o.payhere_payment_id, o.total_amount, o.currency " +
+        "FROM delivery_assignments da " +
+        "JOIN stores s  ON da.store_id  = s.store_id " +
+        "JOIN users  u  ON s.user_id    = u.user_id " +
+        "JOIN orders o  ON da.order_id  = o.order_id " +
+        "WHERE da.status = 'PENDING' " +
+        "  AND da.driver_id IS NULL " +
+        "  AND da.created_at < DATE_SUB(NOW(), INTERVAL ? HOUR)";
+
+    /**
+     * Returns all PENDING, unassigned assignments older than {@code hoursOld} hours,
+     * enriched with store-owner and buyer contact details for notification.
+     */
+    public List<StaleAssignment> getStaleAssignments(int hoursOld) {
+        List<StaleAssignment> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SELECT_STALE)) {
+
+            stmt.setInt(1, hoursOld);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new StaleAssignment(
+                        rs.getInt("assignment_id"),
+                        rs.getString("order_id"),
+                        rs.getString("store_name"),
+                        rs.getString("store_owner_email"),
+                        rs.getString("buyer_email"),
+                        rs.getString("buyer_name"),
+                        rs.getString("payhere_payment_id"),
+                        rs.getBigDecimal("total_amount"),
+                        rs.getString("currency")
+                    ));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("DeliveryAssignmentDAO.getStaleAssignments: " + e.getMessage());
+            e.printStackTrace();
         }
         return list;
     }

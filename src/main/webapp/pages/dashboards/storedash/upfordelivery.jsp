@@ -31,11 +31,11 @@
     DeliveryAssignmentDAO assignmentDAO = new DeliveryAssignmentDAO();
     List<DeliveryAssignment> allAssignments = storeId > 0 ? assignmentDAO.getByStore(storeId) : new ArrayList<>();
 
-    // Filter to only active (PENDING / ACCEPTED) assignments
+    // Show active (PENDING / ACCEPTED) and recently cancelled (timed-out) assignments
     List<DeliveryAssignment> assignments = new ArrayList<>();
     for (DeliveryAssignment a : allAssignments) {
         String s = a.getStatus() != null ? a.getStatus().trim().toUpperCase() : "";
-        if ("PENDING".equals(s) || "ACCEPTED".equals(s)) {
+        if ("PENDING".equals(s) || "ACCEPTED".equals(s) || "CANCELLED".equals(s)) {
             assignments.add(a);
         }
     }
@@ -111,6 +111,9 @@
                     if ("ACCEPTED".equals(statusVal)) {
                         displayStatus = "Driver Assigned";
                         statusClass = "processing";
+                    } else if ("CANCELLED".equals(statusVal)) {
+                        displayStatus = "Timed Out – Refund Initiated";
+                        statusClass = "cancelled";
                     } else {
                         displayStatus = "Awaiting Driver";
                         statusClass = "pending";
