@@ -23,7 +23,7 @@
                     <h3>Navigation</h3>
                     <ul>
                         <li>
-                            <a href="${pageContext.request.contextPath}/pages/dashboards/admindash/admindashmain.jsp"
+                            <a href="${pageContext.request.contextPath}/admin/dashboard"
                                 id="nav-dashboard">
                                 <i class="ph ph-presentation-chart"></i>
                                 Dashboard
@@ -142,7 +142,7 @@
                         document.getElementById('nav-diagnostic')?.classList.add('active');
                     } else if (currentPath.includes('/volunteer-request')) {
                         document.getElementById('nav-volunteer-requests')?.classList.add('active');
-                    } else if (currentPath.includes('/admindashmain.jsp')) {
+                    } else if (currentPath.includes('/admin/dashboard') || currentPath.includes('/admindashmain.jsp')) {
                         document.getElementById('nav-dashboard')?.classList.add('active');
                     } else if (currentPath.includes('/deliveryRates')) {
                         document.getElementById('nav-delivery-rates')?.classList.add('active');

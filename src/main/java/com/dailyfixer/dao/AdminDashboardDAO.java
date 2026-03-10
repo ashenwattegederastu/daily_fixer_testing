@@ -9,9 +9,199 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdminDashboardDAO {
+
+    // ── Platform-wide overview stats (for admin main dashboard) ──
+
+    public int getTotalUsers() {
+        return countQuery("SELECT COUNT(*) FROM users");
+    }
+
+    public int getActiveUsers() {
+        return countQuery("SELECT COUNT(*) FROM users WHERE status = 'active'");
+    }
+
+    public int getSuspendedUsers() {
+        return countQuery("SELECT COUNT(*) FROM users WHERE status = 'suspended'");
+    }
+
+    public int getTotalBookings() {
+        return countQuery("SELECT COUNT(*) FROM bookings");
+    }
+
+    public int getActiveBookings() {
+        return countQuery("SELECT COUNT(*) FROM bookings WHERE status IN ('REQUESTED','ACCEPTED')");
+    }
+
+    public int getOrdersLast24h() {
+        return countQuery("SELECT COUNT(*) FROM orders WHERE created_at >= NOW() - INTERVAL 1 DAY");
+    }
+
+    public double getRevenueLast24h() {
+        return sumQuery("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE created_at >= NOW() - INTERVAL 1 DAY AND status = 'PAID'");
+    }
+
+    public int getPendingRefunds() {
+        return countQuery("SELECT COUNT(*) FROM orders WHERE UPPER(TRIM(status)) = 'REFUND_PENDING'");
+    }
+
+    public int getPendingVolunteerRequests() {
+        return countQuery("SELECT COUNT(*) FROM volunteer_requests WHERE status = 'PENDING'");
+    }
+
+    public int getFlaggedGuidesCount() {
+        return countQuery("SELECT COUNT(DISTINCT guide_id) FROM guide_flags");
+    }
+
+    public int getTotalGuides() {
+        return countQuery("SELECT COUNT(*) FROM guides");
+    }
+
+    public int getTotalDiagnosticTrees() {
+        return countQuery("SELECT COUNT(*) FROM diagnostic_trees");
+    }
+
+    /** Returns a map of role -> count, e.g. {user=80, technician=15, ...} */
+    public Map<String, Integer> getUserCountsByRole() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT role, COUNT(*) AS cnt FROM users GROUP BY role ORDER BY cnt DESC";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("role"), rs.getInt("cnt"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /** Returns a map of status -> count for orders */
+    public Map<String, Integer> getOrderCountsByStatus() {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT status, COUNT(*) AS cnt FROM orders GROUP BY status ORDER BY cnt DESC";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                map.put(rs.getString("status"), rs.getInt("cnt"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /** Orders per day for the last N days – returns date-label -> count (ordered oldest→newest) */
+    public Map<String, Integer> getOrdersPerDay(int days) {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT DATE(created_at) AS d, COUNT(*) AS cnt FROM orders " +
+                     "WHERE created_at >= CURDATE() - INTERVAL ? DAY " +
+                     "GROUP BY d ORDER BY d";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, days);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString("d"), rs.getInt("cnt"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /** Revenue per day for the last N days (only PAID orders) */
+    public Map<String, Double> getRevenuePerDay(int days) {
+        Map<String, Double> map = new LinkedHashMap<>();
+        String sql = "SELECT DATE(created_at) AS d, COALESCE(SUM(total_amount),0) AS rev FROM orders " +
+                     "WHERE created_at >= CURDATE() - INTERVAL ? DAY AND status = 'PAID' " +
+                     "GROUP BY d ORDER BY d";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, days);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString("d"), rs.getDouble("rev"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /** New user registrations per day for the last N days */
+    public Map<String, Integer> getNewUsersPerDay(int days) {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT DATE(created_at) AS d, COUNT(*) AS cnt FROM users " +
+                     "WHERE created_at >= CURDATE() - INTERVAL ? DAY " +
+                     "GROUP BY d ORDER BY d";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, days);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString("d"), rs.getInt("cnt"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /** Bookings per day for the last N days */
+    public Map<String, Integer> getBookingsPerDay(int days) {
+        Map<String, Integer> map = new LinkedHashMap<>();
+        String sql = "SELECT DATE(created_at) AS d, COUNT(*) AS cnt FROM bookings " +
+                     "WHERE created_at >= CURDATE() - INTERVAL ? DAY " +
+                     "GROUP BY d ORDER BY d";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, days);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString("d"), rs.getInt("cnt"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    // ── helper utilities ──
+
+    private int countQuery(String sql) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private double sumQuery(String sql) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getDouble(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+    // ── Store-level stats (used by AdminStoreDashboardServlet) ──
 
     public int getTotalRegisteredStores() {
         String sql = "SELECT COUNT(*) FROM stores";
