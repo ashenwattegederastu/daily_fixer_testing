@@ -13,7 +13,7 @@
                             if ("mine".equals(filter)) {
                             guides = guideDAO.getGuidesByCreator(user.getUserId());
                             } else {
-                            guides = guideDAO.getAllGuides();
+                            guides = guideDAO.getAllGuidesAdmin();
                             }
                             request.setAttribute("guides", guides);
                             request.setAttribute("filter", filter);

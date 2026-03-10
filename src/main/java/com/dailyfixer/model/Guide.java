@@ -15,6 +15,11 @@ public class Guide {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private int viewCount;
+    private String status; // ACTIVE, HIDDEN, PENDING_REVIEW
+    private String hideReason;
+    private Timestamp hiddenAt;
+    private int hiddenBy;
+    private int flagCount; // Transient, loaded from query
 
     // Associated data (loaded separately)
     private List<String> requirements;
@@ -146,6 +151,46 @@ public class Guide {
 
     public void setCreatorName(String creatorName) {
         this.creatorName = creatorName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getHideReason() {
+        return hideReason;
+    }
+
+    public void setHideReason(String hideReason) {
+        this.hideReason = hideReason;
+    }
+
+    public Timestamp getHiddenAt() {
+        return hiddenAt;
+    }
+
+    public void setHiddenAt(Timestamp hiddenAt) {
+        this.hiddenAt = hiddenAt;
+    }
+
+    public int getHiddenBy() {
+        return hiddenBy;
+    }
+
+    public void setHiddenBy(int hiddenBy) {
+        this.hiddenBy = hiddenBy;
+    }
+
+    public int getFlagCount() {
+        return flagCount;
+    }
+
+    public void setFlagCount(int flagCount) {
+        this.flagCount = flagCount;
     }
 
     // Helper to get YouTube embed URL

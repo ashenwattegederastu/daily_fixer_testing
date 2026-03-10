@@ -3,6 +3,7 @@ package com.dailyfixer.servlet.guide;
 import com.dailyfixer.dao.GuideDAO;
 import com.dailyfixer.dao.GuideRatingDAO;
 import com.dailyfixer.dao.GuideCommentDAO;
+import com.dailyfixer.dao.GuideFlagDAO;
 import com.dailyfixer.model.Guide;
 import com.dailyfixer.model.GuideComment;
 import com.dailyfixer.model.User;
@@ -25,6 +26,7 @@ public class GuideViewServlet extends HttpServlet {
     private GuideDAO guideDAO = new GuideDAO();
     private GuideRatingDAO ratingDAO = new GuideRatingDAO();
     private GuideCommentDAO commentDAO = new GuideCommentDAO();
+    private GuideFlagDAO flagDAO = new GuideFlagDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -66,19 +68,32 @@ public class GuideViewServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         String userRating = null;
         boolean canEdit = false;
+        boolean hasUserFlagged = false;
         int currentUserId = 0;
+        boolean isAdmin = false;
 
         if (session != null) {
             User currentUser = (User) session.getAttribute("currentUser");
             if (currentUser != null) {
                 currentUserId = currentUser.getUserId();
+                isAdmin = "admin".equals(currentUser.getRole());
                 userRating = ratingDAO.getUserRating(guideId, currentUserId);
+                hasUserFlagged = flagDAO.hasUserFlagged(guideId, currentUserId);
 
                 // Check if user can edit (admin or creator)
-                canEdit = "admin".equals(currentUser.getRole()) ||
-                        guide.getCreatedBy() == currentUserId;
+                canEdit = isAdmin || guide.getCreatedBy() == currentUserId;
             }
         }
+
+        // If guide is hidden, only allow admin or creator to view
+        if ("HIDDEN".equals(guide.getStatus()) || "PENDING_REVIEW".equals(guide.getStatus())) {
+            if (!isAdmin && guide.getCreatedBy() != currentUserId) {
+                response.sendRedirect(request.getContextPath() + "/guides");
+                return;
+            }
+        }
+
+        int flagCount = flagDAO.getFlagCount(guideId);
 
         request.setAttribute("guide", guide);
         request.setAttribute("upCount", ratingCounts[0]);
@@ -87,6 +102,9 @@ public class GuideViewServlet extends HttpServlet {
         request.setAttribute("comments", comments);
         request.setAttribute("canEdit", canEdit);
         request.setAttribute("currentUserId", currentUserId);
+        request.setAttribute("hasUserFlagged", hasUserFlagged);
+        request.setAttribute("flagCount", flagCount);
+        request.setAttribute("isAdmin", isAdmin);
 
         request.getRequestDispatcher("/pages/guides/view.jsp").forward(request, response);
     }

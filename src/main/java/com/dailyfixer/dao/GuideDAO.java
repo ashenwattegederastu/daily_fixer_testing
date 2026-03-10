@@ -103,12 +103,13 @@ public class GuideDAO {
     // ==================== READ ====================
 
     /**
-     * Get all guides (for public listing).
+     * Get all active guides (for public listing).
      */
     public List<Guide> getAllGuides() {
         List<Guide> list = new ArrayList<>();
         String sql = "SELECT g.*, u.first_name, u.last_name FROM guides g " +
                 "JOIN users u ON g.created_by = u.user_id " +
+                "WHERE g.status = 'ACTIVE' " +
                 "ORDER BY g.created_at DESC";
 
         try (Connection conn = DBConnection.getConnection();
@@ -153,13 +154,117 @@ public class GuideDAO {
     }
 
     /**
+     * Get all guides including non-active (for admin listing).
+     */
+    public List<Guide> getAllGuidesAdmin() {
+        List<Guide> list = new ArrayList<>();
+        String sql = "SELECT g.*, u.first_name, u.last_name, " +
+                "(SELECT COUNT(*) FROM guide_flags f WHERE f.guide_id = g.guide_id) as flag_count " +
+                "FROM guides g JOIN users u ON g.created_by = u.user_id " +
+                "ORDER BY g.created_at DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Guide g = mapGuideFromResultSet(rs);
+                g.setCreatorName(rs.getString("first_name") + " " + rs.getString("last_name"));
+                g.setFlagCount(rs.getInt("flag_count"));
+                list.add(g);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Get guides that have reached the flag threshold (for admin flagged guides page).
+     */
+    public List<Guide> getFlaggedGuides(int threshold) {
+        List<Guide> list = new ArrayList<>();
+        String sql = "SELECT g.*, u.first_name, u.last_name, " +
+                "(SELECT COUNT(*) FROM guide_flags f WHERE f.guide_id = g.guide_id) as flag_count " +
+                "FROM guides g JOIN users u ON g.created_by = u.user_id " +
+                "WHERE g.status = 'ACTIVE' " +
+                "HAVING flag_count >= ? " +
+                "ORDER BY flag_count DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, threshold);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Guide g = mapGuideFromResultSet(rs);
+                g.setCreatorName(rs.getString("first_name") + " " + rs.getString("last_name"));
+                g.setFlagCount(rs.getInt("flag_count"));
+                list.add(g);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Get hidden guides by a specific creator (for creator's flagged guides view).
+     */
+    public List<Guide> getHiddenGuidesByCreator(int userId) {
+        List<Guide> list = new ArrayList<>();
+        String sql = "SELECT g.*, u.first_name, u.last_name FROM guides g " +
+                "JOIN users u ON g.created_by = u.user_id " +
+                "WHERE g.created_by = ? AND g.status IN ('HIDDEN', 'PENDING_REVIEW') " +
+                "ORDER BY g.hidden_at DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Guide g = mapGuideFromResultSet(rs);
+                g.setCreatorName(rs.getString("first_name") + " " + rs.getString("last_name"));
+                list.add(g);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Get guides pending review (edited hidden guides awaiting admin approval).
+     */
+    public List<Guide> getPendingReviewGuides() {
+        List<Guide> list = new ArrayList<>();
+        String sql = "SELECT g.*, u.first_name, u.last_name FROM guides g " +
+                "JOIN users u ON g.created_by = u.user_id " +
+                "WHERE g.status = 'PENDING_REVIEW' " +
+                "ORDER BY g.updated_at DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Guide g = mapGuideFromResultSet(rs);
+                g.setCreatorName(rs.getString("first_name") + " " + rs.getString("last_name"));
+                list.add(g);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
      * Search guides with filters.
      */
     public List<Guide> searchGuides(String keyword, String mainCategory, String subCategory) {
         List<Guide> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
                 "SELECT g.*, u.first_name, u.last_name FROM guides g " +
-                        "JOIN users u ON g.created_by = u.user_id WHERE 1=1 ");
+                        "JOIN users u ON g.created_by = u.user_id WHERE g.status = 'ACTIVE' ");
 
         List<Object> params = new ArrayList<>();
 
@@ -502,6 +607,10 @@ public class GuideDAO {
         g.setCreatedAt(rs.getTimestamp("created_at"));
         g.setUpdatedAt(rs.getTimestamp("updated_at"));
         g.setViewCount(rs.getInt("view_count"));
+        g.setStatus(rs.getString("status"));
+        g.setHideReason(rs.getString("hide_reason"));
+        g.setHiddenAt(rs.getTimestamp("hidden_at"));
+        g.setHiddenBy(rs.getInt("hidden_by"));
         return g;
     }
 }

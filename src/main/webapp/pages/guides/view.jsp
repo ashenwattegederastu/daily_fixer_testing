@@ -292,6 +292,143 @@
                     gap: 15px;
                     margin-bottom: 20px;
                 }
+
+                /* Flag button styles */
+                .flag-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 8px 16px;
+                    border: 2px solid var(--border);
+                    border-radius: var(--radius-md);
+                    background: transparent;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    color: var(--muted-foreground);
+                    transition: all 0.2s;
+                }
+
+                .flag-btn:hover {
+                    border-color: #ef4444;
+                    color: #ef4444;
+                }
+
+                .flag-btn.flagged {
+                    background: #fef2f2;
+                    border-color: #ef4444;
+                    color: #ef4444;
+                    cursor: default;
+                }
+
+                .hidden-banner {
+                    background: #fef2f2;
+                    border: 2px solid #ef4444;
+                    border-radius: var(--radius-md);
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    color: #991b1b;
+                }
+
+                .hidden-banner h3 {
+                    margin-bottom: 8px;
+                    color: #991b1b;
+                }
+
+                .pending-banner {
+                    background: #fefce8;
+                    border: 2px solid #eab308;
+                    border-radius: var(--radius-md);
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    color: #854d0e;
+                }
+
+                .pending-banner h3 {
+                    margin-bottom: 8px;
+                    color: #854d0e;
+                }
+
+                /* Flag modal styles */
+                .modal-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .modal-overlay.active {
+                    display: flex;
+                }
+
+                .modal-content {
+                    background: var(--card);
+                    border-radius: var(--radius-lg);
+                    padding: 30px;
+                    max-width: 500px;
+                    width: 90%;
+                    border: 1px solid var(--border);
+                }
+
+                .modal-content h2 {
+                    margin-bottom: 20px;
+                    color: var(--foreground);
+                }
+
+                .modal-content label {
+                    display: block;
+                    font-weight: 500;
+                    margin-bottom: 8px;
+                    color: var(--foreground);
+                }
+
+                .modal-content select,
+                .modal-content textarea {
+                    width: 100%;
+                    padding: 10px;
+                    border: 2px solid var(--border);
+                    border-radius: var(--radius-md);
+                    background: var(--input);
+                    color: var(--foreground);
+                    font-family: inherit;
+                    margin-bottom: 15px;
+                }
+
+                .modal-content textarea {
+                    min-height: 80px;
+                    resize: vertical;
+                }
+
+                .modal-actions {
+                    display: flex;
+                    gap: 10px;
+                    justify-content: flex-end;
+                }
+
+                .btn-cancel {
+                    padding: 10px 20px;
+                    border: 2px solid var(--border);
+                    border-radius: var(--radius-md);
+                    background: transparent;
+                    color: var(--foreground);
+                    cursor: pointer;
+                    font-weight: 500;
+                }
+
+                .btn-flag-submit {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: var(--radius-md);
+                    background: #ef4444;
+                    color: white;
+                    cursor: pointer;
+                    font-weight: 500;
+                }
             </style>
         </head>
 
@@ -305,6 +442,22 @@
                     <a href="${pageContext.request.contextPath}/guides">Repair Guides</a>
                     <span> / ${guide.mainCategory} / ${guide.subCategory}</span>
                 </div>
+
+                <!-- Hidden Guide Banner (shown to creator and admin) -->
+                <c:if test="${guide.status == 'HIDDEN'}">
+                    <div class="hidden-banner">
+                        <h3><i class="ph ph-warning"></i> This Guide Has Been Hidden</h3>
+                        <p><strong>Reason:</strong> ${guide.hideReason}</p>
+                        <p style="margin-top: 8px;">You can edit this guide to address the issues, then it will be sent for admin review.</p>
+                    </div>
+                </c:if>
+
+                <c:if test="${guide.status == 'PENDING_REVIEW'}">
+                    <div class="pending-banner">
+                        <h3><i class="ph ph-clock"></i> Pending Admin Review</h3>
+                        <p>This guide has been edited and is awaiting admin approval before it becomes visible again.</p>
+                    </div>
+                </c:if>
 
                 <!-- Edit Actions (for owners/admins) -->
                 <c:if test="${canEdit}">
@@ -347,8 +500,24 @@
                             <span id="downCount">${downCount}</span>
                         </button>
                         <div
-                            style="margin-left: auto; display: flex; align-items: center; gap: 5px; color: var(--muted-foreground);">
+                            style="margin-left: auto; display: flex; align-items: center; gap: 15px; color: var(--muted-foreground);">
                             <span><i class="ph ph-eye" style="margin-right:4px;"></i> ${guide.viewCount} views</span>
+
+                            <!-- Flag button (for logged-in users, not the guide creator) -->
+                            <c:if test="${not empty sessionScope.currentUser && sessionScope.currentUser.userId != guide.createdBy && guide.status == 'ACTIVE'}">
+                                <c:choose>
+                                    <c:when test="${hasUserFlagged}">
+                                        <button class="flag-btn flagged" disabled>
+                                            <i class="ph-fill ph-flag"></i> Flagged
+                                        </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button class="flag-btn" onclick="openFlagModal()">
+                                            <i class="ph ph-flag"></i> Flag
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:if>
                         </div>
                     </div>
                 </div>
@@ -450,6 +619,30 @@
             </div>
 
 
+            <!-- Flag Guide Modal -->
+            <div class="modal-overlay" id="flagModal">
+                <div class="modal-content">
+                    <h2><i class="ph ph-flag" style="color: #ef4444;"></i> Flag This Guide</h2>
+                    <label for="flagReason">Reason for flagging:</label>
+                    <select id="flagReason">
+                        <option value="">-- Select a reason --</option>
+                        <option value="INACCURATE">Inaccurate information</option>
+                        <option value="OUTDATED">Outdated content</option>
+                        <option value="INAPPROPRIATE">Inappropriate content</option>
+                        <option value="SPAM">Spam or advertising</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+
+                    <label for="flagDescription">Additional details (optional):</label>
+                    <textarea id="flagDescription" placeholder="Describe the issue..." maxlength="500"></textarea>
+
+                    <div class="modal-actions">
+                        <button class="btn-cancel" onclick="closeFlagModal()">Cancel</button>
+                        <button class="btn-flag-submit" onclick="submitFlag()">Submit Flag</button>
+                    </div>
+                </div>
+            </div>
+
             <script>
                 function rateGuide(rating) {
                     <c:if test="${empty sessionScope.currentUser}">
@@ -480,6 +673,62 @@
                         })
                         .catch(err => console.error('Rating error:', err));
                 }
+
+                function openFlagModal() {
+                    document.getElementById('flagModal').classList.add('active');
+                }
+
+                function closeFlagModal() {
+                    document.getElementById('flagModal').classList.remove('active');
+                    document.getElementById('flagReason').value = '';
+                    document.getElementById('flagDescription').value = '';
+                }
+
+                function submitFlag() {
+                    var reason = document.getElementById('flagReason').value;
+                    var description = document.getElementById('flagDescription').value;
+
+                    if (!reason) {
+                        alert('Please select a reason for flagging.');
+                        return;
+                    }
+
+                    fetch('${pageContext.request.contextPath}/guides/flag', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'guideId=${guide.guideId}&reason=' + encodeURIComponent(reason) + '&description=' + encodeURIComponent(description)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                closeFlagModal();
+                                // Replace the flag button with "Flagged" state
+                                var flagBtns = document.querySelectorAll('.flag-btn');
+                                flagBtns.forEach(function(btn) {
+                                    btn.classList.add('flagged');
+                                    btn.disabled = true;
+                                    btn.innerHTML = '<i class="ph-fill ph-flag"></i> Flagged';
+                                    btn.onclick = null;
+                                });
+                                alert(data.message);
+                            } else {
+                                alert(data.message || data.error || 'Failed to submit flag.');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Flag error:', err);
+                            alert('An error occurred. Please try again.');
+                        });
+                }
+
+                // Close modal when clicking outside
+                document.getElementById('flagModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeFlagModal();
+                    }
+                });
             </script>
         </body>
 

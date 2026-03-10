@@ -238,8 +238,15 @@
                                 <main class="main-content">
                                     <div class="page-header">
                                         <h1>My Guides</h1>
-                                        <a href="${pageContext.request.contextPath}/guides/create" class="btn-primary">+
-                                            Create New Guide</a>
+                                        <div style="display: flex; gap: 10px;">
+                                            <a href="${pageContext.request.contextPath}/guides/flagged"
+                                                class="btn-secondary"
+                                                style="padding: 10px 20px; border: 2px solid var(--border); border-radius: var(--radius-md); text-decoration: none; color: var(--foreground); font-weight: 500;">
+                                                Hidden Guides
+                                            </a>
+                                            <a href="${pageContext.request.contextPath}/guides/create" class="btn-primary">+
+                                                Create New Guide</a>
+                                        </div>
                                     </div>
 
                                     <c:if test="${param.success == 'created'}">

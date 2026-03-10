@@ -54,6 +54,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="${pageContext.request.contextPath}/admin/flagged-guides" id="nav-flagged-guides">
+                                <i class="ph ph-flag"></i>
+                                Flagged Guides
+                            </a>
+                        </li>
+                        <li>
                             <a href="${pageContext.request.contextPath}/pages/dashboards/admindash/diagnostic-trees.jsp"
                                 id="nav-diagnostic">
                                 <i class="ph ph-tree-structure"></i>

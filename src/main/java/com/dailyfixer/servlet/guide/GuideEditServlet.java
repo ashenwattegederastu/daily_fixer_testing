@@ -1,6 +1,7 @@
 package com.dailyfixer.servlet.guide;
 
 import com.dailyfixer.dao.GuideDAO;
+import com.dailyfixer.dao.GuideFlagDAO;
 import com.dailyfixer.model.Guide;
 import com.dailyfixer.model.GuideStep;
 import com.dailyfixer.model.User;
@@ -26,6 +27,7 @@ import java.util.List;
 public class GuideEditServlet extends HttpServlet {
 
     private GuideDAO guideDAO = new GuideDAO();
+    private GuideFlagDAO flagDAO = new GuideFlagDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -227,6 +229,10 @@ public class GuideEditServlet extends HttpServlet {
             }
 
             if (success) {
+                // If guide was hidden, mark as pending review for admin
+                if ("HIDDEN".equals(existingGuide.getStatus())) {
+                    flagDAO.markPendingReview(guideId);
+                }
                 response.sendRedirect(request.getContextPath() + "/guides/view?id=" + guideId + "&success=updated");
             } else {
                 request.setAttribute("error", "Failed to update guide. Please try again.");
